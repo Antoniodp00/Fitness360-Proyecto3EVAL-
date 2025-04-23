@@ -1,0 +1,104 @@
+-- Crear la base de datos si no existe
+CREATE DATABASE IF NOT EXISTS Fitness360;
+USE Fitness360;
+
+-- Tabla principal de usuarios
+CREATE TABLE Usuario (
+    idUsuario INT PRIMARY KEY AUTO_INCREMENT,           -- Identificador único de usuario
+    nombre VARCHAR(50),                                 -- Nombre del usuario
+    apellidos VARCHAR(50),                              -- Apellidos del usuario
+    correo VARCHAR(100) UNIQUE,                         -- Correo único para login
+    password VARCHAR(100),                              -- Contraseña (idealmente con hash)
+    telefono VARCHAR(20)                                -- Teléfono de contacto
+);
+
+-- Tabla de empleados (entrenadores o dietistas)
+CREATE TABLE Empleado (
+    idUsuario INT PRIMARY KEY,                          -- Mismo ID que en Usuario
+    descripcion TEXT,                                   -- Descripción del profesional
+    rol VARCHAR(50),                                    -- Rol: 'entrenador', 'dietista' o ambos
+    FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE
+);
+
+-- Tabla de clientes
+CREATE TABLE Cliente (
+    idUsuario INT PRIMARY KEY,                          -- Mismo ID que en Usuario
+    FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE
+);
+
+-- Tabla de tarifas ofrecidas por profesionales
+CREATE TABLE Tarifa (
+    idTarifa INT PRIMARY KEY AUTO_INCREMENT,            -- ID de la tarifa
+    precio DECIMAL(8,2),                                -- Precio en euros
+    descripcion TEXT,                                   -- Detalles de la tarifa
+    idEmpleado INT,                                     -- Profesional que la creó
+    FOREIGN KEY (idEmpleado) REFERENCES Empleado(idUsuario) ON DELETE SET NULL
+);
+
+-- Tabla de dietas creadas por profesionales
+CREATE TABLE Dieta (
+    idDieta INT PRIMARY KEY AUTO_INCREMENT,             -- ID de la dieta
+    nombre VARCHAR(100),                                -- Nombre de la dieta
+    descripcion TEXT,                                   -- Detalles de la dieta
+    archivo VARCHAR(255),                               -- Ruta al archivo PDF o imagen
+    idEmpleado INT,                                     -- Profesional que la creó
+    FOREIGN KEY (idEmpleado) REFERENCES Empleado(idUsuario) ON DELETE SET NULL
+);
+
+-- Tabla de rutinas de entrenamiento creadas por profesionales
+CREATE TABLE Rutina (
+    idRutina INT PRIMARY KEY AUTO_INCREMENT,            -- ID de la rutina
+    nombre VARCHAR(100),                                -- Nombre de la rutina
+    descripcion TEXT,                                   -- Descripción de la rutina
+    idEmpleado INT,                                     -- Profesional que la creó
+    FOREIGN KEY (idEmpleado) REFERENCES Empleado(idUsuario) ON DELETE SET NULL
+);
+
+-- Relación entre clientes y dietas asignadas
+CREATE TABLE Cliente_Dieta (
+    idCliente INT,
+    idDieta INT,
+    PRIMARY KEY (idCliente, idDieta),
+    FOREIGN KEY (idCliente) REFERENCES Cliente(idUsuario) ON DELETE CASCADE,
+    FOREIGN KEY (idDieta) REFERENCES Dieta(idDieta) ON DELETE CASCADE
+);
+
+-- Relación entre clientes y rutinas asignadas
+CREATE TABLE Cliente_Rutina (
+    idCliente INT,
+    idRutina INT,
+    PRIMARY KEY (idCliente, idRutina),
+    FOREIGN KEY (idCliente) REFERENCES Cliente(idUsuario) ON DELETE CASCADE,
+    FOREIGN KEY (idRutina) REFERENCES Rutina(idRutina) ON DELETE CASCADE
+);
+
+-- Relación entre clientes y tarifas contratadas
+CREATE TABLE Cliente_Tarifa (
+    idCliente INT,
+    idTarifa INT,
+    estado ENUM('activa', 'inactiva', 'suspendida') DEFAULT 'activa', -- Estado actual de la tarifa
+    fecha_contratacion DATE,                          -- Cuándo se contrató
+    fecha_renovacion DATE,                            -- Cuándo se renovó por última vez
+    fecha_fin DATE,                                   -- Cuándo termina la suscripción
+    PRIMARY KEY (idCliente, idTarifa),
+    FOREIGN KEY (idCliente) REFERENCES Cliente(idUsuario) ON DELETE CASCADE,
+    FOREIGN KEY (idTarifa) REFERENCES Tarifa(idTarifa) ON DELETE CASCADE
+);
+
+-- Revisiones físicas realizadas por un profesional a un cliente
+CREATE TABLE Revision (
+    idRevision INT PRIMARY KEY AUTO_INCREMENT,
+    fecha DATE,                                        -- Fecha de la revisión
+    peso DECIMAL(5,2),                                 -- Peso en kg
+    grasa DECIMAL(5,2),                                -- % de grasa corporal
+    musculo DECIMAL(5,2),                              -- % de masa muscular
+    mPecho DECIMAL(5,2),                               -- Medida de pecho en cm
+    mCintura DECIMAL(5,2),                             -- Medida de cintura en cm
+    mCadera DECIMAL(5,2),                              -- Medida de cadera en cm
+    observaciones TEXT,                                -- Comentarios adicionales
+    imagen VARCHAR(255),                               -- Imagen opcional del progreso
+    idCliente INT,                                     -- Cliente evaluado
+    idEmpleado INT,                                    -- Profesional que hizo la revisión
+    FOREIGN KEY (idCliente) REFERENCES Cliente(idUsuario) ON DELETE CASCADE,
+    FOREIGN KEY (idEmpleado) REFERENCES Empleado(idUsuario) ON DELETE SET NULL
+);

@@ -1,104 +1,176 @@
--- Crear la base de datos si no existe
+-- =======================================
+-- Base de datos: Proyecto Fitness360
+-- Script SQL completo con atributos adicionales y auditoría
+-- =======================================
+
+-- 1) Crear base de datos y seleccionarla
 CREATE DATABASE IF NOT EXISTS Fitness360;
 USE Fitness360;
 
--- Tabla principal de usuarios
+-- 2) Tabla Usuario (datos demográficos + auditoría)
 CREATE TABLE Usuario (
-    idUsuario INT PRIMARY KEY AUTO_INCREMENT,           -- Identificador único de usuario
-    nombre VARCHAR(50),                                 -- Nombre del usuario
-    apellidos VARCHAR(50),                              -- Apellidos del usuario
-    correo VARCHAR(100) UNIQUE,                         -- Correo único para login
-    password VARCHAR(100),                              -- Contraseña (idealmente con hash)
-    telefono VARCHAR(20)                                -- Teléfono de contacto
+    idUsuario INT PRIMARY KEY AUTO_INCREMENT,           -- Identificador único
+    nombre VARCHAR(50) NOT NULL,                        -- Nombre
+    apellidos VARCHAR(50) NOT NULL,                     -- Apellidos
+    correo VARCHAR(100) NOT NULL UNIQUE,                -- Email único
+    password VARCHAR(100) NOT NULL,                     -- Contraseña (hash)
+    telefono VARCHAR(20),                               -- Teléfono
+
+    -- Datos demográficos
+    fecha_nacimiento DATE,                              -- Fecha de nacimiento
+    sexo ENUM('M','F','O'),                             -- Género
+    altura DECIMAL(4,1),                                -- Altura en cm (e.g., 175.5)
+
+    -- Auditoría
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Tabla de empleados (entrenadores o dietistas)
+-- 3) Tabla Empleado (especialidad, contratación + auditoría)
 CREATE TABLE Empleado (
-    idUsuario INT PRIMARY KEY,                          -- Mismo ID que en Usuario
-    descripcion TEXT,                                   -- Descripción del profesional
-    rol VARCHAR(50),                                    -- Rol: 'entrenador', 'dietista' o ambos
-    FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE
+    idUsuario INT PRIMARY KEY,                          -- Hereda id de Usuario
+    descripcion TEXT,                                   -- Descripción profesional
+    rol VARCHAR(50),                                    -- Rol (entrenador/dietista)
+
+    especialidad ENUM('entrenador','dietista','ambos') NOT NULL DEFAULT 'ambos',
+    fecha_contratacion DATE,                            -- Fecha de inicio
+
+    -- Auditoría
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
+      ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Tabla de clientes
+-- 4) Tabla Cliente (auditoría)
 CREATE TABLE Cliente (
-    idUsuario INT PRIMARY KEY,                          -- Mismo ID que en Usuario
-    FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE
+    idUsuario INT PRIMARY KEY,                          -- Hereda id de Usuario
+
+    -- Auditoría
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
+      ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Tabla de tarifas ofrecidas por profesionales
+-- 5) Tabla Tarifa (periodo + auditoría)
 CREATE TABLE Tarifa (
-    idTarifa INT PRIMARY KEY AUTO_INCREMENT,            -- ID de la tarifa
-    precio DECIMAL(8,2),                                -- Precio en euros
-    descripcion TEXT,                                   -- Detalles de la tarifa
-    idEmpleado INT,                                     -- Profesional que la creó
-    FOREIGN KEY (idEmpleado) REFERENCES Empleado(idUsuario) ON DELETE SET NULL
+    idTarifa INT PRIMARY KEY AUTO_INCREMENT,            -- Identificador de tarifa
+    precio DECIMAL(8,2) NOT NULL,                       -- Precio en €
+    descripcion TEXT,                                   -- Descripción
+    periodo ENUM('mensual','trimestral','anual','único') NOT NULL DEFAULT 'mensual',
+    idEmpleado INT NOT NULL,                            -- Profesional creador
+
+    -- Auditoría
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (idEmpleado) REFERENCES Empleado(idUsuario)
+      ON DELETE SET NULL ON UPDATE CASCADE
 );
 
--- Tabla de dietas creadas por profesionales
+-- 6) Tabla Dieta (auditoría)
 CREATE TABLE Dieta (
-    idDieta INT PRIMARY KEY AUTO_INCREMENT,             -- ID de la dieta
-    nombre VARCHAR(100),                                -- Nombre de la dieta
-    descripcion TEXT,                                   -- Detalles de la dieta
-    archivo VARCHAR(255),                               -- Ruta al archivo PDF o imagen
-    idEmpleado INT,                                     -- Profesional que la creó
-    FOREIGN KEY (idEmpleado) REFERENCES Empleado(idUsuario) ON DELETE SET NULL
+    idDieta INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    archivo VARCHAR(255),                               -- Ruta al recurso
+    idEmpleado INT NOT NULL,
+
+    -- Auditoría
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (idEmpleado) REFERENCES Empleado(idUsuario)
+      ON DELETE SET NULL ON UPDATE CASCADE
 );
 
--- Tabla de rutinas de entrenamiento creadas por profesionales
+-- 7) Tabla Rutina (auditoría)
 CREATE TABLE Rutina (
-    idRutina INT PRIMARY KEY AUTO_INCREMENT,            -- ID de la rutina
-    nombre VARCHAR(100),                                -- Nombre de la rutina
-    descripcion TEXT,                                   -- Descripción de la rutina
-    idEmpleado INT,                                     -- Profesional que la creó
-    FOREIGN KEY (idEmpleado) REFERENCES Empleado(idUsuario) ON DELETE SET NULL
+    idRutina INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    idEmpleado INT NOT NULL,
+
+    -- Auditoría
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (idEmpleado) REFERENCES Empleado(idUsuario)
+      ON DELETE SET NULL ON UPDATE CASCADE
 );
 
--- Relación entre clientes y dietas asignadas
+-- 8) Relación Cliente_Dieta (fechas de asignación y fin)
 CREATE TABLE Cliente_Dieta (
     idCliente INT,
     idDieta INT,
+    fecha_asignacion DATE,                              -- Inicio de asignación
+    fecha_fin DATE,                                     -- Fin de asignación
     PRIMARY KEY (idCliente, idDieta),
-    FOREIGN KEY (idCliente) REFERENCES Cliente(idUsuario) ON DELETE CASCADE,
-    FOREIGN KEY (idDieta) REFERENCES Dieta(idDieta) ON DELETE CASCADE
+
+    FOREIGN KEY (idCliente) REFERENCES Cliente(idUsuario)
+      ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (idDieta) REFERENCES Dieta(idDieta)
+      ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Relación entre clientes y rutinas asignadas
+-- 9) Relación Cliente_Rutina (fechas de asignación y fin)
 CREATE TABLE Cliente_Rutina (
     idCliente INT,
     idRutina INT,
+    fecha_asignacion DATE,
+    fecha_fin DATE,
     PRIMARY KEY (idCliente, idRutina),
-    FOREIGN KEY (idCliente) REFERENCES Cliente(idUsuario) ON DELETE CASCADE,
-    FOREIGN KEY (idRutina) REFERENCES Rutina(idRutina) ON DELETE CASCADE
+
+    FOREIGN KEY (idCliente) REFERENCES Cliente(idUsuario)
+      ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (idRutina) REFERENCES Rutina(idRutina)
+      ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Relación entre clientes y tarifas contratadas
+-- 10) Relación Cliente_Tarifa (estado, fechas + auditoría)
 CREATE TABLE Cliente_Tarifa (
     idCliente INT,
     idTarifa INT,
-    estado ENUM('activa', 'inactiva', 'suspendida') DEFAULT 'activa', -- Estado actual de la tarifa
-    fecha_contratacion DATE,                          -- Cuándo se contrató
-    fecha_renovacion DATE,                            -- Cuándo se renovó por última vez
-    fecha_fin DATE,                                   -- Cuándo termina la suscripción
+    estado ENUM('activa','inactiva','suspendida') NOT NULL DEFAULT 'activa',
+    fecha_contratacion DATE,
+    fecha_renovacion DATE,
+    fecha_fin DATE,
+
+    -- Auditoría
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
     PRIMARY KEY (idCliente, idTarifa),
-    FOREIGN KEY (idCliente) REFERENCES Cliente(idUsuario) ON DELETE CASCADE,
-    FOREIGN KEY (idTarifa) REFERENCES Tarifa(idTarifa) ON DELETE CASCADE
+    FOREIGN KEY (idCliente) REFERENCES Cliente(idUsuario)
+      ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (idTarifa) REFERENCES Tarifa(idTarifa)
+      ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Revisiones físicas realizadas por un profesional a un cliente
+-- 11) Tabla Revision (auditoría)
 CREATE TABLE Revision (
     idRevision INT PRIMARY KEY AUTO_INCREMENT,
-    fecha DATE,                                        -- Fecha de la revisión
-    peso DECIMAL(5,2),                                 -- Peso en kg
-    grasa DECIMAL(5,2),                                -- % de grasa corporal
-    musculo DECIMAL(5,2),                              -- % de masa muscular
-    mPecho DECIMAL(5,2),                               -- Medida de pecho en cm
-    mCintura DECIMAL(5,2),                             -- Medida de cintura en cm
-    mCadera DECIMAL(5,2),                              -- Medida de cadera en cm
-    observaciones TEXT,                                -- Comentarios adicionales
-    imagen VARCHAR(255),                               -- Imagen opcional del progreso
-    idCliente INT,                                     -- Cliente evaluado
-    idEmpleado INT,                                    -- Profesional que hizo la revisión
-    FOREIGN KEY (idCliente) REFERENCES Cliente(idUsuario) ON DELETE CASCADE,
-    FOREIGN KEY (idEmpleado) REFERENCES Empleado(idUsuario) ON DELETE SET NULL
+    fecha DATE NOT NULL,
+    peso DECIMAL(5,2),
+    grasa DECIMAL(5,2),
+    musculo DECIMAL(5,2),
+    mPecho DECIMAL(5,2),
+    mCintura DECIMAL(5,2),
+    mCadera DECIMAL(5,2),
+    observaciones TEXT,
+    imagen VARCHAR(255),
+    idCliente INT NOT NULL,
+    idEmpleado INT,
+
+    -- Auditoría
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (idCliente) REFERENCES Cliente(idUsuario)
+      ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (idEmpleado) REFERENCES Empleado(idUsuario)
+      ON DELETE SET NULL ON UPDATE CASCADE
 );

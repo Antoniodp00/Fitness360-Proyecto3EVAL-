@@ -18,9 +18,9 @@ CREATE TABLE Cliente (
     password VARCHAR(100) NOT NULL,
     telefono VARCHAR(20),
     fechaNacimiento DATE,
-    sexo ENUM('M','F','O'),
+    sexo ENUM('M','F','O','NS') DEFAULT 'NS',
     altura DECIMAL(4,1),
-    estado ENUM('activo','inactivo','suspendido') DEFAULT 'activo',
+    estado ENUM('ACTIVO','INACTIVO','SUSPENDIDO') DEFAULT 'ACTIVO',
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -35,11 +35,11 @@ CREATE TABLE Empleado (
     password VARCHAR(100) NOT NULL,
     telefono VARCHAR(20),
     fechaNacimiento DATE,
-    sexo ENUM('M','F','O'),
+    sexo ENUM('M','F','O','NS') DEFAULT 'NS',
     descripcion TEXT,
     rol VARCHAR(50),
-    especialidad ENUM('entrenador','dietista','ambos') NOT NULL DEFAULT 'ambos',
-    estado ENUM('activo','inactivo','suspendido') DEFAULT 'activo',
+    especialidad ENUM('ENTRENADOR','DIETISTA','AMBOS') NOT NULL DEFAULT 'AMBOS',
+    estado ENUM('ACTIVO','INACTIVO','SUSPENDIDO') DEFAULT 'ACTIVO',
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -50,7 +50,7 @@ CREATE TABLE Tarifa (
     nombre VARCHAR(100) NOT NULL,
     precio DECIMAL(8,2) NOT NULL,
     descripcion TEXT,
-    periodo ENUM('mensual','trimestral','anual','único') NOT NULL DEFAULT 'mensual',
+    periodo ENUM('MENSUAL','TRIMESTRAL','ANUAL','UNICO') NOT NULL DEFAULT 'MENSUAL',
     idEmpleado INT,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -117,7 +117,7 @@ CREATE TABLE UsuarioRutina (
 CREATE TABLE ClienteTarifa (
     idCliente INT,
     idTarifa INT,
-    estado ENUM('activa','inactiva','suspendida') NOT NULL DEFAULT 'activa',
+    estado ENUM('ACTIVA','INACTIVA','SUSPENDIDA') NOT NULL DEFAULT 'ACTIVA',
     fechaContratacion DATE,
     fechaRenovacion DATE,
     fechaFin DATE,

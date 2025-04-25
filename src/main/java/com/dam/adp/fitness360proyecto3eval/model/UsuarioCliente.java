@@ -28,8 +28,8 @@ public class UsuarioCliente extends Usuario {
      * @param updatedAt Fecha y hora de última actualización del registro
      * @param altura Altura del cliente en metros
      */
-    public UsuarioCliente(int idUsuario, String nombreUsuario, String nombre, String apellidos, String correo, String password, String telefono, Date fechaNacimiento, Sexo sexo, LocalDateTime createdAt, LocalDateTime updatedAt, double altura) {
-        super(idUsuario, nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, createdAt, updatedAt);
+    public UsuarioCliente(int idUsuario, String nombreUsuario, String nombre, String apellidos, String correo, String password, String telefono, Date fechaNacimiento, Sexo sexo, Estado estado,LocalDateTime createdAt, LocalDateTime updatedAt, double altura) {
+        super(idUsuario, nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, estado,createdAt, updatedAt);
         this.altura = altura;
     }
 
@@ -47,8 +47,8 @@ public class UsuarioCliente extends Usuario {
      * @param sexo Sexo del usuario (M, F, O)
      * @param altura Altura del cliente en metros
      */
-    public UsuarioCliente(int idUsuario, String nombreUsuario, String nombre, String apellidos, String correo, String password, String telefono, Date fechaNacimiento, Sexo sexo, double altura) {
-        super(idUsuario, nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo);
+    public UsuarioCliente(int idUsuario, String nombreUsuario, String nombre, String apellidos, String correo, String password, String telefono, Date fechaNacimiento, Sexo sexo,Estado estado, double altura) {
+        super(idUsuario, nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo,estado);
         this.altura = altura;
     }
 
@@ -91,4 +91,13 @@ public class UsuarioCliente extends Usuario {
 
 
     // Getters y setters...
+
+
+    @Override
+    public String toString() {
+        return "UsuarioCliente{" +
+                super.toString() +
+                "altura=" + altura +
+                '}';
+    }
 }

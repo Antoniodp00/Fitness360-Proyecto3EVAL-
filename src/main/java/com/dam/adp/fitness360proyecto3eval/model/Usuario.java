@@ -20,11 +20,12 @@ public class Usuario {
     private String telefono;
     private Date fechaNacimiento;
     private Sexo sexo;
+    private Estado estado;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Usuario(int idUsuario, String nombreUsuario, String nombre, String apellidos, String correo, String password, String telefono, Date fechaNacimiento, Sexo sexo, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Usuario(int idUsuario, String nombreUsuario, String nombre, String apellidos, String correo, String password, String telefono, Date fechaNacimiento, Sexo sexo, Estado estado, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.idUsuario = idUsuario;
         this.nombreUsuario = nombreUsuario;
         this.nombre = nombre;
@@ -34,11 +35,12 @@ public class Usuario {
         this.telefono = telefono;
         this.fechaNacimiento = fechaNacimiento;
         this.sexo = sexo;
+        this.estado = estado;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
-    public Usuario(int idUsuario, String nombreUsuario, String nombre, String apellidos, String correo, String password, String telefono, Date fechaNacimiento, Sexo sexo) {
+    public Usuario(int idUsuario, String nombreUsuario, String nombre, String apellidos, String correo, String password, String telefono, Date fechaNacimiento, Sexo sexo, Estado estado) {
         this.idUsuario = idUsuario;
         this.nombreUsuario = nombreUsuario;
         this.nombre = nombre;
@@ -48,6 +50,7 @@ public class Usuario {
         this.telefono = telefono;
         this.fechaNacimiento = fechaNacimiento;
         this.sexo = sexo;
+        this.estado = estado;
     }
 
     public Usuario() {
@@ -120,10 +123,27 @@ public class Usuario {
     public Sexo getSexo() {
         return sexo;
     }
-
     public void setSexo(Sexo sexo) {
         this.sexo = sexo;
     }
+    /**
+     * Obtiene el estado del empleado.
+     *
+     * @return El estado del empleado (ACTIVO, INACTIVO, SUSPENDIDO)
+     */
+    public Estado getEstado() {
+        return estado;
+    }
+
+    /**
+     * Establece el estado del empleado.
+     *
+     * @param estado El nuevo estado del empleado (ACTIVO, INACTIVO, SUSPENDIDO)
+     */
+    public void setEstado(Estado estado) {
+        this.estado = estado;
+    }
+
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -142,4 +162,23 @@ public class Usuario {
     }
 
     // Getters y setters...
+
+
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "idUsuario=" + idUsuario +
+                ", nombreUsuario='" + nombreUsuario + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", apellidos='" + apellidos + '\'' +
+                ", correo='" + correo + '\'' +
+                ", password='" + password + '\'' +
+                ", telefono='" + telefono + '\'' +
+                ", fechaNacimiento=" + fechaNacimiento +
+                ", sexo=" + sexo +
+                ", estado=" + estado +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
 }

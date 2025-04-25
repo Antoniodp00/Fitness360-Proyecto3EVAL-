@@ -13,7 +13,7 @@ public class UsuarioEmpleado extends Usuario {
     private String descripcion;
     private String rol;
     private Especialidad especialidad;
-    private Estado estado;
+
 
     /**
      * Constructor completo para crear un empleado con todos los atributos, incluyendo datos de auditoría.
@@ -35,9 +35,8 @@ public class UsuarioEmpleado extends Usuario {
      * @param rol Rol del empleado en el sistema
      */
     public UsuarioEmpleado(int idUsuario, String nombreUsuario, String nombre, String apellidos, String correo, String password, String telefono, Date fechaNacimiento, Sexo sexo, LocalDateTime createdAt, LocalDateTime updatedAt, String descripcion, Estado estado, Especialidad especialidad, String rol) {
-        super(idUsuario, nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, createdAt, updatedAt);
+        super(idUsuario, nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, estado, createdAt, updatedAt);
         this.descripcion = descripcion;
-        this.estado = estado;
         this.especialidad = especialidad;
         this.rol = rol;
     }
@@ -60,11 +59,10 @@ public class UsuarioEmpleado extends Usuario {
      * @param estado Estado del empleado (ACTIVO, INACTIVO, SUSPENDIDO)
      */
     public UsuarioEmpleado(int idUsuario, String nombreUsuario, String nombre, String apellidos, String correo, String password, String telefono, Date fechaNacimiento, Sexo sexo, String descripcion, String rol, Especialidad especialidad, Estado estado) {
-        super(idUsuario, nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo);
+        super(idUsuario, nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, estado);
         this.descripcion = descripcion;
         this.rol = rol;
         this.especialidad = especialidad;
-        this.estado = estado;
     }
 
     /**
@@ -130,23 +128,6 @@ public class UsuarioEmpleado extends Usuario {
         this.especialidad = especialidad;
     }
 
-    /**
-     * Obtiene el estado del empleado.
-     * 
-     * @return El estado del empleado (ACTIVO, INACTIVO, SUSPENDIDO)
-     */
-    public Estado getEstado() {
-        return estado;
-    }
-
-    /**
-     * Establece el estado del empleado.
-     * 
-     * @param estado El nuevo estado del empleado (ACTIVO, INACTIVO, SUSPENDIDO)
-     */
-    public void setEstado(Estado estado) {
-        this.estado = estado;
-    }
 
 
 

@@ -4,6 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+/**
+ * Clase base que representa a un usuario en el sistema.
+ * Contiene información común a todos los usuarios como identificador, nombre de usuario,
+ * datos personales (nombre, apellidos, correo, teléfono, fecha de nacimiento, sexo),
+ * credenciales de acceso y datos de auditoría.
+ */
 public class Usuario {
     private int idUsuario;
     private String nombreUsuario;

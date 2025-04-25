@@ -2,6 +2,11 @@ package com.dam.adp.fitness360proyecto3eval.model;
 
 import java.time.LocalDateTime;
 
+/**
+ * Clase que representa una tarifa o plan de precios en el sistema.
+ * Contiene información sobre la tarifa como su identificador, nombre, precio,
+ * descripción, periodo de validez, el empleado que la creó, y datos de auditoría.
+ */
 public class Tarifa {
     private int idTarifa;
     private String nombre;

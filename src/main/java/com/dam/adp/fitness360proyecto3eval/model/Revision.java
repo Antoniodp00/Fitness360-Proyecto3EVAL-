@@ -2,6 +2,7 @@ package com.dam.adp.fitness360proyecto3eval.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Clase que representa una revisión o evaluación física de un cliente.
@@ -352,5 +353,56 @@ public class Revision {
      */
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    /**
+     * Devuelve una representación en cadena de texto de la revisión.
+     * 
+     * @return Cadena de texto con los datos principales de la revisión
+     */
+    @Override
+    public String toString() {
+        return "Revision{" +
+                "idRevision=" + idRevision +
+                ", fecha=" + fecha +
+                ", peso=" + peso +
+                ", grasa=" + grasa +
+                ", musculo=" + musculo +
+                ", mPecho=" + mPecho +
+                ", mCintura=" + mCintura +
+                ", mCadera=" + mCadera +
+                ", observaciones='" + observaciones + '\'' +
+                ", imagen='" + imagen + '\'' +
+                ", cliente=" + (cliente != null ? "ID: " + cliente.getId() : "null") +
+                ", empleado=" + (empleado != null ? "ID: " + empleado.getId() : "null") +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
+
+    /**
+     * Compara esta revisión con otro objeto para determinar si son iguales.
+     * 
+     * @param o El objeto a comparar con esta revisión
+     * @return true si los objetos son iguales, false en caso contrario
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Revision revision = (Revision) o;
+        return idRevision == revision.idRevision &&
+                Objects.equals(fecha, revision.fecha) &&
+                Objects.equals(cliente, revision.cliente);
+    }
+
+    /**
+     * Calcula el código hash para esta revisión.
+     * 
+     * @return El código hash calculado
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(idRevision, fecha, cliente);
     }
 }

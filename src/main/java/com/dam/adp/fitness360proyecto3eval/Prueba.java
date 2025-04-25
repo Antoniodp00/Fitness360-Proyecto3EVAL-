@@ -23,9 +23,17 @@ public class Prueba {
         ConsultasBasicas.eliminarUsuario(1);*/
 
 
-        List<UsuarioCliente> clientes = UsuarioClienteDAO.getAll();
+      /*  List<UsuarioCliente> clientes = UsuarioClienteDAO.getAll();
         for (UsuarioCliente cliente : clientes) {
             System.out.println(cliente);
+        }*/
+
+        UsuarioCliente cliente = UsuarioClienteDAO.findById(1);
+        if (UsuarioClienteDAO.disableUsuarioCliente(1)){
+            System.out.println("Autor desactivado correctamente"+cliente);
+
+        }else {
+            System.out.println("No se a podido desactivar");
         }
     }
 

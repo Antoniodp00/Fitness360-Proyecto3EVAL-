@@ -1,6 +1,9 @@
 package com.dam.adp.fitness360proyecto3eval.model;
 
 import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Clase que representa una rutina de ejercicios en el sistema.
@@ -11,11 +14,11 @@ public class Rutina {
     private int idRutina;
     private String nombre;
     private String descripcion;
-    private UsuarioEmpleado empleado;
     private UsuarioCliente cliente;
-
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private UsuarioEmpleado creador;
+    private List<ClienteRutina> clientesAsignados;
+    private Date createdAt;
+    private Date updatedAt;
 
     /**
      * Constructor por defecto sin parámetros.
@@ -25,44 +28,58 @@ public class Rutina {
     }
 
     /**
-     * Constructor completo para crear una rutina con todos los atributos, incluyendo datos de auditoría.
+     * Constructor con parámetros básicos para crear una rutina.
      * 
      * @param idRutina Identificador único de la rutina
      * @param nombre Nombre de la rutina
      * @param descripcion Descripción detallada de la rutina
-     * @param empleado Empleado que creó la rutina
-     * @param cliente Cliente al que está asignada la rutina
-     * @param createdAt Fecha y hora de creación del registro
-     * @param updatedAt Fecha y hora de última actualización del registro
      */
-    public Rutina(int idRutina, String nombre, String descripcion, UsuarioEmpleado empleado, UsuarioCliente cliente, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Rutina(int idRutina, String nombre, String descripcion) {
         this.idRutina = idRutina;
         this.nombre = nombre;
         this.descripcion = descripcion;
-        this.empleado = empleado;
-        this.cliente = cliente;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     /**
-     * Constructor para crear una rutina sin datos de auditoría.
+     * Constructor con parámetros para crear una rutina con cliente y creador.
      * 
      * @param idRutina Identificador único de la rutina
      * @param nombre Nombre de la rutina
      * @param descripcion Descripción detallada de la rutina
-     * @param empleado Empleado que creó la rutina
      * @param cliente Cliente al que está asignada la rutina
+     * @param creador Empleado que creó la rutina
      */
-    public Rutina(int idRutina, String nombre, String descripcion, UsuarioEmpleado empleado, UsuarioCliente cliente) {
+    public Rutina(int idRutina, String nombre, String descripcion, UsuarioCliente cliente, UsuarioEmpleado creador) {
         this.idRutina = idRutina;
         this.nombre = nombre;
         this.descripcion = descripcion;
-        this.empleado = empleado;
         this.cliente = cliente;
+        this.creador = creador;
     }
 
-    // Getters y setters...
+    /**
+     * Constructor completo para crear una rutina con todos los atributos.
+     * 
+     * @param idRutina Identificador único de la rutina
+     * @param nombre Nombre de la rutina
+     * @param descripcion Descripción detallada de la rutina
+     * @param cliente Cliente al que está asignada la rutina
+     * @param creador Empleado que creó la rutina
+     * @param clientesAsignados Lista de clientes con esta rutina asignada
+     * @param createdAt Fecha y hora de creación del registro
+     * @param updatedAt Fecha y hora de última actualización del registro
+     */
+    public Rutina(int idRutina, String nombre, String descripcion, UsuarioCliente cliente, 
+                 UsuarioEmpleado creador, List<ClienteRutina> clientesAsignados, Date createdAt, Date updatedAt) {
+        this.idRutina = idRutina;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.cliente = cliente;
+        this.creador = creador;
+        this.clientesAsignados = clientesAsignados;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 
     /**
      * Obtiene el identificador único de la rutina.
@@ -101,7 +118,7 @@ public class Rutina {
     }
 
     /**
-     * Obtiene la descripción detallada de la rutina.
+     * Obtiene la descripción de la rutina.
      * 
      * @return La descripción de la rutina
      */
@@ -110,7 +127,7 @@ public class Rutina {
     }
 
     /**
-     * Establece la descripción detallada de la rutina.
+     * Establece la descripción de la rutina.
      * 
      * @param descripcion La nueva descripción de la rutina
      */
@@ -119,27 +136,9 @@ public class Rutina {
     }
 
     /**
-     * Obtiene el empleado que creó la rutina.
-     * 
-     * @return El empleado creador de la rutina
-     */
-    public UsuarioEmpleado getEmpleado() {
-        return empleado;
-    }
-
-    /**
-     * Establece el empleado que creó la rutina.
-     * 
-     * @param empleado El nuevo empleado creador de la rutina
-     */
-    public void setEmpleado(UsuarioEmpleado empleado) {
-        this.empleado = empleado;
-    }
-
-    /**
      * Obtiene el cliente al que está asignada la rutina.
      * 
-     * @return El cliente asignado a la rutina
+     * @return El cliente de la rutina
      */
     public UsuarioCliente getCliente() {
         return cliente;
@@ -148,18 +147,54 @@ public class Rutina {
     /**
      * Establece el cliente al que está asignada la rutina.
      * 
-     * @param cliente El nuevo cliente asignado a la rutina
+     * @param cliente El nuevo cliente de la rutina
      */
     public void setCliente(UsuarioCliente cliente) {
         this.cliente = cliente;
     }
 
     /**
+     * Obtiene el empleado que creó la rutina.
+     * 
+     * @return El creador de la rutina
+     */
+    public UsuarioEmpleado getCreador() {
+        return creador;
+    }
+
+    /**
+     * Establece el empleado que creó la rutina.
+     * 
+     * @param creador El nuevo creador de la rutina
+     */
+    public void setCreador(UsuarioEmpleado creador) {
+        this.creador = creador;
+    }
+
+    /**
+     * Obtiene la lista de clientes con esta rutina asignada.
+     * 
+     * @return La lista de clientes asignados
+     */
+    public List<ClienteRutina> getClientesAsignados() {
+        return clientesAsignados;
+    }
+
+    /**
+     * Establece la lista de clientes con esta rutina asignada.
+     * 
+     * @param clientesAsignados La nueva lista de clientes asignados
+     */
+    public void setClientesAsignados(List<ClienteRutina> clientesAsignados) {
+        this.clientesAsignados = clientesAsignados;
+    }
+
+    /**
      * Obtiene la fecha y hora de creación del registro.
      * 
-     * @return La fecha y hora en que se creó el registro
+     * @return La fecha y hora de creación
      */
-    public LocalDateTime getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
@@ -168,16 +203,16 @@ public class Rutina {
      * 
      * @param createdAt La nueva fecha y hora de creación
      */
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
     /**
      * Obtiene la fecha y hora de última actualización del registro.
      * 
-     * @return La fecha y hora en que se actualizó por última vez el registro
+     * @return La fecha y hora de última actualización
      */
-    public LocalDateTime getUpdatedAt() {
+    public Date getUpdatedAt() {
         return updatedAt;
     }
 
@@ -186,7 +221,52 @@ public class Rutina {
      * 
      * @param updatedAt La nueva fecha y hora de última actualización
      */
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    /**
+     * Devuelve una representación en cadena de texto de la rutina.
+     * 
+     * @return Cadena de texto con los datos principales de la rutina
+     */
+    @Override
+    public String toString() {
+        return "Rutina{" +
+                "idRutina=" + idRutina +
+                ", nombre='" + nombre + '\'' +
+                ", descripcion='" + descripcion + '\'' +
+                ", cliente=" + (cliente != null ? "presente" : "null") +
+                ", creador=" + (creador != null ? "presente" : "null") +
+                ", clientesAsignados=" + (clientesAsignados != null ? clientesAsignados.size() : 0) + " clientes" +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
+
+    /**
+     * Compara esta rutina con otro objeto para determinar si son iguales.
+     * 
+     * @param o El objeto a comparar con esta rutina
+     * @return true si los objetos son iguales, false en caso contrario
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Rutina rutina = (Rutina) o;
+        return idRutina == rutina.idRutina &&
+                Objects.equals(nombre, rutina.nombre) &&
+                Objects.equals(descripcion, rutina.descripcion);
+    }
+
+    /**
+     * Calcula el código hash para esta rutina.
+     * 
+     * @return El código hash calculado
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(idRutina, nombre, descripcion);
     }
 }

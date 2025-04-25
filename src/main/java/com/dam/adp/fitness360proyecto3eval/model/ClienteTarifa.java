@@ -2,6 +2,7 @@ package com.dam.adp.fitness360proyecto3eval.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Clase que representa la relación entre un cliente y una tarifa contratada.
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 public class ClienteTarifa {
     private UsuarioCliente cliente;
     private Tarifa tarifa;
-    private String estado;
+    private EstadoTarifa estado;
     private LocalDate fechaContratacion;
     private LocalDate fechaRenovacion;
     private LocalDate fechaFin;
@@ -39,7 +40,7 @@ public class ClienteTarifa {
      * @param createdAt Fecha y hora de creación del registro
      * @param updatedAt Fecha y hora de última actualización del registro
      */
-    public ClienteTarifa(UsuarioCliente cliente, Tarifa tarifa, String estado, LocalDate fechaContratacion, LocalDate fechaRenovacion, LocalDate fechaFin, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public ClienteTarifa(UsuarioCliente cliente, Tarifa tarifa, EstadoTarifa estado, LocalDate fechaContratacion, LocalDate fechaRenovacion, LocalDate fechaFin, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.cliente = cliente;
         this.tarifa = tarifa;
         this.estado = estado;
@@ -60,7 +61,7 @@ public class ClienteTarifa {
      * @param fechaRenovacion Fecha en que se renueva la tarifa
      * @param fechaFin Fecha en que finaliza la contratación de la tarifa
      */
-    public ClienteTarifa(UsuarioCliente cliente, Tarifa tarifa, String estado, LocalDate fechaContratacion, LocalDate fechaRenovacion, LocalDate fechaFin) {
+    public ClienteTarifa(UsuarioCliente cliente, Tarifa tarifa, EstadoTarifa estado, LocalDate fechaContratacion, LocalDate fechaRenovacion, LocalDate fechaFin) {
         this.cliente = cliente;
         this.tarifa = tarifa;
         this.estado = estado;
@@ -112,7 +113,7 @@ public class ClienteTarifa {
      * 
      * @return El estado actual de la contratación
      */
-    public String getEstado() {
+    public EstadoTarifa getEstado() {
         return estado;
     }
 
@@ -121,7 +122,7 @@ public class ClienteTarifa {
      * 
      * @param estado El nuevo estado de la contratación
      */
-    public void setEstado(String estado) {
+    public void setEstado(EstadoTarifa estado) {
         this.estado = estado;
     }
 
@@ -213,5 +214,50 @@ public class ClienteTarifa {
      */
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    /**
+     * Devuelve una representación en cadena de texto de la relación cliente-tarifa.
+     * 
+     * @return Cadena de texto con los datos principales de la relación
+     */
+    @Override
+    public String toString() {
+        return "ClienteTarifa{" +
+                "cliente=" + (cliente != null ? "ID: " + cliente.getId() : "null") +
+                ", tarifa=" + (tarifa != null ? "ID: " + tarifa.getIdTarifa() : "null") +
+                ", estado=" + estado +
+                ", fechaContratacion=" + fechaContratacion +
+                ", fechaRenovacion=" + fechaRenovacion +
+                ", fechaFin=" + fechaFin +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
+
+    /**
+     * Compara esta relación cliente-tarifa con otro objeto para determinar si son iguales.
+     * 
+     * @param o El objeto a comparar con esta relación
+     * @return true si los objetos son iguales, false en caso contrario
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClienteTarifa that = (ClienteTarifa) o;
+        return Objects.equals(cliente, that.cliente) &&
+                Objects.equals(tarifa, that.tarifa) &&
+                Objects.equals(fechaContratacion, that.fechaContratacion);
+    }
+
+    /**
+     * Calcula el código hash para esta relación cliente-tarifa.
+     * 
+     * @return El código hash calculado
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(cliente, tarifa, fechaContratacion);
     }
 }

@@ -12,16 +12,16 @@
 - [x] Crear estructura del proyecto Java con paquetes: `model`, `dao`, `util`, `controller`, `view`
 - [x] Crear la base de datos con el script SQL completo
 - [x] Implementar todas las clases modelo con sus atributos (ya hecho)
-- [ ] Configurar conexión JDBC con MySQL
-- [ ] Crear clase `DBUtil` para gestionar la conexión a base de datos
-- [ ] Crear primeras pruebas de conexión y consultas básicas
+- [x] Configurar conexión JDBC con MySQL
+- [x] Crear clase `DBUtil` para gestionar la conexión a base de datos
+- [x] Crear primeras pruebas de conexión y consultas básicas
 
 ---
 
 ## 🧱 Sprint 2: 28 de abril al 4 de mayo
 **Objetivo:** Crear DAOs e implementar CRUD básico
 
-- [ ] DAO para `Usuario`, `Cliente`, `Empleado`
+- [ ] DAO para `Cliente`, `Empleado`
 - [ ] DAO para `Dieta`, `Rutina`, `Tarifa`, `Revisión`
 - [ ] DAO para tablas intermedias (`Cliente_Dieta`, etc.)
 - [ ] CRUD en consola para probar inserción, lectura, modificación y eliminación

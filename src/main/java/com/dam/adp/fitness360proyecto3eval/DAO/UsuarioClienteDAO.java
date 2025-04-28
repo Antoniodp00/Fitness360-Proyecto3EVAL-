@@ -11,9 +11,38 @@ public class UsuarioClienteDAO {
 
     private final static String SQL_ALL = "SELECT * FROM Cliente";
     private final static String SQL_FIND_BY_ID = "SELECT * FROM Cliente WHERE idCliente= ?";
-    private final static String SQL_INSERT = "INSERT INTO Cliente (nombreUsuarioCliente) VALUES (?)";
     private final static String SQL_FIND_BY_NAME_USER = "SELECT * FROM Cliente WHERE nombreUsuarioCliente = ?";
+    private final static String SQL_INSERT = "INSERT INTO Cliente (nombreUsuarioCliente) VALUES (?)";
     private final static String SQL_DISABLE = "UPDATE Cliente SET estado = ?, updatedAt = ? WHERE idCliente = ?";
+    private static final String SQL_UPDATE = "UPDATE Cliente SET nombreUsuario = ?, nombre = ?, apellidos = ?, correo = ?, password = ?, telefono = ?, fechaNacimiento = ?, sexo = ?, altura = ?, estado = ?, updatedAt = ? WHERE idCliente = ?";
+
+
+
+    private static UsuarioCliente mapearCliente(ResultSet rs) throws SQLException {
+        UsuarioCliente cliente = new UsuarioCliente();
+        cliente.setId(rs.getInt("id"));
+        cliente.setNombreUsuario(rs.getString("nombre_usuario"));
+        cliente.setNombre(rs.getString("nombre"));
+        cliente.setApellidos(rs.getString("apellidos"));
+        cliente.setCorreo(rs.getString("correo"));
+        cliente.setPassword(rs.getString("password"));
+        cliente.setTelefono(rs.getString("telefono"));
+        cliente.setFechaNacimiento(rs.getDate("fecha_nacimiento"));
+
+        String sexoStr = rs.getString("sexo");
+        if (sexoStr != null) {
+            cliente.setSexo(Sexo.valueOf(sexoStr));
+        }
+
+        String estadoStr = rs.getString("estado");
+        if (estadoStr != null) {
+            cliente.setEstado(Estado.valueOf(estadoStr));
+        }
+
+        cliente.setCreatedAt(rs.getTimestamp("created_at"));
+        cliente.setUpdatedAt(rs.getTimestamp("updated_at"));
+        return cliente;
+    }
 
 
     public static List<UsuarioCliente> getAll() {
@@ -24,24 +53,7 @@ public class UsuarioClienteDAO {
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(SQL_ALL);
             while (rs.next()) {
-                UsuarioCliente cliente = new UsuarioCliente();
-                cliente.setId(rs.getInt("idCliente"));
-                cliente.setNombreUsuario(rs.getString("nombreUsuario"));
-                cliente.setNombre(rs.getString("nombre"));
-                cliente.setApellidos(rs.getString("apellidos"));
-                cliente.setCorreo(rs.getString("correo"));
-                cliente.setPassword(rs.getString("password"));
-                cliente.setTelefono(rs.getString("telefono"));
-                cliente.setFechaNacimiento(rs.getDate("fechaNacimiento"));
-                cliente.setSexo(Sexo.valueOf(rs.getString("sexo")));
-                cliente.setAltura(rs.getDouble("altura"));
-                cliente.setEstado(Estado.valueOf(rs.getString("estado")));
-                cliente.setCreatedAt(rs.getTimestamp("createdAt"));
-                cliente.setUpdatedAt(rs.getTimestamp("updatedAt"));
-                cliente.setRutinasAsignadas(new ArrayList<>());
-                cliente.setDietasAsignadas(new ArrayList<>());
-                cliente.setRevisiones(new ArrayList<>());
-                cliente.setTarifasContratadas(new ArrayList<>());
+                UsuarioCliente cliente = mapearCliente(rs);
                 clientes.add(cliente);
             }
         } catch (SQLException e) {
@@ -61,24 +73,7 @@ public class UsuarioClienteDAO {
             pstmt.setInt(1, idCliente);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                cliente = new UsuarioCliente();
-                cliente.setId(rs.getInt("idCliente"));
-                cliente.setNombreUsuario(rs.getString("nombreUsuario"));
-                cliente.setNombre(rs.getString("nombre"));
-                cliente.setApellidos(rs.getString("apellidos"));
-                cliente.setCorreo(rs.getString("correo"));
-                cliente.setPassword(rs.getString("password"));
-                cliente.setTelefono(rs.getString("telefono"));
-                cliente.setFechaNacimiento(rs.getDate("fechaNacimiento"));
-                cliente.setSexo(Sexo.valueOf(rs.getString("sexo")));
-                cliente.setAltura(rs.getDouble("altura"));
-                cliente.setEstado(Estado.valueOf(rs.getString("estado")));
-                cliente.setCreatedAt(rs.getTimestamp("createdAt"));
-                cliente.setUpdatedAt(rs.getTimestamp("updatedAt"));
-                cliente.setRutinasAsignadas(new ArrayList<>());
-                cliente.setDietasAsignadas(new ArrayList<>());
-                cliente.setRevisiones(new ArrayList<>());
-                cliente.setTarifasContratadas(new ArrayList<>());
+                cliente = mapearCliente(rs);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -96,24 +91,7 @@ public class UsuarioClienteDAO {
             pstmt.setString(1, nombreUsuario);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                cliente = new UsuarioCliente();
-                cliente.setId(rs.getInt("idCliente"));
-                cliente.setNombreUsuario(rs.getString("nombreUsuario"));
-                cliente.setNombre(rs.getString("nombre"));
-                cliente.setApellidos(rs.getString("apellidos"));
-                cliente.setCorreo(rs.getString("correo"));
-                cliente.setPassword(rs.getString("password"));
-                cliente.setTelefono(rs.getString("telefono"));
-                cliente.setFechaNacimiento(rs.getDate("fechaNacimiento"));
-                cliente.setSexo(Sexo.valueOf(rs.getString("sexo")));
-                cliente.setAltura(rs.getDouble("altura"));
-                cliente.setEstado(Estado.valueOf(rs.getString("estado")));
-                cliente.setCreatedAt(rs.getTimestamp("createdAt"));
-                cliente.setUpdatedAt(rs.getTimestamp("updatedAt"));
-                cliente.setRutinasAsignadas(new ArrayList<>());
-                cliente.setDietasAsignadas(new ArrayList<>());
-                cliente.setRevisiones(new ArrayList<>());
-                cliente.setTarifasContratadas(new ArrayList<>());
+                cliente = mapearCliente(rs);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -149,4 +127,32 @@ public class UsuarioClienteDAO {
         }
         return disabled;
     }
+
+    public boolean update(UsuarioCliente cliente) {
+        boolean actualizado = false;
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {
+
+            stmt.setString(1, cliente.getNombreUsuario());
+            stmt.setString(2, cliente.getNombre());
+            stmt.setString(3, cliente.getApellidos());
+            stmt.setString(4, cliente.getCorreo());
+            stmt.setString(5, cliente.getPassword());
+            stmt.setString(6, cliente.getTelefono());
+            stmt.setDate(7, cliente.getFechaNacimiento() != null ? new java.sql.Date(cliente.getFechaNacimiento().getTime()) : null);
+            stmt.setString(8, cliente.getSexo() != null ? cliente.getSexo().name() : null);
+            stmt.setDouble(9, cliente.getAltura());
+            stmt.setString(10, cliente.getEstado() != null ? cliente.getEstado().name() : null);
+            stmt.setTimestamp(11, new Timestamp(System.currentTimeMillis())); // updatedAt
+            stmt.setInt(12, cliente.getId()); // idCliente
+
+            int filas = stmt.executeUpdate();
+            actualizado = filas > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return actualizado;
+    }
+
+
 }

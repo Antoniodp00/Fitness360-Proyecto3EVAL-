@@ -1,7 +1,7 @@
 -- =======================================
 -- Insertar datos en la base de datos Fitness360
 -- =======================================
-
+use fitness360;
 -- 1) Insertar Clientes
 INSERT INTO Cliente (nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, altura, estado)
 VALUES
@@ -34,34 +34,34 @@ VALUES
 INSERT INTO Rutina (nombre, descripcion, idCliente, idEmpleado)
 VALUES
 ('Rutina para principiantes', 'Rutina básica para nuevos en el ejercicio', 1, 1),
-('Rutina avanzada', 'Rutina para ganar masa muscular', 4, 1),
+('Rutina avanzada', 'Rutina para ganar masa muscular', 2, 1),
 ('Rutina de cardio', 'Rutina centrada en ejercicios cardiovasculares', 3, 1);
 
 -- 6) Insertar Relación ClienteDieta
 INSERT INTO ClienteDieta (idCliente, idDieta, fechaAsignacion, fechaFin)
 VALUES
 (1, 1, '2025-01-01', '2025-02-01'),
-(4, 2, '2025-01-15', '2025-02-15'),
+(2, 2, '2025-01-15', '2025-02-15'),
 (3, 3, '2025-01-20', '2025-02-20');
 
 -- 7) Insertar Relación UsuarioRutina
 INSERT INTO UsuarioRutina (idUsuario, idRutina, fechaAsignacion, fechaFin)
 VALUES
-(1, 7, '2025-01-01', '2025-01-31'),
-(4, 8, '2025-01-15', '2025-02-15'),
-(3, 9, '2025-01-20', '2025-02-20');
+(1, 4, '2025-01-01', '2025-01-31'),
+(2, 5, '2025-01-15', '2025-02-15'),
+(3, 6, '2025-01-20', '2025-02-20');
 
 -- 8) Insertar Relación ClienteTarifa
 INSERT INTO ClienteTarifa (idCliente, idTarifa, estado, fechaContratacion, fechaRenovacion, fechaFin)
 VALUES
 (1, 1, 'ACTIVA', '2025-01-01', '2025-02-01', '2025-02-01'),
-(4, 2, 'ACTIVA', '2025-01-15', '2025-02-15', '2025-02-15'),
+(2, 2, 'ACTIVA', '2025-01-15', '2025-02-15', '2025-02-15'),
 (3, 3, 'SUSPENDIDA', '2025-01-20', '2025-02-20', '2025-02-20');
 
 -- 9) Insertar Revisiones
 INSERT INTO Revision (fecha, peso, grasa, musculo, mPecho, mCintura, mCadera, observaciones, imagen, idCliente, idEmpleado)
 VALUES
 ('2025-01-01', 70.5, 18.0, 32.5, 95.0, 80.0, 90.0, 'Buena forma física', 'revision1.jpg', 1, 1),
-('2025-01-15', 85.0, 20.0, 35.0, 100.0, 85.0, 95.0, 'Necesita más trabajo en cardio', 'revision2.jpg', 4, 1),
+('2025-01-15', 85.0, 20.0, 35.0, 100.0, 85.0, 95.0, 'Necesita más trabajo en cardio', 'revision2.jpg', 2, 1),
 ('2025-01-20', 65.0, 22.0, 30.0, 90.0, 78.0, 88.0, 'Progreso moderado', 'revision3.jpg', 3, 2);
 

@@ -22,7 +22,7 @@ public class UsuarioEmpleadoDAO {
 
     private static final String SQL_UPDATE = "UPDATE Empleado SET nombreUsuario = ?, nombre = ?, apellidos = ?, correo = ?, password = ?, telefono = ?, fechaNacimiento = ?, sexo = ?, descripcion = ?, rol = ?, especialidad = ?, estado = ?, updatedAt = ? WHERE idEmpleado = ?";
 
-    private static final String SQL_DISABLE = "UPDATE Empleado SET estado = 'INACTIVO', updatedAt = NOW() WHERE idEmpleado = ?";
+    private static final String SQL_DISABLE = "UPDATE Empleado SET estado = ?, updatedAt = ? WHERE idEmpleado = ?";
 
     private static final String SQL_GET_RUTINAS_CREADAS = "SELECT * FROM Rutina WHERE idCreador = ?";
 
@@ -76,7 +76,7 @@ public class UsuarioEmpleadoDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        ConnectionDB.closeConnection();
+
         return empleados;
     }
 

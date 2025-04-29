@@ -95,7 +95,7 @@ public class Prueba {
 
         //EmpleadoDAO
         // Crear un empleado para probar el método insert
-        UsuarioEmpleado nuevoEmpleado = new UsuarioEmpleado(
+        /*UsuarioEmpleado nuevoEmpleado = new UsuarioEmpleado(
                 "empleadoTest",  // nombreUsuario
                 "Juan",          // nombre
                 "Pérez",         // apellidos
@@ -155,16 +155,18 @@ public class Prueba {
                 System.out.println("No se pudo actualizar el empleado.");
             }
         }
-
         // Probar desactivar un empleado
+        UsuarioEmpleado encontrado = UsuarioEmpleadoDAO.findById(1);
         if (encontrado != null) {
-            boolean desactivado = UsuarioEmpleadoDAO.disableUsuarioEmpleado(encontrado.getId());
+            boolean desactivado = UsuarioEmpleadoDAO.disableUsuarioEmpleado(1);
             if (desactivado) {
                 System.out.println("Empleado desactivado: " + encontrado.getNombreUsuario());
             } else {
                 System.out.println("No se pudo desactivar el empleado.");
             }
-        }
+        }*/
+
+
             }
         }
 

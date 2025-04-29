@@ -12,7 +12,7 @@ import java.util.List;
 public class UsuarioEmpleadoDAO {
 
     private static final String SQL_INSERT = "INSERT INTO Empleado (nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, descripcion, rol, especialidad, estado, createdAt, updatedAt) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     private static final String SQL_FIND_BY_ID = "SELECT * FROM Empleado WHERE idEmpleado = ?";
 
@@ -121,6 +121,19 @@ public class UsuarioEmpleadoDAO {
         if(empleado != null && finByUserName(empleado.getNombreUsuario()) == null){
             try(PreparedStatement pst = ConnectionDB.getConnection().prepareStatement(SQL_INSERT)){
                 pst.setString(1, empleado.getNombreUsuario());
+                pst.setString(2, empleado.getNombre());
+                pst.setString(3, empleado.getApellidos());
+                pst.setString(4, empleado.getCorreo());
+                pst.setString(5, empleado.getPassword());
+                pst.setString(6, empleado.getTelefono());
+                pst.setDate(7, empleado.getFechaNacimiento() != null ? new java.sql.Date(empleado.getFechaNacimiento().getTime()) : null);
+                pst.setString(8, empleado.getSexo() != null ? empleado.getSexo().name() : null);
+                pst.setString(9, empleado.getDescripcion());
+                pst.setString(10, empleado.getRol());
+                pst.setString(11, empleado.getEspecialidad() != null ? empleado.getEspecialidad().name() : null);
+                pst.setString(12, Estado.ACTIVO.name());
+                pst.setTimestamp(13, new Timestamp(System.currentTimeMillis()));
+                pst.setTimestamp(14, new Timestamp(System.currentTimeMillis()));
                 pst.executeUpdate();
             }catch (SQLException e) {
                 throw new RuntimeException(e);
@@ -145,7 +158,7 @@ public class UsuarioEmpleadoDAO {
         }
         return disabled;
     }
-    public boolean update(UsuarioEmpleado empleado) {
+    public static boolean update(UsuarioEmpleado empleado) {
         boolean actualizado = false;
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {

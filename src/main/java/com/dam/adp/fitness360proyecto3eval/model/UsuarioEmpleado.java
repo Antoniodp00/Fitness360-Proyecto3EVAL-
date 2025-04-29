@@ -55,6 +55,33 @@ public class UsuarioEmpleado extends Usuario {
     }
 
     /**
+     * Constructor con parámetros básicos para crear un empleado.
+     *
+     * @param nombreUsuario Nombre de usuario para acceso al sistema
+     * @param nombre Nombre real del empleado
+     * @param apellidos Apellidos del empleado
+     * @param correo Correo electrónico del empleado
+     * @param password Contraseña de acceso al sistema
+     * @param telefono Número de teléfono del empleado
+     * @param fechaNacimiento Fecha de nacimiento del empleado
+     * @param sexo Sexo o género del empleado
+     * @param estado Estado del empleado en el sistema
+     * @param createdAt Fecha y hora de creación del registro
+     * @param updatedAt Fecha y hora de última actualización del registro
+     * @param descripcion Descripción o biografía del empleado
+     * @param rol Rol o puesto del empleado en la empresa
+     * @param especialidad Especialidad del empleado (entrenador, dietista o ambos)
+     */
+    public UsuarioEmpleado(String nombreUsuario, String nombre, String apellidos, String correo,
+                           String password, String telefono, Date fechaNacimiento, Sexo sexo, Estado estado,
+                           Date createdAt, Date updatedAt, String descripcion, String rol, Especialidad especialidad) {
+        super(nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, estado, createdAt, updatedAt);
+        this.descripcion = descripcion;
+        this.rol = rol;
+        this.especialidad = especialidad;
+    }
+
+    /**
      * Constructor completo para crear un empleado con todos los atributos.
      * 
      * @param id Identificador único del empleado

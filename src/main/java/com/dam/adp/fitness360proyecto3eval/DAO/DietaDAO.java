@@ -1,20 +1,114 @@
 package com.dam.adp.fitness360proyecto3eval.DAO;
 
+import com.dam.adp.fitness360proyecto3eval.baseDatos.ConnectionDB;
+import com.dam.adp.fitness360proyecto3eval.model.ClienteDieta;
+import com.dam.adp.fitness360proyecto3eval.model.Dieta;
+import com.dam.adp.fitness360proyecto3eval.model.UsuarioCliente;
+import com.dam.adp.fitness360proyecto3eval.model.UsuarioEmpleado;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
 public class DietaDAO {
-    private static final String SQL_INSERT =
-            "INSERT INTO Dieta (nombre, descripcion, archivo, idEmpleado, createdAt, updatedAt) " +
-                    "VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+    private static final String SQL_INSERT = "INSERT INTO Dieta (nombre, descripcion, archivo, idEmpleado, createdAt, updatedAt) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
 
-    private static final String SQL_FIND_BY_ID =
-            "SELECT * FROM Dieta WHERE idDieta = ?";
+    private static final String SQL_FIND_BY_ID = "SELECT * FROM Dieta WHERE idDieta = ?";
 
-    private static final String SQL_GET_ALL =
-            "SELECT * FROM Dieta";
+    private static final String SQL_FIND_BY_NAME = "SELECT * FROM Dieta WHERE nombre = ?";
 
-    private static final String SQL_UPDATE =
-            "UPDATE Dieta SET nombre = ?, descripcion = ?, archivo = ?, idEmpleado = ?, updatedAt = ? WHERE idDieta = ?";
+    private static final String SQL_GET_ALL = "SELECT * FROM Dieta";
 
-    private static final String SQL_DELETE =
-            "DELETE FROM Dieta WHERE idDieta = ?";
+    private static final String SQL_UPDATE = "UPDATE Dieta SET nombre = ?, descripcion = ?, archivo = ?, idEmpleado = ?, updatedAt = ? WHERE idDieta = ?";
+
+    private static final String SQL_DELETE = "DELETE FROM Dieta WHERE idDieta = ?";
+
+
+    private static Dieta mapearDieta(ResultSet rs) throws SQLException {
+        Dieta dieta = new Dieta();
+
+        dieta.setIdDieta(rs.getInt("idDieta"));
+        dieta.setNombre(rs.getString("nombre"));
+        dieta.setDescripcion(rs.getString("descripcion"));
+        dieta.setArchivo(rs.getString("archivo"));
+        int idEmpleado = rs.getInt("idEmpleado");
+        if (idEmpleado != 0) {
+            UsuarioEmpleado creador = UsuarioEmpleadoDAO.findById(idEmpleado);
+            dieta.setCreador(creador);
+        }
+       dieta.setClientesAsignados(new ArrayList<ClienteDieta>());
+        dieta.setCreatedAt(rs.getTimestamp("createdAt"));
+        dieta.setUpdatedAt(rs.getTimestamp("updatedAt"));
+
+        return dieta;
+    }
+
+    public static List<Dieta> getAll() {
+        List<Dieta> dietas = new ArrayList<>();
+        Connection con = ConnectionDB.getConnection();
+
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(SQL_GET_ALL);
+            while (rs.next()) {
+                Dieta dieta = mapearDieta(rs);
+                dietas.add(dieta);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        ConnectionDB.closeConnection();
+        return dietas;
+    }
+
+    public static Dieta findById(int idDieta) {
+        Dieta dieta = null;
+
+        Connection con = ConnectionDB.getConnection();
+
+        try {
+            PreparedStatement pstmt = con.prepareStatement(SQL_FIND_BY_ID);
+            pstmt.setInt(1, idDieta);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                dieta = mapearDieta(rs);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return dieta;
+    }
+
+    public static Dieta insert(Dieta dieta) {
+        String SQL_INSERT = "INSERT INTO Dieta (nombre, descripcion, archivo, idEmpleado) VALUES (?, ?, ?, ?)";
+
+        try (PreparedStatement pst = ConnectionDB.getConnection().prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
+            // Establece los valores para los parámetros de la consulta
+            pst.setString(1, dieta.getNombre());
+            pst.setString(2, dieta.getDescripcion());  // Suponiendo que no sea nulo
+            pst.setString(3, dieta.getArchivo());  // Suponiendo que no sea nulo
+            if (dieta.getCreador() != null) {
+                pst.setInt(4, dieta.getCreador().getId());  // Asumiendo que `getCreador()` retorna un `UsuarioEmpleado` válido
+            } else {
+                pst.setNull(4, Types.INTEGER);  // Si el creador es nulo, se establece NULL
+            }
+
+            // Ejecuta la inserción
+            int affectedRows = pst.executeUpdate();
+
+            // Si se insertaron filas, recupera el ID generado para la dieta
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = pst.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        dieta.setIdDieta(generatedKeys.getInt(1));  // Asigna el ID generado a la dieta
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al insertar la dieta", e);  // Mensaje de error más claro
+        }
+        return dieta;
+    }
 
 }

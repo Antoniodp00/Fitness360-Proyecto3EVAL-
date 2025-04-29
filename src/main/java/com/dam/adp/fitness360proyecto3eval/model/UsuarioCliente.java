@@ -48,6 +48,28 @@ public class UsuarioCliente extends Usuario {
         super(id, nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, estado, createdAt, updatedAt);
         this.altura = altura;
     }
+    /**
+     * Constructor con parámetros básicos para crear un cliente.
+     *
+     * @param nombreUsuario Nombre de usuario para acceso al sistema
+     * @param nombre Nombre real del cliente
+     * @param apellidos Apellidos del cliente
+     * @param correo Correo electrónico del cliente
+     * @param password Contraseña de acceso al sistema
+     * @param telefono Número de teléfono del cliente
+     * @param fechaNacimiento Fecha de nacimiento del cliente
+     * @param sexo Sexo o género del cliente
+     * @param estado Estado del cliente en el sistema
+     * @param altura Altura del cliente en centímetros
+     * @param createdAt Fecha y hora de creación del registro
+     * @param updatedAt Fecha y hora de última actualización del registro
+     */
+    public UsuarioCliente( String nombreUsuario, String nombre, String apellidos, String correo,
+                          String password, String telefono, Date fechaNacimiento, Sexo sexo, Estado estado,
+                          double altura, Date createdAt, Date updatedAt) {
+        super(nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, estado, createdAt, updatedAt);
+        this.altura = altura;
+    }
 
     /**
      * Constructor completo para crear un cliente con todos los atributos.

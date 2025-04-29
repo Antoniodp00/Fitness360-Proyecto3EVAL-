@@ -11,36 +11,35 @@ public class UsuarioClienteDAO {
 
     private final static String SQL_ALL = "SELECT * FROM Cliente";
     private final static String SQL_FIND_BY_ID = "SELECT * FROM Cliente WHERE idCliente= ?";
-    private final static String SQL_FIND_BY_NAME_USER = "SELECT * FROM Cliente WHERE nombreUsuarioCliente = ?";
-    private final static String SQL_INSERT = "INSERT INTO Cliente (nombreUsuarioCliente) VALUES (?)";
+    private final static String SQL_FIND_BY_NAME_USER = "SELECT * FROM Cliente WHERE nombreUsuario = ?";
+    private final static String SQL_INSERT ="INSERT INTO Cliente (nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, altura, estado, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";;
     private final static String SQL_DISABLE = "UPDATE Cliente SET estado = ?, updatedAt = ? WHERE idCliente = ?";
     private static final String SQL_UPDATE = "UPDATE Cliente SET nombreUsuario = ?, nombre = ?, apellidos = ?, correo = ?, password = ?, telefono = ?, fechaNacimiento = ?, sexo = ?, altura = ?, estado = ?, updatedAt = ? WHERE idCliente = ?";
 
 
-
     private static UsuarioCliente mapearCliente(ResultSet rs) throws SQLException {
         UsuarioCliente cliente = new UsuarioCliente();
-        cliente.setId(rs.getInt("id"));
-        cliente.setNombreUsuario(rs.getString("nombre_usuario"));
+        cliente.setId(rs.getInt("idCliente"));
+        cliente.setNombreUsuario(rs.getString("nombreUsuario"));
         cliente.setNombre(rs.getString("nombre"));
         cliente.setApellidos(rs.getString("apellidos"));
         cliente.setCorreo(rs.getString("correo"));
         cliente.setPassword(rs.getString("password"));
         cliente.setTelefono(rs.getString("telefono"));
-        cliente.setFechaNacimiento(rs.getDate("fecha_nacimiento"));
+        cliente.setFechaNacimiento(rs.getDate("fechaNacimiento"));
 
         String sexoStr = rs.getString("sexo");
         if (sexoStr != null) {
             cliente.setSexo(Sexo.valueOf(sexoStr));
         }
-
+        cliente.setAltura(rs.getDouble("altura"));
         String estadoStr = rs.getString("estado");
         if (estadoStr != null) {
             cliente.setEstado(Estado.valueOf(estadoStr));
         }
 
-        cliente.setCreatedAt(rs.getTimestamp("created_at"));
-        cliente.setUpdatedAt(rs.getTimestamp("updated_at"));
+        cliente.setCreatedAt(rs.getTimestamp("createdAt"));
+        cliente.setUpdatedAt(rs.getTimestamp("updatedAt"));
         return cliente;
     }
 
@@ -59,7 +58,7 @@ public class UsuarioClienteDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        ConnectionDB.closeConnection();
+
         return clientes;
     }
 
@@ -100,35 +99,47 @@ public class UsuarioClienteDAO {
     }
 
     public static UsuarioCliente insert(UsuarioCliente cliente) {
-      if(cliente != null && finByUserName(cliente.getNombreUsuario()) == null){
-          try(PreparedStatement pst = ConnectionDB.getConnection().prepareStatement(SQL_INSERT)){
-              pst.setString(1, cliente.getNombreUsuario());
-              pst.executeUpdate();
-          }catch (SQLException e) {
-              throw new RuntimeException(e);
-          }
-      }else {
-          cliente = null;
-      }
-      return cliente;
+        if (cliente != null && finByUserName(cliente.getNombreUsuario()) == null) {
+            try (PreparedStatement pst = ConnectionDB.getConnection().prepareStatement(SQL_INSERT)) {
+                pst.setString(1, cliente.getNombreUsuario());
+                pst.setString(2, cliente.getNombre());
+                pst.setString(3, cliente.getApellidos());
+                pst.setString(4, cliente.getCorreo());
+                pst.setString(5, cliente.getPassword());
+                pst.setString(6, cliente.getTelefono());
+                pst.setDate(7, cliente.getFechaNacimiento() != null ? new java.sql.Date(cliente.getFechaNacimiento().getTime()) : null);
+                pst.setString(8, cliente.getSexo() != null ? cliente.getSexo().name() : null);
+                pst.setDouble(9, cliente.getAltura());
+                pst.setString(10, Estado.ACTIVO.name());
+                pst.setTimestamp(11, new Timestamp(System.currentTimeMillis()));
+                pst.setTimestamp(12, new Timestamp(System.currentTimeMillis()));
+                pst.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            cliente = null;
+        }
+        return cliente;
     }
+
     public static boolean disableUsuarioCliente(int id) {
         boolean disabled = false;
-        if(findById(id) != null) {
-        try (PreparedStatement pst = ConnectionDB.getConnection().prepareStatement(SQL_DISABLE)) {
-            pst.setString(1, Estado.INACTIVO.name());
-            pst.setDate(2, new java.sql.Date(new java.util.Date().getTime()));
-            pst.setInt(3, id);
-           pst.executeUpdate();
-           disabled = true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        if (findById(id) != null) {
+            try (PreparedStatement pst = ConnectionDB.getConnection().prepareStatement(SQL_DISABLE)) {
+                pst.setString(1, Estado.INACTIVO.name());
+                pst.setDate(2, new java.sql.Date(new java.util.Date().getTime()));
+                pst.setInt(3, id);
+                pst.executeUpdate();
+                disabled = true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return disabled;
     }
 
-    public boolean update(UsuarioCliente cliente) {
+    public static boolean update(UsuarioCliente cliente) {
         boolean actualizado = false;
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {

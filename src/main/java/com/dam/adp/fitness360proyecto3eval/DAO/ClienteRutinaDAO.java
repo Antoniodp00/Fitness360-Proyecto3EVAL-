@@ -13,11 +13,15 @@ import java.util.List;
  * Proporciona métodos para insertar, buscar y eliminar asignaciones de rutinas a clientes.
  */
 public class ClienteRutinaDAO {
-    /** Consulta SQL para insertar una nueva asignación de rutina a cliente */
+    /**
+     * Consulta SQL para insertar una nueva asignación de rutina a cliente
+     */
     private static final String SQL_INSERT =
             "INSERT INTO UsuarioRutina (idUsuario, idRutina, fechaAsignacion, fechaFin) VALUES (?, ?, ?, ?)";
 
-    /** Consulta SQL para buscar asignaciones de rutinas por ID de usuario (cliente) con carga completa de datos */
+    /**
+     * Consulta SQL para buscar asignaciones de rutinas por ID de usuario (cliente) con carga completa de datos
+     */
     private static final String SQL_FIND_BY_USUARIO =
             "SELECT ur.*, " +
                     "c.idCliente, c.nombreUsuario, c.nombre, c.apellidos, c.correo, " +
@@ -30,21 +34,34 @@ public class ClienteRutinaDAO {
                     "JOIN Rutina r ON ur.idRutina = r.idRutina " +
                     "WHERE ur.idUsuario = ?";
 
-    /** Consulta SQL para buscar asignaciones por ID de rutina */
+    /**
+     * Consulta SQL para buscar asignaciones por ID de rutina
+     */
     private static final String SQL_FIND_BY_RUTINA =
-            "SELECT * FROM UsuarioRutina WHERE idRutina = ?";
+            "SELECT ur.*, " +
+                    "c.idCliente, c.nombreUsuario, c.nombre, c.apellidos, c.correo, " +
+                    "c.password, c.telefono, c.fechaNacimiento, c.sexo, c.altura, " +
+                    "c.estado, c.createdAt, c.updatedAt, " +
+                    "r.nombre as nombreRutina, r.descripcion as descripcionRutina, " +
+                    "r.createdAt as createdAtRutina, r.updatedAt as updatedAtRutina " +
+                    "FROM UsuarioRutina ur " +
+                    "JOIN Cliente c ON ur.idUsuario = c.idCliente " +
+                    "JOIN Rutina r ON ur.idRutina = r.idRutina " +
+                    "WHERE ur.idRutina = ?";
 
-    /** Consulta SQL para eliminar una asignación de rutina a cliente */
+    /**
+     * Consulta SQL para eliminar una asignación de rutina a cliente
+     */
     private static final String SQL_DELETE =
             "DELETE FROM UsuarioRutina WHERE idUsuario = ? AND idRutina = ?";
 
     /**
      * Inserta una nueva asignación de rutina a cliente en la base de datos
-     * 
+     *
      * @param cr Objeto ClienteRutina con los datos de la asignación a insertar
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static void insert(ClienteRutina cr) throws SQLException {
+    public static void insert(ClienteRutina cr) {
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_INSERT)) {
 
@@ -54,117 +71,132 @@ public class ClienteRutinaDAO {
             stmt.setDate(4, (Date) cr.getFechaFin());
 
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     /**
      * Busca las asignaciones de rutinas para un cliente específico
-     * 
+     *
      * @param idCliente ID del cliente
      * @return Lista de asignaciones de rutinas para el cliente
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static List<ClienteRutina> findByClient(int idCliente) throws SQLException {
+    public static List<ClienteRutina> findByClient(int idCliente) {
         List<ClienteRutina> lista = new ArrayList<>();
-        try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_USUARIO)) {
 
-            stmt.setInt(1, idCliente);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    lista.add(mapearClienteRutina(rs));
-                }
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(SQL_FIND_BY_USUARIO)) {
+
+            pstmt.setInt(1, idCliente);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                lista.add(mapearClienteRutina(rs));
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         return lista;
     }
 
     /**
      * Busca las asignaciones de rutinas para un cliente específico con carga completa de datos (eager loading)
-     * 
+     *
      * @param idCliente ID del cliente
      * @return Lista de asignaciones de rutinas para el cliente con datos completos
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static List<ClienteRutina> findByClientEager(int idCliente) throws SQLException {
+    public static List<ClienteRutina> findByClientEager(int idCliente) {
         List<ClienteRutina> lista = new ArrayList<>();
+
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_USUARIO)) {
 
             stmt.setInt(1, idCliente);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    lista.add(mapearClienteRutinaEager(rs));
-                }
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                lista.add(mapearClienteRutinaEager(rs));
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         return lista;
     }
 
     /**
      * Busca las asignaciones de clientes para una rutina específica
-     * 
+     *
      * @param idRutina ID de la rutina
      * @return Lista de asignaciones de clientes para la rutina
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static List<ClienteRutina> findByRutine(int idRutina) throws SQLException {
+    public static List<ClienteRutina> findByRutine(int idRutina){
         List<ClienteRutina> lista = new ArrayList<>();
+
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_RUTINA)) {
 
             stmt.setInt(1, idRutina);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    lista.add(mapearClienteRutina(rs));
-                }
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                lista.add(mapearClienteRutina(rs));
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         return lista;
     }
 
     /**
      * Busca las asignaciones de clientes para una rutina específica con carga completa de datos (eager loading)
-     * 
+     *
      * @param idRutina ID de la rutina
      * @return Lista de asignaciones de clientes para la rutina con datos completos
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static List<ClienteRutina> findByRutineEager(int idRutina) throws SQLException {
+    public static List<ClienteRutina> findByRutineEager(int idRutina){
         List<ClienteRutina> lista = new ArrayList<>();
-        try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_RUTINA)) {
-
+        Connection conn = ConnectionDB.getConnection();
+        try {
+            PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_RUTINA);
             stmt.setInt(1, idRutina);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    lista.add(mapearClienteRutinaEager(rs));
-                }
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                lista.add(mapearClienteRutinaEager(rs));
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+
         return lista;
     }
 
     /**
      * Elimina una asignación de rutina a cliente de la base de datos
-     * 
+     *
      * @param idCliente ID del cliente
-     * @param idRutina ID de la rutina
+     * @param idRutina  ID de la rutina
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static void delete(int idCliente, int idRutina) throws SQLException {
+    public static void delete(int idCliente, int idRutina){
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_DELETE)) {
 
             stmt.setInt(1, idCliente);
             stmt.setInt(2, idRutina);
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     /**
      * Método auxiliar para mapear un ResultSet a un objeto ClienteRutina
-     * 
+     *
      * @param rs ResultSet con los datos de la asignación
      * @return Objeto ClienteRutina con los datos mapeados
      * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
@@ -189,7 +221,7 @@ public class ClienteRutinaDAO {
     /**
      * Método auxiliar para mapear un ResultSet a un objeto ClienteRutina con carga completa de datos (eager loading)
      * Incluye todos los datos del cliente y la rutina
-     * 
+     *
      * @param rs ResultSet con los datos completos de la asignación, cliente y rutina
      * @return Objeto ClienteRutina con los datos completos mapeados
      * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet

@@ -1,6 +1,5 @@
 package com.dam.adp.fitness360proyecto3eval.model;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -14,8 +13,8 @@ public class Rutina {
     private int idRutina;
     private String nombre;
     private String descripcion;
-    private UsuarioCliente cliente;
-    private UsuarioEmpleado creador;
+    private UsuarioCliente creadorCliente;
+    private UsuarioEmpleado creadorEmpleado;
     private List<ClienteRutina> clientesAsignados;
     private Date createdAt;
     private Date updatedAt;
@@ -46,15 +45,15 @@ public class Rutina {
      * @param idRutina Identificador único de la rutina
      * @param nombre Nombre de la rutina
      * @param descripcion Descripción detallada de la rutina
-     * @param cliente Cliente al que está asignada la rutina
-     * @param creador Empleado que creó la rutina
+     * @param creadorCliente Cliente al que está asignada la rutina
+     * @param creadorEmpleado Empleado que creó la rutina
      */
-    public Rutina(int idRutina, String nombre, String descripcion, UsuarioCliente cliente, UsuarioEmpleado creador) {
+    public Rutina(int idRutina, String nombre, String descripcion, UsuarioCliente creadorCliente, UsuarioEmpleado creadorEmpleado) {
         this.idRutina = idRutina;
         this.nombre = nombre;
         this.descripcion = descripcion;
-        this.cliente = cliente;
-        this.creador = creador;
+        this.creadorCliente = creadorCliente;
+        this.creadorEmpleado = creadorEmpleado;
     }
 
     /**
@@ -63,19 +62,19 @@ public class Rutina {
      * @param idRutina Identificador único de la rutina
      * @param nombre Nombre de la rutina
      * @param descripcion Descripción detallada de la rutina
-     * @param cliente Cliente al que está asignada la rutina
-     * @param creador Empleado que creó la rutina
+     * @param creadorCliente Cliente al que está asignada la rutina
+     * @param creadorEmpleado Empleado que creó la rutina
      * @param clientesAsignados Lista de clientes con esta rutina asignada
      * @param createdAt Fecha y hora de creación del registro
      * @param updatedAt Fecha y hora de última actualización del registro
      */
-    public Rutina(int idRutina, String nombre, String descripcion, UsuarioCliente cliente, 
-                 UsuarioEmpleado creador, List<ClienteRutina> clientesAsignados, Date createdAt, Date updatedAt) {
+    public Rutina(int idRutina, String nombre, String descripcion, UsuarioCliente creadorCliente,
+                  UsuarioEmpleado creadorEmpleado, List<ClienteRutina> clientesAsignados, Date createdAt, Date updatedAt) {
         this.idRutina = idRutina;
         this.nombre = nombre;
         this.descripcion = descripcion;
-        this.cliente = cliente;
-        this.creador = creador;
+        this.creadorCliente = creadorCliente;
+        this.creadorEmpleado = creadorEmpleado;
         this.clientesAsignados = clientesAsignados;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -140,17 +139,17 @@ public class Rutina {
      * 
      * @return El cliente de la rutina
      */
-    public UsuarioCliente getCliente() {
-        return cliente;
+    public UsuarioCliente getCreadorCliente() {
+        return creadorCliente;
     }
 
     /**
      * Establece el cliente al que está asignada la rutina.
      * 
-     * @param cliente El nuevo cliente de la rutina
+     * @param creadorCliente El nuevo cliente de la rutina
      */
-    public void setCliente(UsuarioCliente cliente) {
-        this.cliente = cliente;
+    public void setCreadorCliente(UsuarioCliente creadorCliente) {
+        this.creadorCliente = creadorCliente;
     }
 
     /**
@@ -158,17 +157,17 @@ public class Rutina {
      * 
      * @return El creador de la rutina
      */
-    public UsuarioEmpleado getCreador() {
-        return creador;
+    public UsuarioEmpleado getCreadorEmpleado() {
+        return creadorEmpleado;
     }
 
     /**
      * Establece el empleado que creó la rutina.
      * 
-     * @param creador El nuevo creador de la rutina
+     * @param creadorEmpleado El nuevo creador de la rutina
      */
-    public void setCreador(UsuarioEmpleado creador) {
-        this.creador = creador;
+    public void setCreadorEmpleado(UsuarioEmpleado creadorEmpleado) {
+        this.creadorEmpleado = creadorEmpleado;
     }
 
     /**
@@ -236,8 +235,8 @@ public class Rutina {
                 "idRutina=" + idRutina +
                 ", nombre='" + nombre + '\'' +
                 ", descripcion='" + descripcion + '\'' +
-                ", cliente=" + (cliente != null ? "presente" : "null") +
-                ", creador=" + (creador != null ? "presente" : "null") +
+                ", cliente=" + (creadorCliente != null ? "presente" : "null") +
+                ", creador=" + (creadorEmpleado != null ? "presente" : "null") +
                 ", clientesAsignados=" + (clientesAsignados != null ? clientesAsignados.size() : 0) + " clientes" +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +

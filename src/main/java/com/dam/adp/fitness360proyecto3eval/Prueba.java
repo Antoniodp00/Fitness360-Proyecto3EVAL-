@@ -1,5 +1,6 @@
 package com.dam.adp.fitness360proyecto3eval;
 
+import com.dam.adp.fitness360proyecto3eval.DAO.RutinaDAO;
 import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioClienteDAO;
 import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioEmpleadoDAO;
 import com.dam.adp.fitness360proyecto3eval.model.*;
@@ -180,7 +181,7 @@ public class Prueba {
             System.out.println("No tiene rutinas asignadas.");
         }*/
 
-
+/*
         UsuarioEmpleado empleado = UsuarioEmpleadoDAO.findByIdEager(1);
         List<Rutina> rutinas = empleado.getRutinasCreadas();
         if (rutinas != null && !rutinas.isEmpty()) {
@@ -191,6 +192,18 @@ public class Prueba {
             }
         } else {
             System.out.println("No tiene rutinas asignadas.");
+        }*/
+
+
+        Rutina rutina = RutinaDAO.getByIdEager(9);
+        List<ClienteRutina> clienteRutinas = rutina.getClientesAsignados();
+        if (clienteRutinas!= null && !clienteRutinas.isEmpty() ) {
+            System.out.println("Clientes con la rutina asignada:");
+            for (ClienteRutina uC : clienteRutinas){
+                UsuarioCliente cliente = uC.getCliente();
+                System.out.println("- " + cliente.getId() + ": " + cliente.getNombreUsuario());
+                System.out.println("  Asignada desde " + uC.getFechaAsignacion() + " hasta " + uC.getFechaFin());
+            }
         }
     }
 }

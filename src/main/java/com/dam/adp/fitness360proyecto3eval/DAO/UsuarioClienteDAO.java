@@ -73,11 +73,11 @@ public class UsuarioClienteDAO {
      */
     public static List<UsuarioCliente> getAll() {
         List<UsuarioCliente> clientes = new ArrayList<>();
-        Connection con = ConnectionDB.getConnection();
 
-        try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(SQL_ALL);
+        try (Connection con = ConnectionDB.getConnection();
+             Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(SQL_ALL)) {
+
             while (rs.next()) {
                 UsuarioCliente cliente = mapearCliente(rs);
                 clientes.add(cliente);
@@ -159,12 +159,12 @@ public class UsuarioClienteDAO {
     public static UsuarioCliente finByUserName(String nombreUsuario) {
         UsuarioCliente cliente = null;
 
-        Connection con = ConnectionDB.getConnection();
+        try (Connection con = ConnectionDB.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(SQL_FIND_BY_NAME_USER)) {
 
-        try {
-            PreparedStatement pstmt = con.prepareStatement(SQL_FIND_BY_NAME_USER);
             pstmt.setString(1, nombreUsuario);
             ResultSet rs = pstmt.executeQuery();
+
             if (rs.next()) {
                 cliente = mapearCliente(rs);
             }
@@ -183,7 +183,9 @@ public class UsuarioClienteDAO {
      */
     public static UsuarioCliente insert(UsuarioCliente cliente) {
         if (cliente != null && finByUserName(cliente.getNombreUsuario()) == null) {
-            try (PreparedStatement pst = ConnectionDB.getConnection().prepareStatement(SQL_INSERT)) {
+            try (Connection con = ConnectionDB.getConnection();
+                 PreparedStatement pst = con.prepareStatement(SQL_INSERT)) {
+
                 pst.setString(1, cliente.getNombreUsuario());
                 pst.setString(2, cliente.getNombre());
                 pst.setString(3, cliente.getApellidos());
@@ -215,14 +217,16 @@ public class UsuarioClienteDAO {
     public static boolean disableUsuarioCliente(int id) {
         boolean disabled = false;
         if (findById(id) != null) {
-            try (PreparedStatement pst = ConnectionDB.getConnection().prepareStatement(SQL_DISABLE)) {
+            try (Connection con = ConnectionDB.getConnection();
+                 PreparedStatement pst = con.prepareStatement(SQL_DISABLE)) {
+
                 pst.setString(1, Estado.INACTIVO.name());
                 pst.setDate(2, new java.sql.Date(new java.util.Date().getTime()));
                 pst.setInt(3, id);
                 pst.executeUpdate();
                 disabled = true;
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
         return disabled;
@@ -255,7 +259,7 @@ public class UsuarioClienteDAO {
             int filas = stmt.executeUpdate();
             actualizado = filas > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return actualizado;
     }

@@ -37,6 +37,7 @@ VALUES
 ('Rutina avanzada', 'Rutina para ganar masa muscular', 2, 1),
 ('Rutina de cardio', 'Rutina centrada en ejercicios cardiovasculares', 3, 1);
 
+
 -- 6) Insertar Relación ClienteDieta
 INSERT INTO ClienteDieta (idCliente, idDieta, fechaAsignacion, fechaFin)
 VALUES

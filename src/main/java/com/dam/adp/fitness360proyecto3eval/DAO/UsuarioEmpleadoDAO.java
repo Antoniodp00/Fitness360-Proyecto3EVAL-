@@ -85,11 +85,11 @@ public class UsuarioEmpleadoDAO {
      */
     public static List<UsuarioEmpleado> getAll() {
         List<UsuarioEmpleado> empleados = new ArrayList<>();
-        Connection con = ConnectionDB.getConnection();
 
-        try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(SQL_GET_ALL);
+        try (Connection con = ConnectionDB.getConnection();
+             Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(SQL_GET_ALL)) {
+
             while (rs.next()) {
                 UsuarioEmpleado empleado = mapearEmpleado(rs);
                 empleados.add(empleado);
@@ -111,12 +111,12 @@ public class UsuarioEmpleadoDAO {
     public static UsuarioEmpleado findById(int idEmpleado) {
         UsuarioEmpleado empleado = null;
 
-        Connection con = ConnectionDB.getConnection();
+        try (Connection con = ConnectionDB.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(SQL_FIND_BY_ID)) {
 
-        try {
-            PreparedStatement pstmt = con.prepareStatement(SQL_FIND_BY_ID);
             pstmt.setInt(1, idEmpleado);
             ResultSet rs = pstmt.executeQuery();
+
             if (rs.next()) {
                 empleado = mapearEmpleado(rs);
             }
@@ -135,17 +135,19 @@ public class UsuarioEmpleadoDAO {
      */
     public static UsuarioEmpleado findByIdEager(int idEmpleado) {
         UsuarioEmpleado empleado = null;
-        Connection con = ConnectionDB.getConnection();
 
-        try {
-            PreparedStatement pstmt = con.prepareStatement(SQL_FIND_BY_ID);
+        try (Connection con = ConnectionDB.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(SQL_FIND_BY_ID)) {
+
             pstmt.setInt(1, idEmpleado);
             ResultSet rs = pstmt.executeQuery();
+
             if (rs.next()) {
                 empleado = mapearEmpleado(rs);
             }
+
             if (empleado != null) {
-                    empleado.setRutinasCreadas(RutinaDAO.getByCreator(idEmpleado));
+                empleado.setRutinasCreadas(RutinaDAO.getByCreator(idEmpleado));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -164,12 +166,41 @@ public class UsuarioEmpleadoDAO {
     public static UsuarioEmpleado finByUserName(String nombreUsuario) {
         UsuarioEmpleado empleado = null;
 
-        Connection con = ConnectionDB.getConnection();
+        try (Connection con = ConnectionDB.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(SQL_FIND_BY_USERNAME)) {
 
-        try {
-            PreparedStatement pstmt = con.prepareStatement(SQL_FIND_BY_USERNAME);
             pstmt.setString(1, nombreUsuario);
             ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                empleado = mapearEmpleado(rs);
+            }
+
+            if (empleado != null) {
+                empleado.setRutinasCreadas(RutinaDAO.getByCreator(empleado.getId()));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return empleado;
+    }
+
+    /**
+     * Busca un empleado por su nombre de usuario
+     *
+     * @param nombreUsuario Nombre de usuario del empleado a buscar
+     * @return Objeto UsuarioEmpleado si se encuentra, null en caso contrario
+     * @throws RuntimeException Si ocurre un error al acceder a la base de datos
+     */
+    public static UsuarioEmpleado finByUserNameEager(String nombreUsuario) {
+        UsuarioEmpleado empleado = null;
+
+        try (Connection con = ConnectionDB.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(SQL_FIND_BY_USERNAME)) {
+
+            pstmt.setString(1, nombreUsuario);
+            ResultSet rs = pstmt.executeQuery();
+
             if (rs.next()) {
                 empleado = mapearEmpleado(rs);
             }
@@ -188,7 +219,9 @@ public class UsuarioEmpleadoDAO {
      */
     public static UsuarioEmpleado insert(UsuarioEmpleado empleado) {
         if(empleado != null && finByUserName(empleado.getNombreUsuario()) == null){
-            try(PreparedStatement pst = ConnectionDB.getConnection().prepareStatement(SQL_INSERT)){
+            try(Connection con = ConnectionDB.getConnection();
+                PreparedStatement pst = con.prepareStatement(SQL_INSERT)){
+
                 pst.setString(1, empleado.getNombreUsuario());
                 pst.setString(2, empleado.getNombre());
                 pst.setString(3, empleado.getApellidos());
@@ -222,14 +255,16 @@ public class UsuarioEmpleadoDAO {
     public static boolean disableUsuarioEmpleado(int id) {
         boolean disabled = false;
         if(findById(id) != null) {
-            try (PreparedStatement pst = ConnectionDB.getConnection().prepareStatement(SQL_DISABLE)) {
+            try (Connection con = ConnectionDB.getConnection();
+                 PreparedStatement pst = con.prepareStatement(SQL_DISABLE)) {
+
                 pst.setString(1, Estado.INACTIVO.name());
                 pst.setDate(2, new java.sql.Date(new java.util.Date().getTime()));
                 pst.setInt(3, id);
                 pst.executeUpdate();
                 disabled = true;
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
         return disabled;
@@ -264,7 +299,7 @@ public class UsuarioEmpleadoDAO {
             int filas = stmt.executeUpdate();
             actualizado = filas > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return actualizado;
     }

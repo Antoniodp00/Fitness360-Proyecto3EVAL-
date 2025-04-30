@@ -13,45 +13,61 @@ import java.util.List;
  * Proporciona métodos para insertar, buscar, actualizar y eliminar rutinas.
  */
 public class RutinaDAO {
-    /** Consulta SQL para insertar una nueva rutina */
-    private static final String SQL_INSERT =
-            "INSERT INTO Rutina (nombre, descripcion, idCliente, idEmpleado, createdAt, updatedAt) " +
-                    "VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+    /**
+     * Consulta SQL para insertar una nueva rutina
+     */
+    private static final String SQL_INSERT_By_Client =
+            "INSERT INTO Rutina (nombre, descripcion, idCliente, createdAt, updatedAt) " +
+                    "VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
 
-    /** Consulta SQL para buscar una rutina por su ID */
+    private static final String SQL_INSERT_By_Employee =
+            "INSERT INTO Rutina (nombre, descripcion, idEmpleado, createdAt, updatedAt) " +
+                    "VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+
+
+    /**
+     * Consulta SQL para buscar una rutina por su ID
+     */
     private static final String SQL_FIND_BY_ID =
             "SELECT * FROM Rutina WHERE idRutina = ?";
 
-    /** Consulta SQL para obtener todas las rutinas */
+    /**
+     * Consulta SQL para obtener todas las rutinas
+     */
     private static final String SQL_GET_ALL =
             "SELECT * FROM Rutina";
 
-    /** Consulta SQL para actualizar los datos de una rutina */
+    /**
+     * Consulta SQL para actualizar los datos de una rutina
+     */
     private static final String SQL_UPDATE =
             "UPDATE Rutina SET nombre = ?, descripcion = ?, idCliente = ?, idEmpleado = ?, updatedAt = ? WHERE idRutina = ?";
 
-    /** Consulta SQL para eliminar una rutina */
+    /**
+     * Consulta SQL para eliminar una rutina
+     */
     private static final String SQL_DELETE =
             "DELETE FROM Rutina WHERE idRutina = ?";
 
-    /** Consulta SQL para obtener las rutinas creadas por un empleado */
+    /**
+     * Consulta SQL para obtener las rutinas creadas por un empleado
+     */
     private static final String SQL_GET_BY_CREATOR =
             "SELECT * FROM Rutina WHERE idEmpleado = ?";
 
     /**
-     * Inserta una nueva rutina en la base de datos
-     * 
+     * Inserta una nueva rutina en la base de datos por un ususario cliente
+     *
      * @param rutina Objeto Rutina con los datos de la rutina a insertar
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static void insertar(Rutina rutina) throws SQLException {
+    public static void insertByClient(Rutina rutina){
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_By_Client, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, rutina.getNombre());
             stmt.setString(2, rutina.getDescripcion());
-            stmt.setInt(3, rutina.getCliente().getId());
-            stmt.setInt(4, rutina.getCreador().getId());
+            stmt.setInt(3, rutina.getCreadorCliente().getId());
 
             stmt.executeUpdate();
 
@@ -60,17 +76,47 @@ public class RutinaDAO {
                     rutina.setIdRutina(rs.getInt(1));
                 }
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    /**
+     * Inserta una nueva rutina en la base de datos por un ususario cliente
+     *
+     * @param rutina Objeto Rutina con los datos de la rutina a insertar
+     * @throws SQLException Si ocurre un error al acceder a la base de datos
+     */
+    public static void insertByEmployee(Rutina rutina) {
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_By_Employee, Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setString(1, rutina.getNombre());
+            stmt.setString(2, rutina.getDescripcion());
+            stmt.setInt(3, rutina.getCreadorEmpleado().getId());
+
+            stmt.executeUpdate();
+
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    rutina.setIdRutina(rs.getInt(1));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     /**
      * Busca una rutina por su ID
-     * 
+     *
      * @param idRutina ID de la rutina a buscar
      * @return Objeto Rutina si se encuentra, null en caso contrario
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static Rutina buscarPorId(int idRutina) throws SQLException {
+    public static Rutina getById(int idRutina) {
+        Rutina rutina = null;
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_ID)) {
 
@@ -78,20 +124,52 @@ public class RutinaDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return mapearRutina(rs);
+                    rutina = mapearRutina(rs);
                 }
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return null;
+        return rutina;
+    }
+
+
+    /**
+     * Busca una rutina por su ID
+     *
+     * @param idRutina ID de la rutina a buscar
+     * @return Objeto Rutina si se encuentra, null en caso contrario
+     * @throws SQLException Si ocurre un error al acceder a la base de datos
+     */
+    public static Rutina getByIdEager(int idRutina) {
+        Rutina rutina = null;
+
+        try (Connection con = ConnectionDB.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(SQL_FIND_BY_ID)) {
+
+            pstmt.setInt(1, idRutina);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                rutina = mapearRutina(rs);
+            }
+
+            if (rutina != null) {
+                rutina.setClientesAsignados(ClienteRutinaDAO.findByRutineEager(idRutina));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return rutina;
     }
 
     /**
      * Obtiene todas las rutinas de la base de datos
-     * 
+     *
      * @return Lista de todas las rutinas
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static List<Rutina> obtenerTodas() throws SQLException {
+    public static List<Rutina> getAll() {
         List<Rutina> rutinas = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_GET_ALL);
@@ -100,18 +178,20 @@ public class RutinaDAO {
             while (rs.next()) {
                 rutinas.add(mapearRutina(rs));
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return rutinas;
     }
 
     /**
      * Obtiene todas las rutinas creadas por un empleado específico
-     * 
+     *
      * @param idEmpleado ID del empleado creador
      * @return Lista de rutinas creadas por el empleado
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static List<Rutina> getByCreator(int idEmpleado) throws SQLException {
+    public static List<Rutina> getByCreator(int idEmpleado) {
         List<Rutina> rutinas = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_GET_BY_CREATOR)) {
@@ -123,49 +203,55 @@ public class RutinaDAO {
                     rutinas.add(mapearRutina(rs));
                 }
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return rutinas;
     }
 
     /**
      * Actualiza los datos de una rutina en la base de datos
-     * 
+     *
      * @param rutina Objeto Rutina con los datos actualizados
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static void actualizar(Rutina rutina) throws SQLException {
+    public static void update(Rutina rutina) {
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {
 
             stmt.setString(1, rutina.getNombre());
             stmt.setString(2, rutina.getDescripcion());
-            stmt.setInt(3, rutina.getCliente().getId());
-            stmt.setInt(4, rutina.getCreador().getId());
+            stmt.setInt(3, rutina.getCreadorCliente().getId());
+            stmt.setInt(4, rutina.getCreadorEmpleado().getId());
             stmt.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
             stmt.setInt(6, rutina.getIdRutina());
 
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     /**
      * Elimina una rutina de la base de datos
-     * 
+     *
      * @param idRutina ID de la rutina a eliminar
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static void eliminar(int idRutina) throws SQLException {
+    public static void delete(int idRutina) {
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_DELETE)) {
 
             stmt.setInt(1, idRutina);
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     /**
      * Método auxiliar para mapear un ResultSet a un objeto Rutina
-     * 
+     *
      * @param rs ResultSet con los datos de la rutina
      * @return Objeto Rutina con los datos mapeados
      * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
@@ -180,14 +266,14 @@ public class RutinaDAO {
         if (!rs.wasNull()) {
             UsuarioCliente cliente = new UsuarioCliente();
             cliente.setId(idCliente);
-            rutina.setCliente(cliente);
+            rutina.setCreadorCliente(cliente);
         }
 
         int idEmpleado = rs.getInt("idEmpleado");
         if (!rs.wasNull()) {
             UsuarioEmpleado empleado = new UsuarioEmpleado();
             empleado.setId(idEmpleado);
-            rutina.setCreador(empleado);
+            rutina.setCreadorEmpleado(empleado);
         }
 
         rutina.setCreatedAt(rs.getTimestamp("createdAt"));

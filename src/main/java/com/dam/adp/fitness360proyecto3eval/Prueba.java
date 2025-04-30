@@ -9,8 +9,6 @@ import java.util.Date;
 import java.util.List;
 
 public class Prueba {
-    private final static String SQL_INSERT = "INSERT INTO Cliente (nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, altura, estado, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
     public static void main(String[] args) {
        /*  // Probar la conexión y realizar una consulta básica para obtener todos los usuarios
         System.out.println("Obteniendo todos los usuarios...");

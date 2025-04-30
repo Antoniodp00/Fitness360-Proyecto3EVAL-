@@ -7,27 +7,42 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
+/**
+ * Clase DAO (Data Access Object) para gestionar las operaciones CRUD (Create, Read, Update, Delete)
+ * relacionadas con los usuarios empleados en la base de datos.
+ * Proporciona métodos para obtener, buscar, insertar, actualizar y desactivar usuarios empleados.
+ */
 public class UsuarioEmpleadoDAO {
 
+    /** Consulta SQL para insertar un nuevo empleado */
     private static final String SQL_INSERT = "INSERT INTO Empleado (nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, descripcion, rol, especialidad, estado, createdAt, updatedAt) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+    /** Consulta SQL para buscar un empleado por su ID */
     private static final String SQL_FIND_BY_ID = "SELECT * FROM Empleado WHERE idEmpleado = ?";
 
+    /** Consulta SQL para buscar un empleado por su nombre de usuario */
     private static final String SQL_FIND_BY_USERNAME = "SELECT * FROM Empleado WHERE nombreUsuario = ?";
 
+    /** Consulta SQL para obtener todos los empleados */
     private static final String SQL_GET_ALL = "SELECT * FROM Empleado";
 
+    /** Consulta SQL para actualizar los datos de un empleado */
     private static final String SQL_UPDATE = "UPDATE Empleado SET nombreUsuario = ?, nombre = ?, apellidos = ?, correo = ?, password = ?, telefono = ?, fechaNacimiento = ?, sexo = ?, descripcion = ?, rol = ?, especialidad = ?, estado = ?, updatedAt = ? WHERE idEmpleado = ?";
 
+    /** Consulta SQL para desactivar un empleado */
     private static final String SQL_DISABLE = "UPDATE Empleado SET estado = ?, updatedAt = ? WHERE idEmpleado = ?";
 
-    private static final String SQL_GET_RUTINAS_CREADAS = "SELECT * FROM Rutina WHERE idCreador = ?";
-
+    /** Consulta SQL para obtener las dietas creadas por un empleado */
     private static final String SQL_GET_DIETAS_CREADAS = "SELECT * FROM Dieta WHERE idCreador = ?";
 
+    /**
+     * Método auxiliar para mapear un ResultSet a un objeto UsuarioEmpleado
+     * 
+     * @param rs ResultSet con los datos del empleado
+     * @return Objeto UsuarioEmpleado con los datos mapeados
+     * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
+     */
     private static UsuarioEmpleado mapearEmpleado(ResultSet rs) throws SQLException {
         UsuarioEmpleado empleado = new UsuarioEmpleado();
         empleado.setId(rs.getInt("idEmpleado"));
@@ -62,6 +77,12 @@ public class UsuarioEmpleadoDAO {
         return empleado;
     }
 
+    /**
+     * Obtiene todos los empleados de la base de datos
+     * 
+     * @return Lista de todos los empleados
+     * @throws RuntimeException Si ocurre un error al acceder a la base de datos
+     */
     public static List<UsuarioEmpleado> getAll() {
         List<UsuarioEmpleado> empleados = new ArrayList<>();
         Connection con = ConnectionDB.getConnection();
@@ -80,6 +101,13 @@ public class UsuarioEmpleadoDAO {
         return empleados;
     }
 
+    /**
+     * Busca un empleado por su ID
+     * 
+     * @param idEmpleado ID del empleado a buscar
+     * @return Objeto UsuarioEmpleado si se encuentra, null en caso contrario
+     * @throws RuntimeException Si ocurre un error al acceder a la base de datos
+     */
     public static UsuarioEmpleado findById(int idEmpleado) {
         UsuarioEmpleado empleado = null;
 
@@ -98,7 +126,41 @@ public class UsuarioEmpleadoDAO {
         return empleado;
     }
 
+    /**
+     * Busca un empleado por su ID y carga sus rutinas creadas (carga ansiosa/eager loading)
+     * 
+     * @param idEmpleado ID del empleado a buscar
+     * @return Objeto UsuarioEmpleado con sus rutinas creadas si se encuentra, null en caso contrario
+     * @throws RuntimeException Si ocurre un error al acceder a la base de datos
+     */
+    public static UsuarioEmpleado findByIdEager(int idEmpleado) {
+        UsuarioEmpleado empleado = null;
+        Connection con = ConnectionDB.getConnection();
 
+        try {
+            PreparedStatement pstmt = con.prepareStatement(SQL_FIND_BY_ID);
+            pstmt.setInt(1, idEmpleado);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                empleado = mapearEmpleado(rs);
+            }
+            if (empleado != null) {
+                    empleado.setRutinasCreadas(RutinaDAO.getByCreator(idEmpleado));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return empleado;
+    }
+
+
+    /**
+     * Busca un empleado por su nombre de usuario
+     * 
+     * @param nombreUsuario Nombre de usuario del empleado a buscar
+     * @return Objeto UsuarioEmpleado si se encuentra, null en caso contrario
+     * @throws RuntimeException Si ocurre un error al acceder a la base de datos
+     */
     public static UsuarioEmpleado finByUserName(String nombreUsuario) {
         UsuarioEmpleado empleado = null;
 
@@ -117,6 +179,13 @@ public class UsuarioEmpleadoDAO {
         return empleado;
     }
 
+    /**
+     * Inserta un nuevo empleado en la base de datos
+     * 
+     * @param empleado Objeto UsuarioEmpleado con los datos del empleado a insertar
+     * @return El objeto UsuarioEmpleado insertado si la operación fue exitosa, null si el empleado ya existe o es nulo
+     * @throws RuntimeException Si ocurre un error al acceder a la base de datos
+     */
     public static UsuarioEmpleado insert(UsuarioEmpleado empleado) {
         if(empleado != null && finByUserName(empleado.getNombreUsuario()) == null){
             try(PreparedStatement pst = ConnectionDB.getConnection().prepareStatement(SQL_INSERT)){
@@ -143,6 +212,13 @@ public class UsuarioEmpleadoDAO {
         }
         return empleado;
     }
+
+    /**
+     * Desactiva un empleado en la base de datos cambiando su estado a INACTIVO
+     * 
+     * @param id ID del empleado a desactivar
+     * @return true si el empleado fue desactivado correctamente, false si el empleado no existe o hubo un error
+     */
     public static boolean disableUsuarioEmpleado(int id) {
         boolean disabled = false;
         if(findById(id) != null) {
@@ -158,6 +234,13 @@ public class UsuarioEmpleadoDAO {
         }
         return disabled;
     }
+
+    /**
+     * Actualiza los datos de un empleado en la base de datos
+     * 
+     * @param empleado Objeto UsuarioEmpleado con los datos actualizados
+     * @return true si la actualización fue exitosa, false en caso contrario
+     */
     public static boolean update(UsuarioEmpleado empleado) {
         boolean actualizado = false;
         try (Connection conn = ConnectionDB.getConnection();

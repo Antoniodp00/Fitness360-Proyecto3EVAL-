@@ -9,6 +9,7 @@ import java.util.List;
 
 public class Prueba {
     private final static String SQL_INSERT = "INSERT INTO Cliente (nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, altura, estado, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
     public static void main(String[] args) {
        /*  // Probar la conexión y realizar una consulta básica para obtener todos los usuarios
         System.out.println("Obteniendo todos los usuarios...");
@@ -166,9 +167,30 @@ public class Prueba {
             }
         }*/
 
-
+       /* UsuarioCliente cliente = UsuarioClienteDAO.findByIdEager(4);
+        List<ClienteRutina> rutinas = cliente.getRutinasAsignadas();
+        if (rutinas != null && !rutinas.isEmpty()) {
+            System.out.println("Rutinas asignadas:");
+            for (ClienteRutina cr : rutinas) {
+                Rutina rutina = cr.getRutina();
+                System.out.println("- " + rutina.getIdRutina() + ": " + rutina.getNombre());
+                System.out.println("  Asignada desde " + cr.getFechaAsignacion() + " hasta " + cr.getFechaFin());
             }
+        } else {
+            System.out.println("No tiene rutinas asignadas.");
+        }*/
+
+
+        UsuarioEmpleado empleado = UsuarioEmpleadoDAO.findByIdEager(1);
+        List<Rutina> rutinas = empleado.getRutinasCreadas();
+        if (rutinas != null && !rutinas.isEmpty()) {
+            System.out.println("Rutinas asignadas:");
+            for (Rutina r : rutinas) {
+                System.out.println("- " + r.getIdRutina() + ": " + r.getNombre());
+                System.out.println("  Asignada desde " + r.getCreatedAt());
+            }
+        } else {
+            System.out.println("No tiene rutinas asignadas.");
         }
-
-
-
+    }
+}

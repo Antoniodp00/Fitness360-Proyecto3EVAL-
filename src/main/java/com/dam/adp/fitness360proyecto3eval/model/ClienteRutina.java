@@ -2,6 +2,7 @@ package com.dam.adp.fitness360proyecto3eval.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -12,10 +13,10 @@ import java.util.Objects;
 public class ClienteRutina {
     private UsuarioCliente cliente;
     private Rutina rutina;
-    private LocalDate fechaAsignacion;
-    private LocalDate fechaFin;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Date fechaAsignacion;
+    private Date fechaFin;
+    private Date createdAt;
+    private Date updatedAt;
 
     /**
      * Constructor por defecto sin parámetros.
@@ -32,7 +33,7 @@ public class ClienteRutina {
      * @param fechaAsignacion Fecha en que se asigna la rutina
      * @param fechaFin Fecha en que finaliza la asignación de la rutina
      */
-    public ClienteRutina(UsuarioCliente cliente, Rutina rutina, LocalDate fechaAsignacion, LocalDate fechaFin) {
+    public ClienteRutina(UsuarioCliente cliente, Rutina rutina, Date fechaAsignacion, Date fechaFin) {
         this.cliente = cliente;
         this.rutina = rutina;
         this.fechaAsignacion = fechaAsignacion;
@@ -49,7 +50,7 @@ public class ClienteRutina {
      * @param createdAt Fecha y hora de creación del registro
      * @param updatedAt Fecha y hora de última actualización del registro
      */
-    public ClienteRutina(UsuarioCliente cliente, Rutina rutina, LocalDate fechaAsignacion, LocalDate fechaFin, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public ClienteRutina(UsuarioCliente cliente, Rutina rutina, Date fechaAsignacion, Date fechaFin, Date createdAt, Date updatedAt) {
         this.cliente = cliente;
         this.rutina = rutina;
         this.fechaAsignacion = fechaAsignacion;
@@ -96,10 +97,10 @@ public class ClienteRutina {
 
     /**
      * Obtiene la fecha de asignación de la rutina.
-     * 
+     *
      * @return La fecha en que se asignó la rutina al cliente
      */
-    public LocalDate getFechaAsignacion() {
+    public Date getFechaAsignacion() {
         return fechaAsignacion;
     }
 
@@ -108,16 +109,16 @@ public class ClienteRutina {
      * 
      * @param fechaAsignacion La nueva fecha de asignación
      */
-    public void setFechaAsignacion(LocalDate fechaAsignacion) {
+    public void setFechaAsignacion(Date fechaAsignacion) {
         this.fechaAsignacion = fechaAsignacion;
     }
 
     /**
      * Obtiene la fecha de finalización de la rutina.
-     * 
+     *
      * @return La fecha en que finaliza la asignación de la rutina
      */
-    public LocalDate getFechaFin() {
+    public Date getFechaFin() {
         return fechaFin;
     }
 
@@ -126,7 +127,7 @@ public class ClienteRutina {
      * 
      * @param fechaFin La nueva fecha de finalización
      */
-    public void setFechaFin(LocalDate fechaFin) {
+    public void setFechaFin(Date fechaFin) {
         this.fechaFin = fechaFin;
     }
 
@@ -135,7 +136,7 @@ public class ClienteRutina {
      * 
      * @return La fecha y hora en que se creó el registro
      */
-    public LocalDateTime getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
@@ -144,7 +145,7 @@ public class ClienteRutina {
      * 
      * @param createdAt La nueva fecha y hora de creación
      */
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -153,7 +154,7 @@ public class ClienteRutina {
      * 
      * @return La fecha y hora en que se actualizó por última vez el registro
      */
-    public LocalDateTime getUpdatedAt() {
+    public Date getUpdatedAt() {
         return updatedAt;
     }
 
@@ -162,7 +163,7 @@ public class ClienteRutina {
      * 
      * @param updatedAt La nueva fecha y hora de última actualización
      */
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
 

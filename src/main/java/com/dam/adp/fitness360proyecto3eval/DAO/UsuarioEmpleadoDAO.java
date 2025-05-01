@@ -217,7 +217,7 @@ public class UsuarioEmpleadoDAO {
      * @return El objeto UsuarioEmpleado insertado si la operación fue exitosa, null si el empleado ya existe o es nulo
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static UsuarioEmpleado insert(UsuarioEmpleado empleado) {
+    public static UsuarioEmpleado insertEmpleado(UsuarioEmpleado empleado) {
         if(empleado != null && finByUserName(empleado.getNombreUsuario()) == null){
             try(Connection con = ConnectionDB.getConnection();
                 PreparedStatement pst = con.prepareStatement(SQL_INSERT)){
@@ -276,7 +276,7 @@ public class UsuarioEmpleadoDAO {
      * @param empleado Objeto UsuarioEmpleado con los datos actualizados
      * @return true si la actualización fue exitosa, false en caso contrario
      */
-    public static boolean update(UsuarioEmpleado empleado) {
+    public static boolean updateEmpleado(UsuarioEmpleado empleado) {
         boolean actualizado = false;
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {

@@ -61,24 +61,23 @@ public class RutinaDAO {
      * @param rutina Objeto Rutina con los datos de la rutina a insertar
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static void insertByClient(Rutina rutina){
-        try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_By_Client, Statement.RETURN_GENERATED_KEYS)) {
+    public static Rutina insertRutinaByClient(Rutina rutina) {
+        if (rutina != null) {
+            try (Connection conn = ConnectionDB.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_By_Client)) {
 
-            stmt.setString(1, rutina.getNombre());
-            stmt.setString(2, rutina.getDescripcion());
-            stmt.setInt(3, rutina.getCreadorCliente().getId());
+                stmt.setString(1, rutina.getNombre());
+                stmt.setString(2, rutina.getDescripcion());
+                stmt.setInt(3, rutina.getCreadorCliente().getId());
 
-            stmt.executeUpdate();
-
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
-                if (rs.next()) {
-                    rutina.setIdRutina(rs.getInt(1));
-                }
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        }else {
+            rutina = null;
         }
+        return rutina;
     }
 
 
@@ -88,24 +87,23 @@ public class RutinaDAO {
      * @param rutina Objeto Rutina con los datos de la rutina a insertar
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static void insertByEmployee(Rutina rutina) {
-        try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_By_Employee, Statement.RETURN_GENERATED_KEYS)) {
+    public static Rutina insertRutinaByEmployee(Rutina rutina) {
+        if (rutina != null) {
+            try (Connection conn = ConnectionDB.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_By_Employee)) {
 
-            stmt.setString(1, rutina.getNombre());
-            stmt.setString(2, rutina.getDescripcion());
-            stmt.setInt(3, rutina.getCreadorEmpleado().getId());
+                stmt.setString(1, rutina.getNombre());
+                stmt.setString(2, rutina.getDescripcion());
+                stmt.setInt(3, rutina.getCreadorEmpleado().getId());
 
-            stmt.executeUpdate();
-
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
-                if (rs.next()) {
-                    rutina.setIdRutina(rs.getInt(1));
-                }
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        }else {
+            rutina = null;
         }
+        return rutina;
     }
 
     /**
@@ -215,38 +213,48 @@ public class RutinaDAO {
      * @param rutina Objeto Rutina con los datos actualizados
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static void update(Rutina rutina) {
-        try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {
+    public static boolean updateRutina(Rutina rutina) {
+        boolean updated = false;
+        if (rutina != null && getById(rutina.getIdRutina()) != null) {
+            try (Connection conn = ConnectionDB.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {
 
-            stmt.setString(1, rutina.getNombre());
-            stmt.setString(2, rutina.getDescripcion());
-            stmt.setInt(3, rutina.getCreadorCliente().getId());
-            stmt.setInt(4, rutina.getCreadorEmpleado().getId());
-            stmt.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
-            stmt.setInt(6, rutina.getIdRutina());
+                stmt.setString(1, rutina.getNombre());
+                stmt.setString(2, rutina.getDescripcion());
+                stmt.setInt(3, rutina.getCreadorCliente().getId());
+                stmt.setInt(4, rutina.getCreadorEmpleado().getId());
+                stmt.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
+                stmt.setInt(6, rutina.getIdRutina());
 
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+                int filas = stmt.executeUpdate();
+                updated = filas > 0;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
+        return updated;
     }
 
     /**
      * Elimina una rutina de la base de datos
      *
-     * @param idRutina ID de la rutina a eliminar
+     * @param rutina rutina a eliminar
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static void delete(int idRutina) {
-        try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(SQL_DELETE)) {
+    public static boolean deleteRutina(Rutina rutina) {
+        boolean deleted = false;
+        if (rutina != null && getById(rutina.getIdRutina()) != null) {
+            try (Connection conn = ConnectionDB.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(SQL_DELETE)) {
 
-            stmt.setInt(1, idRutina);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+                stmt.setInt(1, rutina.getIdRutina());
+                stmt.executeUpdate();
+                deleted = true;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
+        return deleted;
     }
 
     /**

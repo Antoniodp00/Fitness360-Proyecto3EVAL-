@@ -155,7 +155,7 @@ public class Prueba {
                 System.out.println("No se pudo actualizar el empleado.");
             }
         }
-        // Probar desactivar un empleado
+        Probar desactivar un empleado
         UsuarioEmpleado encontrado = UsuarioEmpleadoDAO.findById(1);
         if (encontrado != null) {
             boolean desactivado = UsuarioEmpleadoDAO.disableUsuarioEmpleado(1);
@@ -164,7 +164,7 @@ public class Prueba {
             } else {
                 System.out.println("No se pudo desactivar el empleado.");
             }
-        }*/
+        }
 
        /* UsuarioCliente cliente = UsuarioClienteDAO.findByIdEager(4);
         List<ClienteRutina> rutinas = cliente.getRutinasAsignadas();
@@ -193,7 +193,7 @@ public class Prueba {
         }*/
 
 
-        Rutina rutina = RutinaDAO.getByIdEager(9);
+      /*  Rutina rutina = RutinaDAO.getByIdEager(9);
         List<ClienteRutina> clienteRutinas = rutina.getClientesAsignados();
         if (clienteRutinas!= null && !clienteRutinas.isEmpty() ) {
             System.out.println("Clientes con la rutina asignada:");
@@ -202,6 +202,6 @@ public class Prueba {
                 System.out.println("- " + cliente.getId() + ": " + cliente.getNombreUsuario());
                 System.out.println("  Asignada desde " + uC.getFechaAsignacion() + " hasta " + uC.getFechaFin());
             }
-        }
+        }*/
     }
 }

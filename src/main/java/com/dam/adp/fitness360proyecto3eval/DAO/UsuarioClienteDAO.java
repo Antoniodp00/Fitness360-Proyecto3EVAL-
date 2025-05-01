@@ -181,7 +181,7 @@ public class UsuarioClienteDAO {
      * @return El objeto UsuarioCliente insertado si la operación fue exitosa, null si el cliente ya existe o es nulo
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static UsuarioCliente insert(UsuarioCliente cliente) {
+    public static UsuarioCliente insertCliente(UsuarioCliente cliente) {
         if (cliente != null && finByUserName(cliente.getNombreUsuario()) == null) {
             try (Connection con = ConnectionDB.getConnection();
                  PreparedStatement pst = con.prepareStatement(SQL_INSERT)) {
@@ -238,7 +238,7 @@ public class UsuarioClienteDAO {
      * @param cliente Objeto UsuarioCliente con los datos actualizados
      * @return true si la actualización fue exitosa, false en caso contrario
      */
-    public static boolean update(UsuarioCliente cliente) {
+    public static boolean updateCliente(UsuarioCliente cliente) {
         boolean actualizado = false;
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {

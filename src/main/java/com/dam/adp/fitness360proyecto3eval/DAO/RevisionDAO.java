@@ -40,6 +40,7 @@ public class RevisionDAO {
     private static final String SQL_DELETE =
             "DELETE FROM Revision WHERE idRevision = ?";
 
+
     private static Revision mapearRevision(ResultSet rs) throws SQLException {
         Revision revision = new Revision();
         revision.setIdRevision(rs.getInt("idRevision"));

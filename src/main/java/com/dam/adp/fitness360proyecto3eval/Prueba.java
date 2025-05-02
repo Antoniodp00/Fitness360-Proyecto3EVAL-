@@ -1,5 +1,6 @@
 package com.dam.adp.fitness360proyecto3eval;
 
+import com.dam.adp.fitness360proyecto3eval.DAO.DietaDAO;
 import com.dam.adp.fitness360proyecto3eval.DAO.RutinaDAO;
 import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioClienteDAO;
 import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioEmpleadoDAO;
@@ -203,5 +204,94 @@ public class Prueba {
                 System.out.println("  Asignada desde " + uC.getFechaAsignacion() + " hasta " + uC.getFechaFin());
             }
         }*/
+
+        // Asegúrate de que este ID exista en tu base de datos
+       /* UsuarioEmpleado creador = UsuarioEmpleadoDAO.findById(1);
+
+        if (creador == null) {
+            System.out.println("No se encontró un empleado con ID 1. Asegúrate de tener uno en la base de datos.");
+            return;
+        }
+
+        // Crear una nueva dieta
+        Dieta nuevaDieta = new Dieta();
+        nuevaDieta.setNombre("Dieta Test");
+        nuevaDieta.setDescripcion("Una dieta de prueba para testeo.");
+        nuevaDieta.setArchivo("dieta_test.pdf");
+        nuevaDieta.setCreador(creador);
+
+        // Insertar dieta
+        Dieta dietaInsertada = DietaDAO.insertDieta(nuevaDieta);
+        System.out.println("Dieta insertada: " + dietaInsertada);
+*/
+
+        // Buscar por nombre
+        Dieta encontrada = DietaDAO.getByName("Dieta Test");
+        System.out.println("Dieta encontrada por nombre: " + encontrada);
+
+        // Mostrar todas las dietas
+        List<Dieta> todas = DietaDAO.getAll();
+        System.out.println("Lista de todas las dietas:");
+        for (Dieta d : todas) {
+            System.out.println(d);
+        }
+
+        // Actualizar dieta
+        if (encontrada != null) {
+            encontrada.setDescripcion("Descripción actualizada.");
+            DietaDAO.updateDieta(encontrada);
+            System.out.println("Dieta actualizada: " + DietaDAO.getById(encontrada.getIdDieta()));
+        }
+
+        // Eliminar dieta
+        if (encontrada != null) {
+            boolean eliminada = DietaDAO.deleteDieta(encontrada);
+            System.out.println("¿Dieta eliminada? " + eliminada);
+        }
+/*
+
+                // Crear un cliente ficticio con ID 1 (debes asegurarte de que exista en la base de datos)
+                UsuarioCliente cliente = new UsuarioCliente();
+                cliente.setId(1); // ID real existente en la tabla UsuarioCliente
+
+                // Crear una rutina
+                Rutina rutina = new Rutina();
+                rutina.setNombre("Rutina de prueba");
+                rutina.setDescripcion("Rutina creada desde el main para prueba");
+                rutina.setCreadorCliente(cliente);
+
+                // Insertar rutina como cliente
+                RutinaDAO.insertRutinaByClient(rutina);
+                System.out.println("Rutina insertada correctamente.");
+
+                // Recuperar rutina (este método no devuelve el ID insertado automáticamente, así que debes adaptarlo)
+                Rutina rutinaEncontrada = RutinaDAO.getAll().stream()
+                        .filter(r -> r.getNombre().equals("Rutina de prueba"))
+                        .findFirst().orElse(null);
+
+                if (rutinaEncontrada != null) {
+                    System.out.println("Rutina encontrada: " + rutinaEncontrada.getNombre());
+
+                    // Modificar descripción
+                    rutinaEncontrada.setDescripcion("Descripción actualizada desde el main");
+
+                    // Asignar un empleado ficticio (suponiendo ID 2)
+                    UsuarioEmpleado empleado = new UsuarioEmpleado();
+                    empleado.setId(2); // Asegúrate de que este ID existe
+                    rutinaEncontrada.setCreadorEmpleado(empleado);
+
+                    // También debe tener cliente asignado para evitar null
+                    rutinaEncontrada.setCreadorCliente(cliente);
+
+                    // Actualizar rutina
+                    boolean actualizada = RutinaDAO.updateRutina(rutinaEncontrada);
+                    System.out.println("¿Rutina actualizada? " + actualizada);
+
+                    // Eliminar rutina
+                    boolean eliminada = RutinaDAO.deleteRutina(rutinaEncontrada);
+                    System.out.println("¿Rutina eliminada? " + eliminada);
+                } else {
+                    System.out.println("No se encontró la rutina para actualizar o eliminar.");
+                }*/
     }
 }

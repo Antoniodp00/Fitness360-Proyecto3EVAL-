@@ -38,8 +38,12 @@ public class ConnectionDB {
      * @return Objeto Connection para interactuar con la base de datos
      */
     public static Connection getConnection() {
-        if (_instance == null) {
-            _instance = new ConnectionDB();
+        try {
+            if (_instance == null || _instance.con.isClosed()) {
+                _instance = new ConnectionDB();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return con;
     }

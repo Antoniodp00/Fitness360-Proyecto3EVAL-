@@ -6,6 +6,7 @@ import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioEmpleadoDAO;
 import com.dam.adp.fitness360proyecto3eval.exceptions.EmailInvalidoException;
 import com.dam.adp.fitness360proyecto3eval.exceptions.UsuarioYaExisteException;
 import com.dam.adp.fitness360proyecto3eval.utilidades.HashUtil;
+import com.dam.adp.fitness360proyecto3eval.utilidades.Utilidades;
 import com.dam.adp.fitness360proyecto3eval.views.MainApplication;
 
 import javafx.collections.FXCollections;
@@ -87,8 +88,7 @@ public class RegistroController {
     /**
      * Inicializa el controlador después de que se haya cargado el FXML.
      */
-    @FXML
-    private void inicializar() {
+    public void inicializar() {
         // Configurar los ComboBox
         sexoComboBox.setItems(FXCollections.observableArrayList(Sexo.values()));
         especialidadComboBox.setItems(FXCollections.observableArrayList(Especialidad.values()));
@@ -157,6 +157,7 @@ public class RegistroController {
      * @return true si todos los campos son válidos, false en caso contrario
      */
     private boolean validarCamposComunes() {
+        boolean valido = true;
         // Verificar que los campos no estén vacíos
         if (usernameField.getText().isEmpty() || 
             nombreField.getText().isEmpty() || 
@@ -170,31 +171,30 @@ public class RegistroController {
 
             errorMessage.setText("Error: Todos los campos son obligatorios");
             errorMessage.setVisible(true);
-            return false;
+            valido = false;
         }
 
         // Verificar que las contraseñas coincidan
         if (!passwordField.getText().equals(confirmPasswordField.getText())) {
             errorMessage.setText("Error: Las contraseñas no coinciden");
             errorMessage.setVisible(true);
-            return false;
+            valido = false;
         }
 
         // Validar formato de correo electrónico
-        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-        if (!Pattern.compile(emailRegex).matcher(correoField.getText()).matches()) {
+        if (!Utilidades.validarEmail(correoField.getText())) {
             errorMessage.setText("Error: Formato de correo electrónico inválido");
             errorMessage.setVisible(true);
-            return false;
+            valido = false;
         }
 
-        return true;
+        return valido;
     }
 
     /**
      * Registra un nuevo usuario cliente.
      */
-    private void registrarCliente() throws UsuarioYaExisteException, EmailInvalidoException {
+    private void registrarCliente() {
         double altura = 0;
         // Validar campo específico de cliente
         if (alturaField.getText().isEmpty()) {
@@ -234,7 +234,7 @@ public class RegistroController {
     /**
      * Registra un nuevo usuario empleado.
      */
-    private void registrarEmpleado() throws UsuarioYaExisteException, EmailInvalidoException {
+    private void registrarEmpleado(){
         // Validar campos específicos de empleado
         if (descripcionField.getText().isEmpty() || 
             rolField.getText().isEmpty() || 

@@ -43,34 +43,43 @@ public class LoginController {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
-        // Validar que los campos no estén vacíos
+        String mensajeError = null;
+        Usuario usuarioAutenticado = null;
+
+        // Validar campos vacíos
         if (username.isEmpty() || password.isEmpty()) {
-            mostrarError("Por favor, complete todos los campos");
-            return;
-        }
-
-        // Intentar autenticar como cliente
-        UsuarioCliente cliente = UsuarioClienteDAO.finByUserName(username);
-        if (cliente != null) {
-            if (autenticarUsuario(cliente, password)) {
-                navegarAPantallaPrincipal(actionEvent, cliente);
-                return;
+            mensajeError = "Por favor, complete todos los campos";
+        } else {
+            // Buscar y autenticar como cliente
+            UsuarioCliente cliente = UsuarioClienteDAO.finByUserName(username);
+            if (cliente != null && autenticarUsuario(cliente, password)) {
+                usuarioAutenticado = cliente;
+            } else {
+                // Buscar y autenticar como empleado
+                UsuarioEmpleado empleado = UsuarioEmpleadoDAO.finByUserName(username);
+                if (empleado != null && autenticarUsuario(empleado, password)) {
+                    usuarioAutenticado = empleado;
+                } else {
+                    mensajeError = "Nombre de usuario o contraseña incorrectos";
+                }
             }
         }
 
-        // Intentar autenticar como empleado
-        UsuarioEmpleado empleado = UsuarioEmpleadoDAO.finByUserName(username);
-        if (empleado != null) {
-            if (autenticarUsuario(empleado, password)) {
-                navegarAPantallaPrincipal(actionEvent, empleado);
-                return;
-            }
+        // Ejecutar navegación o mostrar error según el resultado
+        if (usuarioAutenticado != null) {
+            navegarAPantallaPrincipal(actionEvent, usuarioAutenticado);
+        } else {
+            mostrarError(mensajeError);
         }
-
-        // Si llegamos aquí, la autenticación falló
-        mostrarError("Nombre de usuario o contraseña incorrectos");
     }
 
+
+    /**
+     * Maneja el evento de clic en el botón de registrarse
+     * Navega hacia la ventana de registro
+     *
+     * @param actionEvent El evento de acción que desencadenó este método
+     */
     public void alHacerClicEnRegistrarse(ActionEvent actionEvent) {
         navegarAPantallaRegistro(actionEvent);
     }
@@ -83,14 +92,16 @@ public class LoginController {
      * @return true si la autenticación es exitosa, false en caso contrario
      */
     private boolean autenticarUsuario(Usuario usuario, String password) {
+        Boolean autenticado = true;
         // Verificar que el usuario esté activo
         if (usuario.getEstado() != Estado.ACTIVO) {
             mostrarError("Usuario inactivo. Contacte al administrador.");
-            return false;
+            autenticado = false;
         }
 
         // Verificar la contraseña
-        return HashUtil.verificarPassword(password, usuario.getPassword());
+        autenticado = HashUtil.verificarPassword(password, usuario.getPassword());
+        return autenticado;
     }
 
     /**

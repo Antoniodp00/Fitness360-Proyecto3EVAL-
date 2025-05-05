@@ -7,10 +7,17 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Clase DAO (Data Access Object) para gestionar las operaciones CRUD (Create, Read, Update, Delete)
+ * relacionadas con la asignación de dietas a clientes en la base de datos.
+ * Proporciona métodos para insertar, buscar y eliminar asignaciones de dietas a clientes.
+ */
 public class ClienteDietaDAO {
+    /** Consulta SQL para insertar una nueva asignación de dieta a cliente */
     private static final String SQL_INSERT =
             "INSERT INTO ClienteDieta (idCliente, idDieta, fechaAsignacion, fechaFin) VALUES (?, ?, ?, ?)";
 
+    /** Consulta SQL para buscar asignaciones de dietas por cliente con información completa */
     private static final String SQL_FIND_BY_CLIENTE =
             "SELECT cd.*, " +
                     "c.idCliente, c.nombreUsuario, c.nombre, c.apellidos, c.correo, " +
@@ -23,6 +30,7 @@ public class ClienteDietaDAO {
                     "JOIN Dieta d ON cd.idDieta = d.idDieta " +
                     "WHERE cd.idCliente = ?";
 
+    /** Consulta SQL para buscar asignaciones de clientes por dieta con información completa */
     private static final String SQL_FIND_BY_DIETA =
             "SELECT cd.*, " +
                     "c.idCliente, c.nombreUsuario, c.nombre, c.apellidos, c.correo, " +
@@ -35,9 +43,15 @@ public class ClienteDietaDAO {
                     "JOIN Dieta d ON cd.idDieta = d.idDieta " +
                     "WHERE cd.idDieta = ?";
 
+    /** Consulta SQL para eliminar una asignación de dieta a cliente */
     private static final String SQL_DELETE =
             "DELETE FROM ClienteDieta WHERE idCliente = ? AND idDieta = ?";
 
+    /**
+     * Inserta una nueva asignación de dieta a cliente en la base de datos
+     * 
+     * @param cd Objeto ClienteDieta con los datos a insertar
+     */
     public static void insert(ClienteDieta cd) {
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_INSERT)) {
@@ -53,6 +67,12 @@ public class ClienteDietaDAO {
         }
     }
 
+    /**
+     * Busca asignaciones de dietas para un cliente específico (versión básica)
+     * 
+     * @param idCliente ID del cliente a buscar
+     * @return Lista de objetos ClienteDieta con las asignaciones encontradas
+     */
     public static List<ClienteDieta> findByClient(int idCliente) {
         List<ClienteDieta> lista = new ArrayList<>();
 
@@ -71,6 +91,13 @@ public class ClienteDietaDAO {
         return lista;
     }
 
+    /**
+     * Busca asignaciones de dietas para un cliente específico (versión completa)
+     * Incluye información detallada del cliente y la dieta
+     * 
+     * @param idCliente ID del cliente a buscar
+     * @return Lista de objetos ClienteDieta con las asignaciones encontradas y datos completos
+     */
     public static List<ClienteDieta> findByClientEager(int idCliente) {
         List<ClienteDieta> lista = new ArrayList<>();
 
@@ -89,6 +116,12 @@ public class ClienteDietaDAO {
         return lista;
     }
 
+    /**
+     * Busca asignaciones de clientes para una dieta específica (versión básica)
+     * 
+     * @param idDieta ID de la dieta a buscar
+     * @return Lista de objetos ClienteDieta con las asignaciones encontradas
+     */
     public static List<ClienteDieta> findByDieta(int idDieta) {
         List<ClienteDieta> lista = new ArrayList<>();
 
@@ -107,6 +140,13 @@ public class ClienteDietaDAO {
         return lista;
     }
 
+    /**
+     * Busca asignaciones de clientes para una dieta específica (versión completa)
+     * Incluye información detallada del cliente y la dieta
+     * 
+     * @param idDieta ID de la dieta a buscar
+     * @return Lista de objetos ClienteDieta con las asignaciones encontradas y datos completos
+     */
     public static List<ClienteDieta> findByDietaEager(int idDieta) {
         List<ClienteDieta> lista = new ArrayList<>();
 
@@ -125,6 +165,12 @@ public class ClienteDietaDAO {
         return lista;
     }
 
+    /**
+     * Elimina una asignación de dieta a cliente de la base de datos
+     * 
+     * @param idCliente ID del cliente
+     * @param idDieta ID de la dieta
+     */
     public static void delete(int idCliente, int idDieta) {
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_DELETE)) {
@@ -137,6 +183,14 @@ public class ClienteDietaDAO {
         }
     }
 
+    /**
+     * Mapea un ResultSet a un objeto ClienteDieta con referencias básicas
+     * Solo incluye los IDs de cliente y dieta
+     * 
+     * @param rs ResultSet con los datos a mapear
+     * @return Objeto ClienteDieta con datos básicos
+     * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
+     */
     private static ClienteDieta mapearClienteDieta(ResultSet rs) throws SQLException {
         ClienteDieta cd = new ClienteDieta();
 
@@ -154,6 +208,13 @@ public class ClienteDietaDAO {
         return cd;
     }
 
+    /**
+     * Mapea un ResultSet a un objeto ClienteDieta incluyendo los objetos Cliente y Dieta completos
+     * 
+     * @param rs ResultSet con los datos a mapear
+     * @return Objeto ClienteDieta con todos los datos relacionados
+     * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
+     */
     private static ClienteDieta mapearClienteDietaEager(ResultSet rs) throws SQLException {
         ClienteDieta cd = new ClienteDieta();
 

@@ -25,9 +25,11 @@ public class RevisionDAO {
     private static final String SQL_GET_BY_ID =
             "SELECT * FROM Revision WHERE idRevision = ?";
 
+    /** Consulta SQL para buscar revisiones por empleado */
     private static final String SQL_GET_BY_EMPLEADO =
             "SELECT * FROM Revision WHERE idEmpleado = ?";
 
+    /** Consulta SQL para buscar revisiones por cliente */
     private static final String SQL_GET_BY_CLIENTE =
             "SELECT * FROM Revision WHERE idCliente = ?";
 
@@ -44,6 +46,13 @@ public class RevisionDAO {
             "DELETE FROM Revision WHERE idRevision = ?";
 
 
+    /**
+     * Mapea un ResultSet a un objeto Revision
+     * 
+     * @param rs ResultSet con los datos a mapear
+     * @return Objeto Revision con todos los datos
+     * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
+     */
     private static Revision mapearRevision(ResultSet rs) throws SQLException {
         Revision revision = new Revision();
         revision.setIdRevision(rs.getInt("idRevision"));
@@ -73,8 +82,12 @@ public class RevisionDAO {
 
         return revision;
     }
+    /**
+     * Obtiene todas las revisiones de la base de datos
+     * 
+     * @return Lista con todas las revisiones
+     */
     public static List<Revision> getAll() {
-
         List<Revision> revisiones = new ArrayList<>();
         Connection con = ConnectionDB.getConnection();
 
@@ -91,6 +104,12 @@ public class RevisionDAO {
         return revisiones;
     }
 
+    /**
+     * Busca una revisión por su ID
+     * 
+     * @param idRevision ID de la revisión a buscar
+     * @return Objeto Revision si se encuentra, null en caso contrario
+     */
     public static Revision getById(int idRevision) {
         Revision revision = null;
 
@@ -109,6 +128,12 @@ public class RevisionDAO {
         return revision;
     }
 
+    /**
+     * Obtiene todas las revisiones realizadas por un empleado específico
+     * 
+     * @param idEmpleado ID del empleado creador
+     * @return Lista de revisiones realizadas por el empleado
+     */
     public static List<Revision> getByCreator(int idEmpleado) {
         List<Revision> revisiones = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
@@ -127,6 +152,12 @@ public class RevisionDAO {
         return revisiones;
     }
 
+    /**
+     * Obtiene todas las revisiones de un cliente específico
+     * 
+     * @param idCliente ID del cliente
+     * @return Lista de revisiones del cliente
+     */
     public static List<Revision> getByClient(int idCliente) {
         List<Revision> revisiones = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
@@ -145,6 +176,12 @@ public class RevisionDAO {
         return revisiones;
     }
 
+    /**
+     * Inserta una nueva revisión en la base de datos
+     * 
+     * @param revision Objeto Revision con los datos a insertar
+     * @return El objeto Revision insertado, o null si hubo un error
+     */
     public static Revision insertRevision(Revision revision) {
         if (revision != null) {
 
@@ -175,6 +212,11 @@ public class RevisionDAO {
         return revision;
     }
 
+    /**
+     * Actualiza los datos de una revisión existente en la base de datos
+     * 
+     * @param revision Objeto Revision con los datos actualizados
+     */
     public static void updateRevision(Revision revision) {
         if (revision != null && getById(revision.getIdRevision())!=null) {
             try (Connection conn = ConnectionDB.getConnection();
@@ -201,6 +243,12 @@ public class RevisionDAO {
         }
     }
 
+    /**
+     * Elimina una revisión de la base de datos
+     * 
+     * @param revision Objeto Revision a eliminar
+     * @return true si se eliminó correctamente, false en caso contrario
+     */
     public static boolean deleteRevision(Revision revision) {
         boolean deleted = false;
         if (revision != null && getById(revision.getIdRevision())!=null) {

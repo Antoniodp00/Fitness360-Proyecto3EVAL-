@@ -156,6 +156,13 @@ public class DietaDAO {
         return dieta;
     }
 
+    /**
+     * Obtiene todas las dietas creadas por un empleado específico
+     *
+     * @param idEmpleado ID del empleado creador de las dietas
+     * @return Lista de dietas creadas por el empleado especificado
+     * @throws RuntimeException Si ocurre un error al acceder a la base de datos
+     */
     public static List<Dieta> getByCreator(int idEmpleado) {
         List<Dieta> dietas = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
@@ -205,6 +212,12 @@ public class DietaDAO {
         return dieta;
     }
 
+    /**
+     * Actualiza los datos de una dieta existente en la base de datos
+     *
+     * @param dieta Objeto Dieta con los nuevos datos a actualizar
+     * @throws RuntimeException Si ocurre un error al acceder a la base de datos
+     */
     public static void updateDieta(Dieta dieta) {
         if (dieta != null && getById(dieta.getIdDieta())!=null) {
             try (Connection conn = ConnectionDB.getConnection();
@@ -224,6 +237,13 @@ public class DietaDAO {
         }
     }
 
+    /**
+     * Elimina una dieta de la base de datos
+     *
+     * @param dieta Objeto Dieta a eliminar
+     * @return true si la dieta fue eliminada correctamente, false en caso contrario
+     * @throws RuntimeException Si ocurre un error al acceder a la base de datos
+     */
     public static boolean deleteDieta(Dieta dieta) {
         boolean deleted = false;
         if (dieta != null && getById(dieta.getIdDieta())!=null) {

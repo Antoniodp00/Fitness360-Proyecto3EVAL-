@@ -22,6 +22,7 @@ public class TarifaDAO {
     private static final String SQL_GET_BY_ID =
             "SELECT * FROM Tarifa WHERE idTarifa = ?";
 
+    /** Consulta SQL para obtener tarifas creadas por un empleado específico */
     private static final String SQL_GET_BY_CREATOR =
             "SELECT * FROM Tarifa WHERE idEmpleado = ?";
 
@@ -38,6 +39,13 @@ public class TarifaDAO {
             "DELETE FROM Tarifa WHERE idTarifa = ?";
 
 
+    /**
+     * Método auxiliar para mapear un ResultSet a un objeto Tarifa
+     *
+     * @param rs ResultSet con los datos de la tarifa
+     * @return Objeto Tarifa con los datos mapeados
+     * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
+     */
     private static Tarifa mapearTarifa(ResultSet rs) throws SQLException {
         Tarifa tarifa = new Tarifa();
         tarifa.setIdTarifa(rs.getInt("idTarifa"));
@@ -59,6 +67,12 @@ public class TarifaDAO {
         return tarifa;
     }
 
+    /**
+     * Obtiene todas las tarifas de la base de datos
+     *
+     * @return Lista de todas las tarifas
+     * @throws RuntimeException Si ocurre un error al acceder a la base de datos
+     */
     public static List<Tarifa> getAll() {
 
         List<Tarifa> tarifas = new ArrayList<>();
@@ -77,6 +91,13 @@ public class TarifaDAO {
         return tarifas;
     }
 
+    /**
+     * Busca una tarifa por su ID
+     *
+     * @param idTarifa ID de la tarifa a buscar
+     * @return Objeto Tarifa si se encuentra, null en caso contrario
+     * @throws RuntimeException Si ocurre un error al acceder a la base de datos
+     */
     public static Tarifa getById(int idTarifa) {
         Tarifa tarifa = null;
 
@@ -95,6 +116,13 @@ public class TarifaDAO {
         return tarifa;
     }
 
+    /**
+     * Obtiene todas las tarifas creadas por un empleado específico
+     *
+     * @param idEmpleado ID del empleado creador de las tarifas
+     * @return Lista de tarifas creadas por el empleado especificado
+     * @throws RuntimeException Si ocurre un error al acceder a la base de datos
+     */
     public static List<Tarifa> getByCreator(int idEmpleado) {
         List<Tarifa> tarifas = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
@@ -113,6 +141,13 @@ public class TarifaDAO {
         return tarifas;
     }
 
+    /**
+     * Inserta una nueva tarifa en la base de datos
+     *
+     * @param tarifa Objeto Tarifa con los datos de la tarifa a insertar
+     * @return El objeto Tarifa insertado con su ID generado
+     * @throws RuntimeException Si ocurre un error al acceder a la base de datos
+     */
     public static Tarifa insertTarifa(Tarifa tarifa) {
         if (tarifa != null) {
 
@@ -138,6 +173,12 @@ public class TarifaDAO {
         return tarifa;
     }
 
+    /**
+     * Actualiza los datos de una tarifa existente en la base de datos
+     *
+     * @param tarifa Objeto Tarifa con los nuevos datos a actualizar
+     * @throws RuntimeException Si ocurre un error al acceder a la base de datos
+     */
     public static void updateTarifa(Tarifa tarifa) {
         if (tarifa != null && getById(tarifa.getIdTarifa())!=null) {
             try (Connection conn = ConnectionDB.getConnection();
@@ -158,6 +199,13 @@ public class TarifaDAO {
         }
     }
 
+    /**
+     * Elimina una tarifa de la base de datos
+     *
+     * @param tarifa Objeto Tarifa a eliminar
+     * @return true si la tarifa fue eliminada correctamente, false en caso contrario
+     * @throws RuntimeException Si ocurre un error al acceder a la base de datos
+     */
     public static boolean deleteTarifa(Tarifa tarifa) {
         boolean deleted = false;
         if (tarifa != null && getById(tarifa.getIdTarifa())!=null) {

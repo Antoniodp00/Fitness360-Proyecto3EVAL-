@@ -7,10 +7,18 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Clase DAO (Data Access Object) para gestionar las operaciones CRUD (Create, Read, Update, Delete)
+ * relacionadas con la asignación de tarifas a clientes en la base de datos.
+ * Proporciona métodos para insertar, buscar y eliminar asignaciones de tarifas a clientes.
+ */
 public class ClienteTarifaDAO {
 
+    /** Consulta SQL para insertar una nueva asignación de tarifa a cliente */
     private static final String SQL_INSERT =
             "INSERT INTO ClienteTarifa (idCliente, idTarifa, estado, fechaContratacion, fechaRenovacion, fechaFin) VALUES (?, ?, ?, ?, ?, ?)";
+
+    /** Consulta SQL para buscar asignaciones de tarifas por cliente */
     private static final String SQL_FIND_BY_CLIENTE =
             "SELECT ct.*, " +
                     "c.*, " +
@@ -20,6 +28,7 @@ public class ClienteTarifaDAO {
                     "JOIN Tarifa t ON ct.idTarifa = t.idTarifa " +
                     "WHERE ct.idCliente = ?";
 
+    /** Consulta SQL para buscar asignaciones de clientes por tarifa */
     private static final String SQL_FIND_BY_TARIFA =
             "SELECT ct.*, " +
                     "c.*, " +
@@ -29,9 +38,15 @@ public class ClienteTarifaDAO {
                     "JOIN Tarifa t ON ct.idTarifa = t.idTarifa " +
                     "WHERE ct.idTarifa = ?";
 
+    /** Consulta SQL para eliminar una asignación de tarifa a cliente */
     private static final String SQL_DELETE =
             "DELETE FROM ClienteTarifa WHERE idCliente = ? AND idTarifa = ?";
 
+    /**
+     * Inserta una nueva asignación de tarifa a cliente en la base de datos
+     * 
+     * @param ct Objeto ClienteTarifa con los datos a insertar
+     */
     public static void insert(ClienteTarifa ct) {
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_INSERT)) {
@@ -49,6 +64,12 @@ public class ClienteTarifaDAO {
         }
     }
 
+    /**
+     * Busca todas las asignaciones de tarifas para un cliente específico
+     * 
+     * @param idCliente ID del cliente a buscar
+     * @return Lista de objetos ClienteTarifa con las asignaciones encontradas
+     */
     public static List<ClienteTarifa> findByCliente(int idCliente) {
         List<ClienteTarifa> lista = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
@@ -64,6 +85,12 @@ public class ClienteTarifaDAO {
         return lista;
     }
 
+    /**
+     * Busca todas las asignaciones de clientes para una tarifa específica
+     * 
+     * @param idTarifa ID de la tarifa a buscar
+     * @return Lista de objetos ClienteTarifa con las asignaciones encontradas
+     */
     public static List<ClienteTarifa> findByTarifa(int idTarifa) {
         List<ClienteTarifa> lista = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
@@ -79,6 +106,12 @@ public class ClienteTarifaDAO {
         return lista;
     }
 
+    /**
+     * Elimina una asignación de tarifa a cliente de la base de datos
+     * 
+     * @param idCliente ID del cliente
+     * @param idTarifa ID de la tarifa
+     */
     public static void delete(int idCliente, int idTarifa) {
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_DELETE)) {
@@ -90,6 +123,13 @@ public class ClienteTarifaDAO {
         }
     }
 
+    /**
+     * Mapea un ResultSet a un objeto ClienteTarifa incluyendo los objetos Cliente y Tarifa relacionados
+     * 
+     * @param rs ResultSet con los datos a mapear
+     * @return Objeto ClienteTarifa con todos los datos
+     * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
+     */
     private static ClienteTarifa mapearClienteTarifaEager(ResultSet rs) throws SQLException {
         ClienteTarifa ct = new ClienteTarifa();
 

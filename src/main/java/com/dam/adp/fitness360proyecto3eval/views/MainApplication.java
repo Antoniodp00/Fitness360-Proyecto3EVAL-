@@ -16,15 +16,15 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        // Load the FXML file from the resources
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/hello-view.fxml"));
+        // Load the login FXML file from the resources
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/login-view.fxml"));
         Parent root = fxmlLoader.load();
-        
+
         // Create a scene with the loaded FXML
-        Scene scene = new Scene(root, 600, 400);
-        
+        Scene scene = new Scene(root, 400, 500);
+
         // Set the stage properties
-        stage.setTitle("Fitness360");
+        stage.setTitle("Fitness360 - Login");
         stage.setScene(scene);
         stage.show();
     }

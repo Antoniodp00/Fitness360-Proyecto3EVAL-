@@ -95,6 +95,34 @@ public class Usuario {
     }
 
     /**
+     * Constructor completo para crear un usuario con todos los atributos.
+     *
+     * @param nombreUsuario Nombre de usuario para acceso al sistema
+     * @param nombre Nombre real del usuario
+     * @param apellidos Apellidos del usuario
+     * @param correo Correo electrónico del usuario
+     * @param password Contraseña de acceso al sistema
+     * @param telefono Número de teléfono del usuario
+     * @param fechaNacimiento Fecha de nacimiento del usuario
+     * @param sexo Sexo o género del usuario
+     * @param estado Estado del usuario en el sistema
+
+     */
+    public Usuario(String nombreUsuario, String nombre, String apellidos, String correo,
+                   String password, String telefono, Date fechaNacimiento, Sexo sexo, Estado estado
+                  ) {
+        this.nombreUsuario = nombreUsuario;
+        this.nombre = nombre;
+        this.apellidos = apellidos;
+        this.correo = correo;
+        this.password = password;
+        this.telefono = telefono;
+        this.fechaNacimiento = fechaNacimiento;
+        this.sexo = sexo;
+        this.estado = estado;
+    }
+
+    /**
      * Obtiene el identificador único del usuario.
      * 
      * @return El identificador del usuario

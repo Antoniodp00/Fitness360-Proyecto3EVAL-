@@ -317,7 +317,30 @@ UsuarioCliente cliente = UsuarioClienteDAO.findByIdEager(1);
         // Eliminar la asignación
         ClienteDietaDAO.delete(cliente.getId(), dieta.getIdDieta());
         System.out.println("Asignación eliminada correctamente.");
-   */ }
+   */
+/*
+        String nombreUsuario = "testUserFX";
+        String nombre = "TestFX";
+        String apellidos = "UsuarioFX";
+        String correo = "testFx@correo.com";
+        String password = "password123";
+        String telefono = "123456789";
+        Date fechaNacimiento = new Date(2000,01,07);  // Fecha actual
+        Sexo sexo = Sexo.M;  // Suponiendo que tienes un enum Sexo con MASCULINO, FEMENINO, etc.
+        Estado estado = Estado.ACTIVO;  // Suponiendo que tienes un enum Estado con ACTIVO, INACTIVO, etc.
+        double altura = 180.0;  // Altura en centímetros
 
 
+        // Crear el cliente
+        UsuarioCliente nuevoCliente = new UsuarioCliente(
+                nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, estado, altura
+        );
+
+        UsuarioCliente insertado = UsuarioClienteDAO.insertCliente(nuevoCliente);
+        if (insertado != null) {
+            System.out.println("Cliente insertado con éxito: " + insertado.getNombreUsuario());
+        } else {
+            System.out.println("Error al insertar el cliente.");
+        }*/
+    }
 }

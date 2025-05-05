@@ -226,7 +226,7 @@ public class UsuarioEmpleadoDAO {
                 pst.setString(2, empleado.getNombre());
                 pst.setString(3, empleado.getApellidos());
                 pst.setString(4, empleado.getCorreo());
-                pst.setString(5, empleado.getPassword());
+                pst.setString(5, com.dam.adp.fitness360proyecto3eval.utilidades.HashUtil.hashPassword(empleado.getPassword()));
                 pst.setString(6, empleado.getTelefono());
                 pst.setDate(7, empleado.getFechaNacimiento() != null ? new java.sql.Date(empleado.getFechaNacimiento().getTime()) : null);
                 pst.setString(8, empleado.getSexo() != null ? empleado.getSexo().name() : null);
@@ -285,7 +285,7 @@ public class UsuarioEmpleadoDAO {
             stmt.setString(2, empleado.getNombre());
             stmt.setString(3, empleado.getApellidos());
             stmt.setString(4, empleado.getCorreo());
-            stmt.setString(5, empleado.getPassword());
+            stmt.setString(5, com.dam.adp.fitness360proyecto3eval.utilidades.HashUtil.hashPassword(empleado.getPassword()));
             stmt.setString(6, empleado.getTelefono());
             stmt.setDate(7, empleado.getFechaNacimiento() != null ? new java.sql.Date(empleado.getFechaNacimiento().getTime()) : null);
             stmt.setString(8, empleado.getSexo() != null ? empleado.getSexo().name() : null);

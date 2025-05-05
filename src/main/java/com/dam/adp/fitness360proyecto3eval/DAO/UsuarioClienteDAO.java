@@ -190,7 +190,7 @@ public class UsuarioClienteDAO {
                 pst.setString(2, cliente.getNombre());
                 pst.setString(3, cliente.getApellidos());
                 pst.setString(4, cliente.getCorreo());
-                pst.setString(5, cliente.getPassword());
+                pst.setString(5, com.dam.adp.fitness360proyecto3eval.utilidades.HashUtil.hashPassword(cliente.getPassword()));
                 pst.setString(6, cliente.getTelefono());
                 pst.setDate(7, cliente.getFechaNacimiento() != null ? new java.sql.Date(cliente.getFechaNacimiento().getTime()) : null);
                 pst.setString(8, cliente.getSexo() != null ? cliente.getSexo().name() : null);
@@ -247,7 +247,7 @@ public class UsuarioClienteDAO {
             stmt.setString(2, cliente.getNombre());
             stmt.setString(3, cliente.getApellidos());
             stmt.setString(4, cliente.getCorreo());
-            stmt.setString(5, cliente.getPassword());
+            stmt.setString(5, com.dam.adp.fitness360proyecto3eval.utilidades.HashUtil.hashPassword(cliente.getPassword()));
             stmt.setString(6, cliente.getTelefono());
             stmt.setDate(7, cliente.getFechaNacimiento() != null ? new java.sql.Date(cliente.getFechaNacimiento().getTime()) : null);
             stmt.setString(8, cliente.getSexo() != null ? cliente.getSexo().name() : null);

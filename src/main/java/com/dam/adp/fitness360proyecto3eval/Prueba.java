@@ -1,12 +1,9 @@
 package com.dam.adp.fitness360proyecto3eval;
 
-import com.dam.adp.fitness360proyecto3eval.DAO.DietaDAO;
-import com.dam.adp.fitness360proyecto3eval.DAO.RutinaDAO;
-import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioClienteDAO;
-import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioEmpleadoDAO;
+import com.dam.adp.fitness360proyecto3eval.DAO.*;
 import com.dam.adp.fitness360proyecto3eval.model.*;
-
-import java.util.Date;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 public class Prueba {
@@ -224,7 +221,7 @@ public class Prueba {
         Dieta dietaInsertada = DietaDAO.insertDieta(nuevaDieta);
         System.out.println("Dieta insertada: " + dietaInsertada);
 */
-
+/*
         // Buscar por nombre
         Dieta encontrada = DietaDAO.getByName("Dieta Test");
         System.out.println("Dieta encontrada por nombre: " + encontrada);
@@ -247,7 +244,7 @@ public class Prueba {
         if (encontrada != null) {
             boolean eliminada = DietaDAO.deleteDieta(encontrada);
             System.out.println("¿Dieta eliminada? " + eliminada);
-        }
+        }*/
 /*
 
                 // Crear un cliente ficticio con ID 1 (debes asegurarte de que exista en la base de datos)
@@ -293,5 +290,34 @@ public class Prueba {
                 } else {
                     System.out.println("No se encontró la rutina para actualizar o eliminar.");
                 }*/
+
+        // Crear dieta de prueba (id debe existir en la BD)
+        Dieta dieta = new Dieta();
+        dieta.setIdDieta(2); // Asegúrate de que la dieta con ID 2 exista
+UsuarioCliente cliente = UsuarioClienteDAO.findByIdEager(1);
+        // Crear relación ClienteDieta
+        ClienteDieta clienteDieta = new ClienteDieta();
+        clienteDieta.setCliente(cliente);
+        clienteDieta.setDieta(dieta);
+        clienteDieta.setFechaAsignacion(Date.valueOf(LocalDate.now()));
+        clienteDieta.setFechaFin(Date.valueOf(LocalDate.now().plusDays(30)));
+
+        // Insertar
+        ClienteDietaDAO.insert(clienteDieta);
+        System.out.println("Asignación insertada correctamente.");
+
+        // Listar dietas de un cliente
+        List<ClienteDieta> lista = ClienteDietaDAO.findByClientEager(cliente.getId());
+        for (ClienteDieta cd : lista) {
+            System.out.println("Dieta: " + cd.getDieta().getNombre() +
+                    ", Fecha asignación: " + cd.getFechaAsignacion() +
+                    ", Fecha fin: " + cd.getFechaFin());
+        }
+
+        // Eliminar la asignación
+        ClienteDietaDAO.delete(cliente.getId(), dieta.getIdDieta());
+        System.out.println("Asignación eliminada correctamente.");
     }
+
+
 }

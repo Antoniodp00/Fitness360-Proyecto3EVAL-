@@ -1,5 +1,6 @@
 package com.dam.adp.fitness360proyecto3eval.model;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -14,12 +15,12 @@ public class ClienteTarifa {
     private UsuarioCliente cliente;
     private Tarifa tarifa;
     private EstadoTarifa estado;
-    private LocalDate fechaContratacion;
-    private LocalDate fechaRenovacion;
-    private LocalDate fechaFin;
+    private Date fechaContratacion;
+    private Date fechaRenovacion;
+    private Date fechaFin;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Date createdAt;
+    private Date updatedAt;
 
     /**
      * Constructor por defecto sin parámetros.
@@ -40,7 +41,7 @@ public class ClienteTarifa {
      * @param createdAt Fecha y hora de creación del registro
      * @param updatedAt Fecha y hora de última actualización del registro
      */
-    public ClienteTarifa(UsuarioCliente cliente, Tarifa tarifa, EstadoTarifa estado, LocalDate fechaContratacion, LocalDate fechaRenovacion, LocalDate fechaFin, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public ClienteTarifa(UsuarioCliente cliente, Tarifa tarifa, EstadoTarifa estado, Date fechaContratacion, Date fechaRenovacion, Date fechaFin, Date createdAt, Date updatedAt) {
         this.cliente = cliente;
         this.tarifa = tarifa;
         this.estado = estado;
@@ -61,7 +62,7 @@ public class ClienteTarifa {
      * @param fechaRenovacion Fecha en que se renueva la tarifa
      * @param fechaFin Fecha en que finaliza la contratación de la tarifa
      */
-    public ClienteTarifa(UsuarioCliente cliente, Tarifa tarifa, EstadoTarifa estado, LocalDate fechaContratacion, LocalDate fechaRenovacion, LocalDate fechaFin) {
+    public ClienteTarifa(UsuarioCliente cliente, Tarifa tarifa, EstadoTarifa estado, Date fechaContratacion, Date fechaRenovacion, Date fechaFin) {
         this.cliente = cliente;
         this.tarifa = tarifa;
         this.estado = estado;
@@ -131,7 +132,7 @@ public class ClienteTarifa {
      * 
      * @return La fecha en que se contrató la tarifa
      */
-    public LocalDate getFechaContratacion() {
+    public Date getFechaContratacion() {
         return fechaContratacion;
     }
 
@@ -140,7 +141,7 @@ public class ClienteTarifa {
      * 
      * @param fechaContratacion La nueva fecha de contratación
      */
-    public void setFechaContratacion(LocalDate fechaContratacion) {
+    public void setFechaContratacion(Date fechaContratacion) {
         this.fechaContratacion = fechaContratacion;
     }
 
@@ -149,7 +150,7 @@ public class ClienteTarifa {
      * 
      * @return La fecha en que se renovó o renovará la tarifa
      */
-    public LocalDate getFechaRenovacion() {
+    public Date getFechaRenovacion() {
         return fechaRenovacion;
     }
 
@@ -158,7 +159,7 @@ public class ClienteTarifa {
      * 
      * @param fechaRenovacion La nueva fecha de renovación
      */
-    public void setFechaRenovacion(LocalDate fechaRenovacion) {
+    public void setFechaRenovacion(Date fechaRenovacion) {
         this.fechaRenovacion = fechaRenovacion;
     }
 
@@ -167,7 +168,7 @@ public class ClienteTarifa {
      * 
      * @return La fecha en que finaliza o finalizará la contratación de la tarifa
      */
-    public LocalDate getFechaFin() {
+    public Date getFechaFin() {
         return fechaFin;
     }
 
@@ -176,7 +177,7 @@ public class ClienteTarifa {
      * 
      * @param fechaFin La nueva fecha de finalización
      */
-    public void setFechaFin(LocalDate fechaFin) {
+    public void setFechaFin(Date fechaFin) {
         this.fechaFin = fechaFin;
     }
 
@@ -185,7 +186,7 @@ public class ClienteTarifa {
      * 
      * @return La fecha y hora en que se creó el registro
      */
-    public LocalDateTime getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
@@ -194,7 +195,7 @@ public class ClienteTarifa {
      * 
      * @param createdAt La nueva fecha y hora de creación
      */
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -203,7 +204,7 @@ public class ClienteTarifa {
      * 
      * @return La fecha y hora en que se actualizó por última vez el registro
      */
-    public LocalDateTime getUpdatedAt() {
+    public Date getUpdatedAt() {
         return updatedAt;
     }
 
@@ -212,7 +213,7 @@ public class ClienteTarifa {
      * 
      * @param updatedAt La nueva fecha y hora de última actualización
      */
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
 

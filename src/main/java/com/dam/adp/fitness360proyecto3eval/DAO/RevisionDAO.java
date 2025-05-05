@@ -28,6 +28,9 @@ public class RevisionDAO {
     private static final String SQL_GET_BY_EMPLEADO =
             "SELECT * FROM Revision WHERE idEmpleado = ?";
 
+    private static final String SQL_GET_BY_CLIENTE =
+            "SELECT * FROM Revision WHERE idCliente = ?";
+
     /** Consulta SQL para obtener todas las revisiones */
     private static final String SQL_GET_ALL =
             "SELECT * FROM Revision";
@@ -124,7 +127,25 @@ public class RevisionDAO {
         return revisiones;
     }
 
-    public static Revision insertTarifa(Revision revision) {
+    public static List<Revision> getByClient(int idCliente) {
+        List<Revision> revisiones = new ArrayList<>();
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQL_GET_BY_CLIENTE)) {
+
+            stmt.setInt(1, idCliente);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    revisiones.add(mapearRevision(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return revisiones;
+    }
+
+    public static Revision insertRevision(Revision revision) {
         if (revision != null) {
 
             try (PreparedStatement stmt = ConnectionDB.getConnection().prepareStatement(SQL_INSERT)) {
@@ -154,7 +175,7 @@ public class RevisionDAO {
         return revision;
     }
 
-    public static void updateTarifa(Revision revision) {
+    public static void updateRevision(Revision revision) {
         if (revision != null && getById(revision.getIdRevision())!=null) {
             try (Connection conn = ConnectionDB.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {
@@ -180,7 +201,7 @@ public class RevisionDAO {
         }
     }
 
-    public static boolean deleteTarifa(Revision revision) {
+    public static boolean deleteRevision(Revision revision) {
         boolean deleted = false;
         if (revision != null && getById(revision.getIdRevision())!=null) {
             try(PreparedStatement pst= ConnectionDB.getConnection().prepareStatement(SQL_DELETE)){

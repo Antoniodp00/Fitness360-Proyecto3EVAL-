@@ -290,7 +290,7 @@ public class Prueba {
                 } else {
                     System.out.println("No se encontró la rutina para actualizar o eliminar.");
                 }*/
-
+/*
         // Crear dieta de prueba (id debe existir en la BD)
         Dieta dieta = new Dieta();
         dieta.setIdDieta(2); // Asegúrate de que la dieta con ID 2 exista
@@ -317,7 +317,7 @@ UsuarioCliente cliente = UsuarioClienteDAO.findByIdEager(1);
         // Eliminar la asignación
         ClienteDietaDAO.delete(cliente.getId(), dieta.getIdDieta());
         System.out.println("Asignación eliminada correctamente.");
-    }
+   */ }
 
 
 }

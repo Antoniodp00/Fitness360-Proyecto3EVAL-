@@ -1,4 +1,4 @@
-package com.dam.adp.fitness360proyecto3eval.controllers;
+package com.dam.adp.fitness360proyecto3eval.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

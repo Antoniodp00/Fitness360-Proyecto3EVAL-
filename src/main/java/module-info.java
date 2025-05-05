@@ -6,7 +6,11 @@ module com.dam.adp.fitness360proyecto3eval {
     requires jbcrypt;
 
     opens com.dam.adp.fitness360proyecto3eval.baseDatos to java.xml.bind;
-    opens com.dam.adp.fitness360proyecto3eval.controllers to javafx.fxml;
-    exports com.dam.adp.fitness360proyecto3eval.controllers;
+    opens com.dam.adp.fitness360proyecto3eval.controller to javafx.fxml;
+
+    exports com.dam.adp.fitness360proyecto3eval.controller;
     exports com.dam.adp.fitness360proyecto3eval.views;
+    exports com.dam.adp.fitness360proyecto3eval.model;
+    exports com.dam.adp.fitness360proyecto3eval.DAO;
+    exports com.dam.adp.fitness360proyecto3eval.utilidades;
 }

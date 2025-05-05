@@ -21,18 +21,18 @@
 ## 🧱 Sprint 2: 28 de abril al 4 de mayo
 **Objetivo:** Crear DAOs e implementar CRUD básico
 
-- [ ] DAO para `Cliente`, `Empleado`
-- [ ] DAO para `Dieta`, `Rutina`, `Tarifa`, `Revisión`
-- [ ] DAO para tablas intermedias (`Cliente_Dieta`, etc.)
-- [ ] CRUD en consola para probar inserción, lectura, modificación y eliminación
+- [x]  DAO para `Cliente`, `Empleado`
+- [x]  DAO para `Dieta`, `Rutina`, `Tarifa`, `Revisión`
+- [x]  DAO para tablas intermedias (`Cliente_Dieta`, etc.)
+- [x]  CRUD en consola para probar inserción, lectura, modificación y eliminación
 
 ---
 
 ## 🎨 Sprint 3: 5 al 10 de mayo
 **Objetivo:** Integrar JavaFX y crear las primeras interfaces
 
-- [ ] Crear estructura de carpetas para `FXML`, `css`, etc.
-- [ ] Ventana de Login + validación con hash de contraseña
+- [x]  Crear estructura de carpetas para `FXML`, `css`, etc.
+- [x]  Ventana de Login + validación con hash de contraseña
 - [ ] Registro de nuevo usuario con selección de tipo (cliente o profesional)
 - [ ] Ventana principal según el tipo de usuario
 - [ ] Carga de datos desde la BD con JavaFX (por ejemplo, tabla de rutinas asignadas)

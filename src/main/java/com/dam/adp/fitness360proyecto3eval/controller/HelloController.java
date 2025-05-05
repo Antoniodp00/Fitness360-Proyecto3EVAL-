@@ -8,7 +8,7 @@ public class HelloController {
     private Label welcomeText;
 
     @FXML
-    protected void onHelloButtonClick() {
+    protected void alHacerClicEnSaludo() {
         welcomeText.setText("Welcome to Fitness360!");
     }
 }

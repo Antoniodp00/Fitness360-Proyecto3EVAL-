@@ -13,6 +13,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -28,7 +29,7 @@ public class LoginController {
     @FXML
     public PasswordField passwordField;
     @FXML
-    public Label errorMessage;
+    private Label errorMessage;
     @FXML
     private TextField usernameField;
 
@@ -38,7 +39,7 @@ public class LoginController {
      * 
      * @param actionEvent El evento de acción que desencadenó este método
      */
-    public void onLoginButtonClick(ActionEvent actionEvent) {
+    public void alHacerClicEnIniciarSesion(ActionEvent actionEvent) {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
@@ -68,6 +69,10 @@ public class LoginController {
 
         // Si llegamos aquí, la autenticación falló
         mostrarError("Nombre de usuario o contraseña incorrectos");
+    }
+
+    public void alHacerClicEnRegistrarse(ActionEvent actionEvent) {
+        navegarAPantallaRegistro(actionEvent);
     }
 
     /**
@@ -126,4 +131,22 @@ public class LoginController {
             e.printStackTrace();
         }
     }
+
+   private void navegarAPantallaRegistro(ActionEvent event){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/registro-view.fxml"));
+            Parent root = loader.load();
+
+            RegistroController controller = loader.getController();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setTitle("Fitness360 - Registro");
+            stage.setScene(scene);
+            stage.show();
+        }catch (IOException e){
+            mostrarError("Error al cargar la pantalla registro: " + e.getMessage());
+            e.printStackTrace();
+        }
+   }
 }

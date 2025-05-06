@@ -14,27 +14,46 @@ import java.util.List;
  */
 public class UsuarioClienteDAO {
 
-    /** Consulta SQL para obtener todos los clientes */
+    /**
+     * Consulta SQL para obtener todos los clientes
+     */
     private final static String SQL_ALL = "SELECT * FROM Cliente";
 
-    /** Consulta SQL para buscar un cliente por su ID */
+    /**
+     * Consulta SQL para buscar un cliente por su ID
+     */
     private final static String SQL_FIND_BY_ID = "SELECT * FROM Cliente WHERE idCliente= ?";
 
-    /** Consulta SQL para buscar un cliente por su nombre de usuario */
+    /**
+     * Consulta SQL para buscar un cliente por su nombre de usuario
+     */
     private final static String SQL_FIND_BY_NAME_USER = "SELECT * FROM Cliente WHERE nombreUsuario = ?";
 
-    /** Consulta SQL para insertar un nuevo cliente */
-    private final static String SQL_INSERT ="INSERT INTO Cliente (nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, altura, estado, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    /**
+     * Consulta SQL para insertar un nuevo cliente
+     */
+    private final static String SQL_INSERT = "INSERT INTO Cliente (nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, altura, estado, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    /** Consulta SQL para desactivar un cliente */
+    /**
+     * Consulta SQL para desactivar un cliente
+     */
     private final static String SQL_DISABLE = "UPDATE Cliente SET estado = ?, updatedAt = ? WHERE idCliente = ?";
 
-    /** Consulta SQL para actualizar los datos de un cliente */
+    /**
+     * Consulta SQL para actualizar los datos de un cliente
+     */
     private static final String SQL_UPDATE = "UPDATE Cliente SET nombreUsuario = ?, nombre = ?, apellidos = ?, correo = ?, password = ?, telefono = ?, fechaNacimiento = ?, sexo = ?, altura = ?, estado = ?, updatedAt = ? WHERE idCliente = ?";
+
+
+    private static final String SQL_GET_CLIENTES_POR_TARIFA = "SELECT c.* " +
+            "FROM Cliente c " +
+            "JOIN ClienteTarifa ct ON c.idCliente = ct.idCliente " +
+            "JOIN Tarifa t ON ct.idTarifa = t.idTarifa " +
+            "WHERE t.idEmpleado = ? AND ct.estado = 'ACTIVA'";
 
     /**
      * Método auxiliar para mapear un ResultSet a un objeto UsuarioCliente
-     * 
+     *
      * @param rs ResultSet con los datos del cliente
      * @return Objeto UsuarioCliente con los datos mapeados
      * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
@@ -67,7 +86,7 @@ public class UsuarioClienteDAO {
 
     /**
      * Obtiene todos los clientes de la base de datos
-     * 
+     *
      * @return Lista de todos los clientes
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
@@ -91,7 +110,7 @@ public class UsuarioClienteDAO {
 
     /**
      * Busca un cliente por su ID
-     * 
+     *
      * @param idCliente ID del cliente a buscar
      * @return Objeto UsuarioCliente si se encuentra, null en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
@@ -118,7 +137,7 @@ public class UsuarioClienteDAO {
 
     /**
      * Busca un cliente por su ID y carga sus rutinas asignadas (carga ansiosa/eager loading)
-     * 
+     *
      * @param idCliente ID del cliente a buscar
      * @return Objeto UsuarioCliente con sus rutinas asignadas si se encuentra, null en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
@@ -151,7 +170,7 @@ public class UsuarioClienteDAO {
 
     /**
      * Busca un cliente por su nombre de usuario
-     * 
+     *
      * @param nombreUsuario Nombre de usuario del cliente a buscar
      * @return Objeto UsuarioCliente si se encuentra, null en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
@@ -176,7 +195,7 @@ public class UsuarioClienteDAO {
 
     /**
      * Inserta un nuevo cliente en la base de datos
-     * 
+     *
      * @param cliente Objeto UsuarioCliente con los datos del cliente a insertar
      * @return El objeto UsuarioCliente insertado si la operación fue exitosa, null si el cliente ya existe o es nulo
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
@@ -210,7 +229,7 @@ public class UsuarioClienteDAO {
 
     /**
      * Desactiva un cliente en la base de datos cambiando su estado a INACTIVO
-     * 
+     *
      * @param id ID del cliente a desactivar
      * @return true si el cliente fue desactivado correctamente, false si el cliente no existe o hubo un error
      */
@@ -234,7 +253,7 @@ public class UsuarioClienteDAO {
 
     /**
      * Actualiza los datos de un cliente en la base de datos
-     * 
+     *
      * @param cliente Objeto UsuarioCliente con los datos actualizados
      * @return true si la actualización fue exitosa, false en caso contrario
      */
@@ -262,6 +281,28 @@ public class UsuarioClienteDAO {
             throw new RuntimeException(e);
         }
         return actualizado;
+    }
+
+    public static List<UsuarioCliente> findClientesByEmpleadoTarifa(int idEmpleado) {
+        List<UsuarioCliente> clientes = new ArrayList<>();
+
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQL_GET_CLIENTES_POR_TARIFA)) {
+
+            stmt.setInt(1, idEmpleado);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    UsuarioCliente cliente = mapearCliente(rs);
+                    clientes.add(cliente);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return clientes;
     }
 
 

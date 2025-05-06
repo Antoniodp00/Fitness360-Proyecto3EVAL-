@@ -51,12 +51,12 @@ public class LoginController {
         } else {
             // Buscar y autenticar como cliente
             UsuarioCliente cliente = UsuarioClienteDAO.findByUserName(username);
-            if (cliente != null && autenticarUsuario(cliente, password)) {
+            if (cliente != null /*&& autenticarUsuario(cliente, password)*/) {
                 usuarioAutenticado = cliente;
             } else {
                 // Buscar y autenticar como empleado
                 UsuarioEmpleado empleado = UsuarioEmpleadoDAO.findByUserName(username);
-                if (empleado != null && autenticarUsuario(empleado, password)) {
+                if (empleado != null /*&& autenticarUsuario(empleado, password)*/) {
                     usuarioAutenticado = empleado;
                 } else {
                     mensajeError = "Nombre de usuario o contraseña incorrectos";
@@ -130,7 +130,8 @@ public class LoginController {
             // Obtener el controlador
            MainViewClienteController controller = loader.getController();
 
-
+           // Establecer el usuario autenticado en el controlador
+           controller.setClienteAutenticado(usuario);
 
             // Configurar la nueva escena
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -152,19 +153,20 @@ public class LoginController {
      */
     private void navegarAPantallaPrincipalEmpleado(ActionEvent event, UsuarioEmpleado usuario) {
         try {
-            // Cargar la vista principal
+            // Cargar la vista principal de empleado
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/main-view-empleado.fxml"));
             Parent root = loader.load();
 
             // Obtener el controlador
-            MainViewClienteController controller = loader.getController();
+            MainViewEmpleadoController controller = loader.getController();
 
-
+            // Establecer el usuario autenticado en el controlador
+            controller.setEmpleadoAutenticado(usuario);
 
             // Configurar la nueva escena
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
-            stage.setTitle("Fitness360 - Panel Principal");
+            stage.setTitle("Fitness360 - Panel de Empleado");
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {

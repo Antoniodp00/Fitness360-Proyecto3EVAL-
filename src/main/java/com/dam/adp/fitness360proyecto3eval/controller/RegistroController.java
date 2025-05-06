@@ -135,16 +135,20 @@ public class RegistroController {
         }
 
         try {
+            boolean registroExitoso = false;
+
             // Registrar según el tipo de usuario
             if (clienteRadio.isSelected()) {
-                registrarCliente();
+                registroExitoso = registrarCliente();
             } else {
-                registrarEmpleado();
+                registroExitoso = registrarEmpleado();
             }
 
-            // Mostrar mensaje de éxito y redirigir a login
-            mostrarAlerta("Registro exitoso", "Usuario registrado correctamente", Alert.AlertType.INFORMATION);
-            irALogin();
+            // Solo mostrar mensaje de éxito y redirigir si el registro fue exitoso
+            if (registroExitoso) {
+                mostrarAlerta("Registro exitoso", "Usuario registrado correctamente", Alert.AlertType.INFORMATION);
+                irALogin();
+            }
 
         } catch (Exception e) {
             errorMessage.setText("Error: " + e.getMessage());
@@ -193,13 +197,15 @@ public class RegistroController {
 
     /**
      * Registra un nuevo usuario cliente.
+     * @return true si el registro fue exitoso, false en caso contrario
      */
-    private void registrarCliente() {
+    private boolean registrarCliente() {
         double altura = 0;
         // Validar campo específico de cliente
         if (alturaField.getText().isEmpty()) {
             errorMessage.setText("Error: Debe ingresar la altura");
             errorMessage.setVisible(true);
+            return false;
         }
 
         try {
@@ -207,10 +213,12 @@ public class RegistroController {
             if (altura <= 0) {
                 errorMessage.setText("Error: La altura debe ser un número positivo");
                 errorMessage.setVisible(true);
+                return false;
             }
         } catch (NumberFormatException e) {
             errorMessage.setText("Error: La altura debe ser un número válido");
             errorMessage.setVisible(true);
+            return false;
         }
 
         // Crear objeto UsuarioCliente
@@ -229,18 +237,21 @@ public class RegistroController {
 
         // Guardar en la base de datos
         UsuarioClienteDAO.insertCliente(cliente);
+        return true;
     }
 
     /**
      * Registra un nuevo usuario empleado.
+     * @return true si el registro fue exitoso, false en caso contrario
      */
-    private void registrarEmpleado(){
+    private boolean registrarEmpleado(){
         // Validar campos específicos de empleado
         if (descripcionField.getText().isEmpty() || 
             rolField.getText().isEmpty() || 
             especialidadComboBox.getValue() == null) {
             errorMessage.setText("Error: Todos los campos son obligatorios");
             errorMessage.setVisible(true);
+            return false;
         }
 
         // Crear objeto UsuarioEmpleado
@@ -263,6 +274,7 @@ public class RegistroController {
 
         // Guardar en la base de datos
         UsuarioEmpleadoDAO.insertEmpleado(empleado);
+        return true;
     }
 
     /**

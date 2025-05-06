@@ -1,5 +1,7 @@
 package com.dam.adp.fitness360proyecto3eval.controller;
 
+import com.dam.adp.fitness360proyecto3eval.model.UsuarioCliente;
+import com.dam.adp.fitness360proyecto3eval.model.UsuarioEmpleado;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
@@ -50,6 +52,18 @@ public class MainViewClienteController {
     public TableColumn colDescripcionTarifa;
     public TableColumn colAccionesTarifa;
 
+    private UsuarioCliente clienteAutenticado;
 
+    /**
+     * Establece el cliente autenticado y actualiza la interfaz
+     * @param cliente El cliente autenticado
+     */
+    public void setClienteAutenticado(UsuarioCliente cliente) {
+        this.clienteAutenticado = cliente;
+        if (cliente != null) {
+            labelUsuario.setText("Usuario: " + cliente.getNombreUsuario());
+            // Aquí se pueden cargar los datos específicos del cliente
+        }
+    }
 
 }

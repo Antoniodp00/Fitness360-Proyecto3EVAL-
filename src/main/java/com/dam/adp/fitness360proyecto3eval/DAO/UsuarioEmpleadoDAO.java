@@ -12,7 +12,7 @@ import java.util.List;
  * relacionadas con los usuarios empleados en la base de datos.
  * Proporciona métodos para obtener, buscar, insertar, actualizar y desactivar usuarios empleados.
  */
-public class UsuarioEmpleadoDAO {
+public class UsuarioEmpleadoDAO implements GenericDAO<UsuarioEmpleado> {
 
     /** Consulta SQL para insertar un nuevo empleado */
     private static final String SQL_INSERT = "INSERT INTO Empleado (nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, descripcion, rol, especialidad, estado, createdAt, updatedAt) " +
@@ -33,6 +33,9 @@ public class UsuarioEmpleadoDAO {
     /** Consulta SQL para desactivar un empleado */
     private static final String SQL_DISABLE = "UPDATE Empleado SET estado = ?, updatedAt = ? WHERE idEmpleado = ?";
 
+    /** Consulta SQL para eliminar un empleado */
+    private static final String SQL_DELETE = "DELETE FROM Empleado WHERE idEmpleado = ?";
+
     /** Consulta SQL para obtener las dietas creadas por un empleado */
     private static final String SQL_GET_DIETAS_CREADAS = "SELECT * FROM Dieta WHERE idCreador = ?";
 
@@ -43,7 +46,7 @@ public class UsuarioEmpleadoDAO {
      * @return Objeto UsuarioEmpleado con los datos mapeados
      * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
      */
-    private static UsuarioEmpleado mapearEmpleado(ResultSet rs) throws SQLException {
+    private UsuarioEmpleado mapearEmpleado(ResultSet rs) throws SQLException {
         UsuarioEmpleado empleado = new UsuarioEmpleado();
         empleado.setId(rs.getInt("idEmpleado"));
         empleado.setNombreUsuario(rs.getString("nombreUsuario"));
@@ -83,7 +86,7 @@ public class UsuarioEmpleadoDAO {
      * @return Lista de todos los empleados
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static List<UsuarioEmpleado> getAll() {
+    public List<UsuarioEmpleado> getAll() {
         List<UsuarioEmpleado> empleados = new ArrayList<>();
 
         try (Connection con = ConnectionDB.getConnection();
@@ -108,7 +111,8 @@ public class UsuarioEmpleadoDAO {
      * @return Objeto UsuarioEmpleado si se encuentra, null en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static UsuarioEmpleado findById(int idEmpleado) {
+    public UsuarioEmpleado getById(int idEmpleado) {
+
         UsuarioEmpleado empleado = null;
 
         try (Connection con = ConnectionDB.getConnection();
@@ -133,7 +137,8 @@ public class UsuarioEmpleadoDAO {
      * @return Objeto UsuarioEmpleado con sus rutinas creadas si se encuentra, null en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static UsuarioEmpleado findByIdEager(int idEmpleado) {
+    public UsuarioEmpleado findByIdEager(int idEmpleado) {
+        RutinaDAO rutinaDAO = new RutinaDAO();
         UsuarioEmpleado empleado = null;
 
         try (Connection con = ConnectionDB.getConnection();
@@ -147,7 +152,7 @@ public class UsuarioEmpleadoDAO {
             }
 
             if (empleado != null) {
-                empleado.setRutinasCreadas(RutinaDAO.getByCreator(idEmpleado));
+                empleado.setRutinasCreadas(rutinaDAO.getByCreator(idEmpleado));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -163,7 +168,8 @@ public class UsuarioEmpleadoDAO {
      * @return Objeto UsuarioEmpleado si se encuentra, null en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static UsuarioEmpleado findByUserName(String nombreUsuario) {
+    public UsuarioEmpleado findByUserName(String nombreUsuario) {
+        RutinaDAO rutinaDAO = new RutinaDAO();
         UsuarioEmpleado empleado = null;
 
         try (Connection con = ConnectionDB.getConnection();
@@ -173,11 +179,11 @@ public class UsuarioEmpleadoDAO {
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                empleado = mapearEmpleado(rs);
+                empleado =mapearEmpleado(rs);
             }
 
             if (empleado != null) {
-                empleado.setRutinasCreadas(RutinaDAO.getByCreator(empleado.getId()));
+                empleado.setRutinasCreadas(rutinaDAO.getByCreator(empleado.getId()));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -192,7 +198,7 @@ public class UsuarioEmpleadoDAO {
      * @return Objeto UsuarioEmpleado si se encuentra, null en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static UsuarioEmpleado finByUserNameEager(String nombreUsuario) {
+    public UsuarioEmpleado finByUserNameEager(String nombreUsuario) {
         UsuarioEmpleado empleado = null;
 
         try (Connection con = ConnectionDB.getConnection();
@@ -217,7 +223,8 @@ public class UsuarioEmpleadoDAO {
      * @return El objeto UsuarioEmpleado insertado si la operación fue exitosa, null si el empleado ya existe o es nulo
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static UsuarioEmpleado insertEmpleado(UsuarioEmpleado empleado) {
+    public UsuarioEmpleado insert(UsuarioEmpleado empleado) {
+
         if(empleado != null && findByUserName(empleado.getNombreUsuario()) == null){
             try(Connection con = ConnectionDB.getConnection();
                 PreparedStatement pst = con.prepareStatement(SQL_INSERT)){
@@ -252,9 +259,10 @@ public class UsuarioEmpleadoDAO {
      * @param id ID del empleado a desactivar
      * @return true si el empleado fue desactivado correctamente, false si el empleado no existe o hubo un error
      */
-    public static boolean disableUsuarioEmpleado(int id) {
+    public boolean disableUsuarioEmpleado(int id) {
+
         boolean disabled = false;
-        if(findById(id) != null) {
+        if(getById(id) != null) {
             try (Connection con = ConnectionDB.getConnection();
                  PreparedStatement pst = con.prepareStatement(SQL_DISABLE)) {
 
@@ -276,7 +284,7 @@ public class UsuarioEmpleadoDAO {
      * @param empleado Objeto UsuarioEmpleado con los datos actualizados
      * @return true si la actualización fue exitosa, false en caso contrario
      */
-    public static boolean updateEmpleado(UsuarioEmpleado empleado) {
+    public boolean update(UsuarioEmpleado empleado) {
         boolean actualizado = false;
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {
@@ -304,5 +312,25 @@ public class UsuarioEmpleadoDAO {
         return actualizado;
     }
 
+    /**
+     * Elimina un empleado de la base de datos
+     *
+     * @param empleado Objeto UsuarioEmpleado a eliminar
+     * @return true si la eliminación fue exitosa, false en caso contrario
+     */
+    public boolean delete(UsuarioEmpleado empleado) {
+        boolean deleted = false;
+        if (empleado != null && getById(empleado.getId()) != null) {
+            try (Connection conn = ConnectionDB.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(SQL_DELETE)) {
 
+                stmt.setInt(1, empleado.getId());
+                stmt.executeUpdate();
+                deleted = true;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return deleted;
+    }
 }

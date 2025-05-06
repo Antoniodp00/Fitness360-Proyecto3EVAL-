@@ -133,8 +133,9 @@ public class MainViewEmpleadoController {
      * Carga los clientes asignados al empleado
      */
     private void cargarClientes() {
+        UsuarioClienteDAO clienteDAO = new UsuarioClienteDAO();
         // Implementación para cargar los clientes del empleado
-        List<UsuarioCliente> misClientes = UsuarioClienteDAO.findClientesByEmpleadoTarifa(empleadoAutenticado.getId());
+        List<UsuarioCliente> misClientes = clienteDAO.findClientesByEmpleadoTarifa(empleadoAutenticado.getId());
 
         // Configurar las columnas de la tabla
         colNombreCliente.setCellValueFactory(new PropertyValueFactory<>("nombre"));
@@ -152,8 +153,9 @@ public class MainViewEmpleadoController {
      * Carga las rutinas creadas por el empleado
      */
     private void cargarRutinas() {
+        RutinaDAO rutinaDAO = new RutinaDAO();
         // Implementación para cargar las rutinas creadas por el empleado
-        List<Rutina> misRutinas = RutinaDAO.getByCreator(empleadoAutenticado.getId());
+        List<Rutina> misRutinas = rutinaDAO.getByCreator(empleadoAutenticado.getId());
 
         // Configurar las columnas de la tabla
         colNombreRutina.setCellValueFactory(new PropertyValueFactory<>("nombre"));
@@ -169,8 +171,9 @@ public class MainViewEmpleadoController {
      * Carga las dietas creadas por el empleado
      */
     private void cargarDietas() {
+        DietaDAO dietaDAO = new DietaDAO();
         // Implementación para cargar las dietas creadas por el empleado
-        List<Dieta> misDietas = DietaDAO.getByCreator(empleadoAutenticado.getId());
+        List<Dieta> misDietas = dietaDAO.getByCreator(empleadoAutenticado.getId());
 
         // Configurar las columnas de la tabla
         colNombreDieta.setCellValueFactory(new PropertyValueFactory<>("nombre"));
@@ -186,8 +189,9 @@ public class MainViewEmpleadoController {
      * Carga las tarifas del empleado
      */
     private void cargarTarifas() {
+        TarifaDAO tarifaDAO = new TarifaDAO();
         // Implementación para cargar las tarifas del empleado
-        List<Tarifa> misTarifas = TarifaDAO.getByCreator(empleadoAutenticado.getId());
+        List<Tarifa> misTarifas = tarifaDAO.getByCreator(empleadoAutenticado.getId());
 
         // Configurar las columnas de la tabla
         colNombreTarifa.setCellValueFactory(new PropertyValueFactory<>("nombre"));
@@ -204,8 +208,9 @@ public class MainViewEmpleadoController {
      * Carga las revisiones realizadas por el empleado
      */
     private void cargarRevisiones() {
+        RevisionDAO revisionDAO = new RevisionDAO();
         // Implementación para cargar las revisiones realizadas por el empleado
-        List<Revision> misRevisiones = RevisionDAO.getByCreator(empleadoAutenticado.getId());
+        List<Revision> misRevisiones = revisionDAO.getByCreator(empleadoAutenticado.getId());
 
         // Configurar las columnas de la tabla
         colFechaRevision.setCellValueFactory(new PropertyValueFactory<>("fecha"));

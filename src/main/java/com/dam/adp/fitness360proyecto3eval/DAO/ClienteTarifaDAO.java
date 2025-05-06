@@ -42,6 +42,19 @@ public class ClienteTarifaDAO {
     private static final String SQL_DELETE =
             "DELETE FROM ClienteTarifa WHERE idCliente = ? AND idTarifa = ?";
 
+    /** Consulta SQL para obtener todas las asignaciones de tarifas a clientes */
+    private static final String SQL_GET_ALL =
+            "SELECT ct.*, " +
+                    "c.*, " +
+                    "t.* " +
+                    "FROM ClienteTarifa ct " +
+                    "JOIN Cliente c ON ct.idCliente = c.idCliente " +
+                    "JOIN Tarifa t ON ct.idTarifa = t.idTarifa";
+
+    /** Consulta SQL para actualizar una asignación de tarifa a cliente */
+    private static final String SQL_UPDATE =
+            "UPDATE ClienteTarifa SET estado = ?, fechaContratacion = ?, fechaRenovacion = ?, fechaFin = ? WHERE idCliente = ? AND idTarifa = ?";
+
     /**
      * Inserta una nueva asignación de tarifa a cliente en la base de datos
      * 
@@ -170,4 +183,49 @@ public class ClienteTarifaDAO {
         return ct;
     }
 
+    /**
+     * Obtiene todas las asignaciones de tarifas a clientes
+     * 
+     * @return Lista de todas las asignaciones
+     */
+    public static List<ClienteTarifa> getAll() {
+        List<ClienteTarifa> lista = new ArrayList<>();
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQL_GET_ALL);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                lista.add(mapearClienteTarifaEager(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return lista;
+    }
+
+    /**
+     * Actualiza una asignación de tarifa a cliente
+     * 
+     * @param ct Objeto ClienteTarifa con los datos actualizados
+     * @return true si la actualización fue exitosa, false en caso contrario
+     */
+    public static boolean update(ClienteTarifa ct) {
+        boolean actualizado = false;
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {
+
+            stmt.setString(1, ct.getEstado().name());
+            stmt.setDate(2, (Date) ct.getFechaContratacion());
+            stmt.setDate(3, (Date) ct.getFechaRenovacion());
+            stmt.setDate(4, (Date) ct.getFechaFin());
+            stmt.setInt(5, ct.getCliente().getId());
+            stmt.setInt(6, ct.getTarifa().getIdTarifa());
+
+            int filas = stmt.executeUpdate();
+            actualizado = filas > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return actualizado;
+    }
 }

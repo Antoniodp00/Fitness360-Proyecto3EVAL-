@@ -56,6 +56,26 @@ public class ClienteRutinaDAO {
             "DELETE FROM UsuarioRutina WHERE idUsuario = ? AND idRutina = ?";
 
     /**
+     * Consulta SQL para obtener todas las asignaciones de rutinas a clientes
+     */
+    private static final String SQL_GET_ALL =
+            "SELECT ur.*, " +
+                    "c.idCliente, c.nombreUsuario, c.nombre, c.apellidos, c.correo, " +
+                    "c.password, c.telefono, c.fechaNacimiento, c.sexo, c.altura, " +
+                    "c.estado, c.createdAt, c.updatedAt, " +
+                    "r.nombre as nombreRutina, r.descripcion as descripcionRutina, " +
+                    "r.createdAt as createdAtRutina, r.updatedAt as updatedAtRutina " +
+                    "FROM UsuarioRutina ur " +
+                    "JOIN Cliente c ON ur.idUsuario = c.idCliente " +
+                    "JOIN Rutina r ON ur.idRutina = r.idRutina";
+
+    /**
+     * Consulta SQL para actualizar una asignación de rutina a cliente
+     */
+    private static final String SQL_UPDATE =
+            "UPDATE UsuarioRutina SET fechaAsignacion = ?, fechaFin = ? WHERE idUsuario = ? AND idRutina = ?";
+
+    /**
      * Inserta una nueva asignación de rutina a cliente en la base de datos
      *
      * @param cr Objeto ClienteRutina con los datos de la asignación a insertar
@@ -271,5 +291,47 @@ public class ClienteRutinaDAO {
         return cr;
     }
 
+    /**
+     * Obtiene todas las asignaciones de rutinas a clientes
+     *
+     * @return Lista de todas las asignaciones
+     */
+    public static List<ClienteRutina> getAll() {
+        List<ClienteRutina> lista = new ArrayList<>();
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQL_GET_ALL);
+             ResultSet rs = stmt.executeQuery()) {
 
+            while (rs.next()) {
+                lista.add(mapearClienteRutinaEager(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return lista;
+    }
+
+    /**
+     * Actualiza una asignación de rutina a cliente
+     *
+     * @param cr Objeto ClienteRutina con los datos actualizados
+     * @return true si la actualización fue exitosa, false en caso contrario
+     */
+    public static boolean update(ClienteRutina cr) {
+        boolean actualizado = false;
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {
+
+            stmt.setDate(1, (Date) cr.getFechaAsignacion());
+            stmt.setDate(2, (Date) cr.getFechaFin());
+            stmt.setInt(3, cr.getCliente().getId());
+            stmt.setInt(4, cr.getRutina().getIdRutina());
+
+            int filas = stmt.executeUpdate();
+            actualizado = filas > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return actualizado;
+    }
 }

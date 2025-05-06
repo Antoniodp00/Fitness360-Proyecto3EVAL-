@@ -200,6 +200,7 @@ public class RegistroController {
      * @return true si el registro fue exitoso, false en caso contrario
      */
     private boolean registrarCliente() {
+        UsuarioClienteDAO clienteDAO = new UsuarioClienteDAO();
         double altura = 0;
         // Validar campo específico de cliente
         if (alturaField.getText().isEmpty()) {
@@ -236,7 +237,7 @@ public class RegistroController {
         );
 
         // Guardar en la base de datos
-        UsuarioClienteDAO.insertCliente(cliente);
+       clienteDAO.insert(cliente);
         return true;
     }
 
@@ -245,6 +246,7 @@ public class RegistroController {
      * @return true si el registro fue exitoso, false en caso contrario
      */
     private boolean registrarEmpleado(){
+        UsuarioEmpleadoDAO empleadoDAO = new UsuarioEmpleadoDAO();
         // Validar campos específicos de empleado
         if (descripcionField.getText().isEmpty() || 
             rolField.getText().isEmpty() || 
@@ -273,7 +275,7 @@ public class RegistroController {
         );
 
         // Guardar en la base de datos
-        UsuarioEmpleadoDAO.insertEmpleado(empleado);
+        empleadoDAO.insert(empleado);
         return true;
     }
 

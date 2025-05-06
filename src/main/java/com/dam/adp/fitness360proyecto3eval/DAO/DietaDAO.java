@@ -12,7 +12,7 @@ import java.util.List;
  * relacionadas con las dietas en la base de datos.
  * Proporciona métodos para insertar, buscar, actualizar y eliminar dietas.
  */
-public class DietaDAO {
+public class DietaDAO implements GenericDAO<Dieta> {
     /**
      * Consulta SQL para insertar una nueva dieta
      */
@@ -54,7 +54,7 @@ public class DietaDAO {
      * @return Objeto Dieta con los datos mapeados
      * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
      */
-    private static Dieta mapearDieta(ResultSet rs) throws SQLException {
+    private Dieta mapearDieta(ResultSet rs) throws SQLException {
         Dieta dieta = new Dieta();
 
         dieta.setIdDieta(rs.getInt("idDieta"));
@@ -83,7 +83,8 @@ public class DietaDAO {
      * @return Lista de todas las dietas
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static List<Dieta> getAll() {
+    @Override
+    public List<Dieta> getAll() {
         List<Dieta> dietas = new ArrayList<>();
         Connection con = ConnectionDB.getConnection();
 
@@ -103,18 +104,19 @@ public class DietaDAO {
     /**
      * Busca una dieta por su ID
      *
-     * @param idDieta ID de la dieta a buscar
+     * @param id ID de la dieta a buscar
      * @return Objeto Dieta si se encuentra, null en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static Dieta getById(int idDieta) {
+    @Override
+    public Dieta getById(int id) {
         Dieta dieta = null;
 
         Connection con = ConnectionDB.getConnection();
 
         try {
             PreparedStatement pstmt = con.prepareStatement(SQL_FIND_BY_ID);
-            pstmt.setInt(1, idDieta);
+            pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 dieta = mapearDieta(rs);
@@ -133,7 +135,8 @@ public class DietaDAO {
      * @return Objeto Dieta si se encuentra, null en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static Dieta getByName(String nombreDieta) {
+    public Dieta getByName(String nombreDieta) {
+        UsuarioEmpleadoDAO empleadoDAO = new UsuarioEmpleadoDAO();
         Dieta dieta = null;
         try (Connection con = ConnectionDB.getConnection();
              PreparedStatement pstmt = con.prepareStatement(SQL_FIND_BY_NAME)) {
@@ -144,7 +147,7 @@ public class DietaDAO {
                 if (rs.next()) {
                     dieta = mapearDieta(rs);
                     if (dieta.getCreador().getId() != 0) {
-                        UsuarioEmpleado creador = UsuarioEmpleadoDAO.findById(dieta.getCreador().getId());
+                        UsuarioEmpleado creador = empleadoDAO.getById(dieta.getCreador().getId());
                         dieta.setCreador(creador);
                     }
                 }
@@ -163,7 +166,7 @@ public class DietaDAO {
      * @return Lista de dietas creadas por el empleado especificado
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static List<Dieta> getByCreator(int idEmpleado) {
+    public List<Dieta> getByCreator(int idEmpleado) {
         List<Dieta> dietas = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_GET_BY_CREATOR)) {
@@ -185,77 +188,80 @@ public class DietaDAO {
     /**
      * Inserta una nueva dieta en la base de datos
      *
-     * @param dieta Objeto Dieta con los datos de la dieta a insertar
+     * @param entity Objeto Dieta con los datos de la dieta a insertar
      * @return El objeto Dieta insertado con su ID generado
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static Dieta insertDieta(Dieta dieta) {
-        if (dieta != null) {
-
+    @Override
+    public Dieta insert(Dieta entity) {
+        if (entity != null) {
             try (PreparedStatement stmt = ConnectionDB.getConnection().prepareStatement(SQL_INSERT)) {
-
-                stmt.setString(1, dieta.getNombre());
-                stmt.setString(2, dieta.getDescripcion());
-                stmt.setString(3, dieta.getArchivo());
-                stmt.setInt(4, dieta.getCreador().getId());
+                stmt.setString(1, entity.getNombre());
+                stmt.setString(2, entity.getDescripcion());
+                stmt.setString(3, entity.getArchivo());
+                stmt.setInt(4, entity.getCreador().getId());
                 stmt.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
                 stmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
 
                 stmt.executeUpdate();
-
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-        }else {
-            dieta = null;
+        } else {
+            entity = null;
         }
-        return dieta;
+        return entity;
     }
 
     /**
      * Actualiza los datos de una dieta existente en la base de datos
      *
-     * @param dieta Objeto Dieta con los nuevos datos a actualizar
+     * @param entity Objeto Dieta con los nuevos datos a actualizar
+     * @return true si la actualización fue exitosa, false en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static void updateDieta(Dieta dieta) {
-        if (dieta != null && getById(dieta.getIdDieta())!=null) {
+    @Override
+    public boolean update(Dieta entity) {
+        boolean updated = false;
+        if (entity != null && getById(entity.getIdDieta()) != null) {
             try (Connection conn = ConnectionDB.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {
 
-                stmt.setString(1, dieta.getNombre());
-                stmt.setString(2, dieta.getDescripcion());
-                stmt.setString(3, dieta.getArchivo());
-                stmt.setInt(4, dieta.getCreador().getId());
+                stmt.setString(1, entity.getNombre());
+                stmt.setString(2, entity.getDescripcion());
+                stmt.setString(3, entity.getArchivo());
+                stmt.setInt(4, entity.getCreador().getId());
                 stmt.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
-                stmt.setInt(6, dieta.getIdDieta());
+                stmt.setInt(6, entity.getIdDieta());
 
                 stmt.executeUpdate();
+                updated = true;
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
+        return updated;
     }
 
     /**
      * Elimina una dieta de la base de datos
      *
-     * @param dieta Objeto Dieta a eliminar
+     * @param entity Objeto Dieta a eliminar
      * @return true si la dieta fue eliminada correctamente, false en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static boolean deleteDieta(Dieta dieta) {
+    @Override
+    public boolean delete(Dieta entity) {
         boolean deleted = false;
-        if (dieta != null && getById(dieta.getIdDieta())!=null) {
-            try(PreparedStatement pst= ConnectionDB.getConnection().prepareStatement(SQL_DELETE)){
-                pst.setInt(1,dieta.getIdDieta());
+        if (entity != null && getById(entity.getIdDieta()) != null) {
+            try (PreparedStatement pst = ConnectionDB.getConnection().prepareStatement(SQL_DELETE)) {
+                pst.setInt(1, entity.getIdDieta());
                 pst.executeUpdate();
                 deleted = true;
-            }catch (SQLException e) {
+            } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
         return deleted;
     }
-
 }

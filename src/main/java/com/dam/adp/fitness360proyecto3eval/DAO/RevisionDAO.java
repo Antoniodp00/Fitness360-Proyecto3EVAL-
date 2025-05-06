@@ -15,7 +15,7 @@ import java.util.List;
  * relacionadas con las revisiones físicas de los clientes en la base de datos.
  * Proporciona constantes SQL para insertar, buscar, actualizar y eliminar revisiones.
  */
-public class RevisionDAO {
+public class RevisionDAO implements GenericDAO<Revision> {
     /** Consulta SQL para insertar una nueva revisión física */
     private static final String SQL_INSERT =
             "INSERT INTO Revision (fecha, peso, grasa, musculo, mPecho, mCintura, mCadera, observaciones, imagen, idCliente, idEmpleado, createdAt, updatedAt) " +
@@ -53,7 +53,7 @@ public class RevisionDAO {
      * @return Objeto Revision con todos los datos
      * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
      */
-    private static Revision mapearRevision(ResultSet rs) throws SQLException {
+    private  Revision mapearRevision(ResultSet rs) throws SQLException {
         Revision revision = new Revision();
         revision.setIdRevision(rs.getInt("idRevision"));
         revision.setFecha(rs.getObject("fecha", LocalDate.class));
@@ -87,7 +87,7 @@ public class RevisionDAO {
      * 
      * @return Lista con todas las revisiones
      */
-    public static List<Revision> getAll() {
+    public List<Revision> getAll() {
         List<Revision> revisiones = new ArrayList<>();
         Connection con = ConnectionDB.getConnection();
 
@@ -110,7 +110,7 @@ public class RevisionDAO {
      * @param idRevision ID de la revisión a buscar
      * @return Objeto Revision si se encuentra, null en caso contrario
      */
-    public static Revision getById(int idRevision) {
+    public  Revision getById(int idRevision) {
         Revision revision = null;
 
         Connection con = ConnectionDB.getConnection();
@@ -134,7 +134,7 @@ public class RevisionDAO {
      * @param idEmpleado ID del empleado creador
      * @return Lista de revisiones realizadas por el empleado
      */
-    public static List<Revision> getByCreator(int idEmpleado) {
+    public  List<Revision> getByCreator(int idEmpleado) {
         List<Revision> revisiones = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_GET_BY_EMPLEADO)) {
@@ -158,7 +158,7 @@ public class RevisionDAO {
      * @param idCliente ID del cliente
      * @return Lista de revisiones del cliente
      */
-    public static List<Revision> getByClient(int idCliente) {
+    public  List<Revision> getByClient(int idCliente) {
         List<Revision> revisiones = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_GET_BY_CLIENTE)) {
@@ -182,7 +182,7 @@ public class RevisionDAO {
      * @param revision Objeto Revision con los datos a insertar
      * @return El objeto Revision insertado, o null si hubo un error
      */
-    public static Revision insertRevision(Revision revision) {
+    public  Revision insert(Revision revision) {
         if (revision != null) {
 
             try (PreparedStatement stmt = ConnectionDB.getConnection().prepareStatement(SQL_INSERT)) {
@@ -216,8 +216,10 @@ public class RevisionDAO {
      * Actualiza los datos de una revisión existente en la base de datos
      * 
      * @param revision Objeto Revision con los datos actualizados
+     * @return true si la actualización fue exitosa, false en caso contrario
      */
-    public static void updateRevision(Revision revision) {
+    public  boolean update(Revision revision) {
+        boolean actualizado = false;
         if (revision != null && getById(revision.getIdRevision())!=null) {
             try (Connection conn = ConnectionDB.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {
@@ -233,14 +235,16 @@ public class RevisionDAO {
                 stmt.setString(9, revision.getImagen());
                 stmt.setInt(10, revision.getCliente().getId());
                 stmt.setInt(11, revision.getEmpleado().getId());
-                stmt.setTimestamp(13, new Timestamp(System.currentTimeMillis()));
+                stmt.setTimestamp(12, new Timestamp(System.currentTimeMillis()));
+                stmt.setInt(13, revision.getIdRevision());
 
-
-                stmt.executeUpdate();
+                int filas = stmt.executeUpdate();
+                actualizado = filas > 0;
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
+        return actualizado;
     }
 
     /**
@@ -249,7 +253,7 @@ public class RevisionDAO {
      * @param revision Objeto Revision a eliminar
      * @return true si se eliminó correctamente, false en caso contrario
      */
-    public static boolean deleteRevision(Revision revision) {
+    public  boolean delete(Revision revision) {
         boolean deleted = false;
         if (revision != null && getById(revision.getIdRevision())!=null) {
             try(PreparedStatement pst= ConnectionDB.getConnection().prepareStatement(SQL_DELETE)){

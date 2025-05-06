@@ -12,7 +12,7 @@ import java.util.List;
  * relacionadas con las rutinas en la base de datos.
  * Proporciona métodos para insertar, buscar, actualizar y eliminar rutinas.
  */
-public class RutinaDAO {
+public class RutinaDAO implements GenericDAO<Rutina> {
     /**
      * Consulta SQL para insertar una nueva rutina
      */
@@ -61,7 +61,7 @@ public class RutinaDAO {
      * @param rutina Objeto Rutina con los datos de la rutina a insertar
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static Rutina insertRutinaByClient(Rutina rutina) {
+    public Rutina insertRutinaByClient(Rutina rutina) {
         if (rutina != null) {
             try (Connection conn = ConnectionDB.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_By_Client)) {
@@ -87,7 +87,7 @@ public class RutinaDAO {
      * @param rutina Objeto Rutina con los datos de la rutina a insertar
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static Rutina insertRutinaByEmployee(Rutina rutina) {
+    public Rutina insertRutinaByEmployee(Rutina rutina) {
         if (rutina != null) {
             try (Connection conn = ConnectionDB.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_By_Employee)) {
@@ -113,7 +113,7 @@ public class RutinaDAO {
      * @return Objeto Rutina si se encuentra, null en caso contrario
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static Rutina getById(int idRutina) {
+    public Rutina getById(int idRutina) {
         Rutina rutina = null;
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_ID)) {
@@ -131,6 +131,11 @@ public class RutinaDAO {
         return rutina;
     }
 
+    @Override
+    public Rutina insert(Rutina entity) {
+        return null;
+    }
+
 
     /**
      * Busca una rutina por su ID
@@ -139,7 +144,7 @@ public class RutinaDAO {
      * @return Objeto Rutina si se encuentra, null en caso contrario
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static Rutina getByIdEager(int idRutina) {
+    public Rutina getByIdEager(int idRutina) {
         Rutina rutina = null;
 
         try (Connection con = ConnectionDB.getConnection();
@@ -167,7 +172,7 @@ public class RutinaDAO {
      * @return Lista de todas las rutinas
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static List<Rutina> getAll() {
+    public List<Rutina> getAll() {
         List<Rutina> rutinas = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_GET_ALL);
@@ -189,7 +194,7 @@ public class RutinaDAO {
      * @return Lista de rutinas creadas por el empleado
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static List<Rutina> getByCreator(int idEmpleado) {
+    public List<Rutina> getByCreator(int idEmpleado) {
         List<Rutina> rutinas = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_GET_BY_CREATOR)) {
@@ -213,7 +218,7 @@ public class RutinaDAO {
      * @param rutina Objeto Rutina con los datos actualizados
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static boolean updateRutina(Rutina rutina) {
+    public boolean update(Rutina rutina) {
         boolean updated = false;
         if (rutina != null && getById(rutina.getIdRutina()) != null) {
             try (Connection conn = ConnectionDB.getConnection();
@@ -241,7 +246,7 @@ public class RutinaDAO {
      * @param rutina rutina a eliminar
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static boolean deleteRutina(Rutina rutina) {
+    public boolean delete(Rutina rutina) {
         boolean deleted = false;
         if (rutina != null && getById(rutina.getIdRutina()) != null) {
             try (Connection conn = ConnectionDB.getConnection();
@@ -264,7 +269,7 @@ public class RutinaDAO {
      * @return Objeto Rutina con los datos mapeados
      * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
      */
-    private static Rutina mapearRutina(ResultSet rs) throws SQLException {
+    private Rutina mapearRutina(ResultSet rs) throws SQLException {
         Rutina rutina = new Rutina();
         rutina.setIdRutina(rs.getInt("idRutina"));
         rutina.setNombre(rs.getString("nombre"));

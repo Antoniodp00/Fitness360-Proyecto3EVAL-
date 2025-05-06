@@ -12,7 +12,7 @@ import java.util.List;
  * relacionadas con los usuarios clientes en la base de datos.
  * Proporciona métodos para obtener, buscar, insertar, actualizar y desactivar usuarios clientes.
  */
-public class UsuarioClienteDAO {
+public class UsuarioClienteDAO implements GenericDAO<UsuarioCliente>{
 
     /**
      * Consulta SQL para obtener todos los clientes
@@ -44,6 +44,10 @@ public class UsuarioClienteDAO {
      */
     private static final String SQL_UPDATE = "UPDATE Cliente SET nombreUsuario = ?, nombre = ?, apellidos = ?, correo = ?, password = ?, telefono = ?, fechaNacimiento = ?, sexo = ?, altura = ?, estado = ?, updatedAt = ? WHERE idCliente = ?";
 
+    /**
+     * Consulta SQL para eliminar un cliente
+     */
+    private static final String SQL_DELETE = "DELETE FROM Cliente WHERE idCliente = ?";
 
     private static final String SQL_GET_CLIENTES_POR_TARIFA = "SELECT c.* " +
             "FROM Cliente c " +
@@ -58,7 +62,7 @@ public class UsuarioClienteDAO {
      * @return Objeto UsuarioCliente con los datos mapeados
      * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
      */
-    private static UsuarioCliente mapearCliente(ResultSet rs) throws SQLException {
+    private UsuarioCliente mapearCliente(ResultSet rs) throws SQLException {
         UsuarioCliente cliente = new UsuarioCliente();
         cliente.setId(rs.getInt("idCliente"));
         cliente.setNombreUsuario(rs.getString("nombreUsuario"));
@@ -90,7 +94,7 @@ public class UsuarioClienteDAO {
      * @return Lista de todos los clientes
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static List<UsuarioCliente> getAll() {
+    public  List<UsuarioCliente> getAll() {
         List<UsuarioCliente> clientes = new ArrayList<>();
 
         try (Connection con = ConnectionDB.getConnection();
@@ -115,7 +119,7 @@ public class UsuarioClienteDAO {
      * @return Objeto UsuarioCliente si se encuentra, null en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static UsuarioCliente findById(int idCliente) {
+    public UsuarioCliente getById(int idCliente) {
         UsuarioCliente cliente = null;
 
         try (Connection con = ConnectionDB.getConnection();
@@ -142,7 +146,7 @@ public class UsuarioClienteDAO {
      * @return Objeto UsuarioCliente con sus rutinas asignadas si se encuentra, null en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static UsuarioCliente findByIdEager(int idCliente) {
+    public UsuarioCliente findByIdEager(int idCliente) {
         UsuarioCliente cliente = null;
 
         try (Connection con = ConnectionDB.getConnection();
@@ -175,7 +179,7 @@ public class UsuarioClienteDAO {
      * @return Objeto UsuarioCliente si se encuentra, null en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static UsuarioCliente findByUserName(String nombreUsuario) {
+    public UsuarioCliente findByUserName(String nombreUsuario) {
         UsuarioCliente cliente = null;
 
         try (Connection con = ConnectionDB.getConnection();
@@ -200,7 +204,7 @@ public class UsuarioClienteDAO {
      * @return El objeto UsuarioCliente insertado si la operación fue exitosa, null si el cliente ya existe o es nulo
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static UsuarioCliente insertCliente(UsuarioCliente cliente) {
+    public UsuarioCliente insert(UsuarioCliente cliente) {
         if (cliente != null && findByUserName(cliente.getNombreUsuario()) == null) {
             try (Connection con = ConnectionDB.getConnection();
                  PreparedStatement pst = con.prepareStatement(SQL_INSERT)) {
@@ -233,9 +237,9 @@ public class UsuarioClienteDAO {
      * @param id ID del cliente a desactivar
      * @return true si el cliente fue desactivado correctamente, false si el cliente no existe o hubo un error
      */
-    public static boolean disableUsuarioCliente(int id) {
+    public boolean disableUsuarioCliente(int id) {
         boolean disabled = false;
-        if (findById(id) != null) {
+        if (getById(id) != null) {
             try (Connection con = ConnectionDB.getConnection();
                  PreparedStatement pst = con.prepareStatement(SQL_DISABLE)) {
 
@@ -257,7 +261,7 @@ public class UsuarioClienteDAO {
      * @param cliente Objeto UsuarioCliente con los datos actualizados
      * @return true si la actualización fue exitosa, false en caso contrario
      */
-    public static boolean updateCliente(UsuarioCliente cliente) {
+    public boolean update(UsuarioCliente cliente) {
         boolean actualizado = false;
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {
@@ -283,7 +287,7 @@ public class UsuarioClienteDAO {
         return actualizado;
     }
 
-    public static List<UsuarioCliente> findClientesByEmpleadoTarifa(int idEmpleado) {
+    public List<UsuarioCliente> findClientesByEmpleadoTarifa(int idEmpleado) {
         List<UsuarioCliente> clientes = new ArrayList<>();
 
         try (Connection conn = ConnectionDB.getConnection();
@@ -305,5 +309,26 @@ public class UsuarioClienteDAO {
         return clientes;
     }
 
+    /**
+     * Elimina un cliente de la base de datos
+     *
+     * @param cliente Objeto UsuarioCliente a eliminar
+     * @return true si la eliminación fue exitosa, false en caso contrario
+     */
+    public boolean delete(UsuarioCliente cliente) {
 
+        boolean deleted = false;
+        if (cliente != null && getById(cliente.getId()) != null) {
+            try (Connection conn = ConnectionDB.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(SQL_DELETE)) {
+
+                stmt.setInt(1, cliente.getId());
+                stmt.executeUpdate();
+                deleted = true;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return deleted;
+    }
 }

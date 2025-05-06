@@ -39,6 +39,8 @@ public class LoginController {
      * @param actionEvent El evento de acción que desencadenó este método
      */
     public void alHacerClicEnIniciarSesion(ActionEvent actionEvent) {
+        UsuarioEmpleadoDAO empleadoDAO = new UsuarioEmpleadoDAO();
+        UsuarioClienteDAO clienteDAO = new UsuarioClienteDAO();
         String username = usernameField.getText();
         String password = passwordField.getText();
 
@@ -50,12 +52,12 @@ public class LoginController {
             mensajeError = "Por favor, complete todos los campos";
         } else {
             // Buscar y autenticar como cliente
-            UsuarioCliente cliente = UsuarioClienteDAO.findByUserName(username);
+            UsuarioCliente cliente = clienteDAO.findByUserName(username);
             if (cliente != null /*&& autenticarUsuario(cliente, password)*/) {
                 usuarioAutenticado = cliente;
             } else {
                 // Buscar y autenticar como empleado
-                UsuarioEmpleado empleado = UsuarioEmpleadoDAO.findByUserName(username);
+                UsuarioEmpleado empleado = empleadoDAO.findByUserName(username);
                 if (empleado != null /*&& autenticarUsuario(empleado, password)*/) {
                     usuarioAutenticado = empleado;
                 } else {

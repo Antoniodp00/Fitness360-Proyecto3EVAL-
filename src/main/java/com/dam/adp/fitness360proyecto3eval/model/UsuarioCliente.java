@@ -230,6 +230,7 @@ public class UsuarioCliente extends Usuario {
                 ", nombreUsuario='" + nombreUsuario + '\'' +
                 ", nombre='" + nombre + '\'' +
                 ", apellidos='" + apellidos + '\'' +
+                ", password='" + password + '\'' +
                 ", correo='" + correo + '\'' +
                 ", telefono='" + telefono + '\'' +
                 ", fechaNacimiento=" + fechaNacimiento +

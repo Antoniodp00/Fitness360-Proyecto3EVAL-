@@ -163,7 +163,7 @@ public class UsuarioEmpleadoDAO {
      * @return Objeto UsuarioEmpleado si se encuentra, null en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static UsuarioEmpleado finByUserName(String nombreUsuario) {
+    public static UsuarioEmpleado findByUserName(String nombreUsuario) {
         UsuarioEmpleado empleado = null;
 
         try (Connection con = ConnectionDB.getConnection();
@@ -218,7 +218,7 @@ public class UsuarioEmpleadoDAO {
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
     public static UsuarioEmpleado insertEmpleado(UsuarioEmpleado empleado) {
-        if(empleado != null && finByUserName(empleado.getNombreUsuario()) == null){
+        if(empleado != null && findByUserName(empleado.getNombreUsuario()) == null){
             try(Connection con = ConnectionDB.getConnection();
                 PreparedStatement pst = con.prepareStatement(SQL_INSERT)){
 

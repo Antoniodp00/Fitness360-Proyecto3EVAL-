@@ -23,7 +23,7 @@
     <Label text="Contraseña:" />
     <PasswordField fx:id="passwordField" promptText="Ingrese su contraseña" />
 
-    <Label fx:id="errorMessage" textFill="RED" visible="false" />
+    <Label fx:id="errorMessage" visible="false" />
 
     <HBox alignment="CENTER" spacing="10.0">
       <padding>
@@ -34,7 +34,7 @@
 
     <HBox alignment="CENTER" spacing="5.0">
       <Label text="¿No tienes cuenta?" />
-      <Button onAction="#alHacerClicEnRegistrarse" style="-fx-background-color: transparent; -fx-text-fill: #4CAF50; -fx-font-weight: bold; -fx-padding: 0;" text="Registrarse" />
+      <Button onAction="#alHacerClicEnRegistrarse" text="Registrarse" />
     </HBox>
   </VBox>
 </VBox>

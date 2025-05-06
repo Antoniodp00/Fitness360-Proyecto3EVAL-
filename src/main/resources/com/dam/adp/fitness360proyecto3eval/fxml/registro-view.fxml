@@ -91,11 +91,11 @@
   </GridPane>
 
   <!-- Mensaje de error -->
-  <Label fx:id="errorMessage" textFill="RED" visible="false" />
+  <Label fx:id="errorMessage" visible="false" />
 
   <!-- Botones de acción -->
   <HBox spacing="10.0" alignment="CENTER">
     <Button text="Registrar" fx:id="registrarButton" defaultButton="true" />
-    <Button text="Cancelar" fx:id="cancelarButton" style="-fx-background-color: #f44336;" />
+    <Button text="Cancelar" fx:id="cancelarButton"/>
   </HBox>
 </VBox>

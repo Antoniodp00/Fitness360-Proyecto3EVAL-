@@ -21,7 +21,7 @@ public class MainApplication extends Application {
         Parent root = fxmlLoader.load();
 
         // Creacion de la escena
-        Scene scene = new Scene(root, 400, 500);
+        Scene scene = new Scene(root, 600, 700);
 
         // Propiedades del stage
         stage.setTitle("Fitness360 - Login");

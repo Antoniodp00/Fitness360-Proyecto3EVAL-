@@ -277,7 +277,8 @@ public class RegistroController {
      */
     private void irALogin() {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("fxml/login-view.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/login-view.fxml"));
+
             Scene scene = new Scene(fxmlLoader.load());
             Stage stage = (Stage) cancelarButton.getScene().getWindow();
             stage.setScene(scene);

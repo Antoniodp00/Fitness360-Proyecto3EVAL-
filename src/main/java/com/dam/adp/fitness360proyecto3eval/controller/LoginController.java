@@ -13,7 +13,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -51,12 +50,12 @@ public class LoginController {
             mensajeError = "Por favor, complete todos los campos";
         } else {
             // Buscar y autenticar como cliente
-            UsuarioCliente cliente = UsuarioClienteDAO.finByUserName(username);
+            UsuarioCliente cliente = UsuarioClienteDAO.findByUserName(username);
             if (cliente != null && autenticarUsuario(cliente, password)) {
                 usuarioAutenticado = cliente;
             } else {
                 // Buscar y autenticar como empleado
-                UsuarioEmpleado empleado = UsuarioEmpleadoDAO.finByUserName(username);
+                UsuarioEmpleado empleado = UsuarioEmpleadoDAO.findByUserName(username);
                 if (empleado != null && autenticarUsuario(empleado, password)) {
                     usuarioAutenticado = empleado;
                 } else {
@@ -67,7 +66,11 @@ public class LoginController {
 
         // Ejecutar navegación o mostrar error según el resultado
         if (usuarioAutenticado != null) {
-            navegarAPantallaPrincipal(actionEvent, usuarioAutenticado);
+            if (usuarioAutenticado instanceof UsuarioCliente) {
+                navegarAPantallaPrincipalCliente(actionEvent, (UsuarioCliente) usuarioAutenticado);
+            }else {
+                navegarAPantallaPrincipalEmpleado(actionEvent, (UsuarioEmpleado) usuarioAutenticado);
+            }
         } else {
             mostrarError(mensajeError);
         }
@@ -86,27 +89,25 @@ public class LoginController {
 
     /**
      * Verifica si las credenciales del usuario son correctas
-     * 
+     *
      * @param usuario El usuario a autenticar
      * @param password La contraseña ingresada
      * @return true si la autenticación es exitosa, false en caso contrario
      */
     private boolean autenticarUsuario(Usuario usuario, String password) {
-        Boolean autenticado = true;
         // Verificar que el usuario esté activo
         if (usuario.getEstado() != Estado.ACTIVO) {
             mostrarError("Usuario inactivo. Contacte al administrador.");
-            autenticado = false;
+           return false;
         }
 
         // Verificar la contraseña
-        autenticado = HashUtil.verificarPassword(password, usuario.getPassword());
-        return autenticado;
+        return HashUtil.verificarPassword(password, usuario.getPassword());
     }
 
     /**
      * Muestra un mensaje de error en la interfaz
-     * 
+     *
      * @param mensaje El mensaje de error a mostrar
      */
     private void mostrarError(String mensaje) {
@@ -115,21 +116,50 @@ public class LoginController {
     }
 
     /**
-     * Navega a la pantalla principal después de un login exitoso
-     * 
+     * Navega a la pantalla principal de cliente después de un login exitoso
+     *
      * @param event El evento que desencadenó la navegación
      * @param usuario El usuario autenticado
      */
-    private void navegarAPantallaPrincipal(ActionEvent event, Usuario usuario) {
+    private void navegarAPantallaPrincipalCliente(ActionEvent event, UsuarioCliente usuario) {
         try {
             // Cargar la vista principal
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/hello-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/main-view-cliente.fxml"));
             Parent root = loader.load();
 
-            // Obtener el controlador y pasar el usuario si es necesario
-            HelloController controller = loader.getController();
-            // Aquí se podría pasar el usuario al controlador si fuera necesario
-            // controller.setUsuario(usuario);
+            // Obtener el controlador
+           MainViewClienteController controller = loader.getController();
+
+
+
+            // Configurar la nueva escena
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setTitle("Fitness360 - Panel Principal");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            mostrarError("Error al cargar la pantalla principal: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Navega a la pantalla principal de empleado después de un login exitoso
+     *
+     * @param event El evento que desencadenó la navegación
+     * @param usuario El usuario autenticado
+     */
+    private void navegarAPantallaPrincipalEmpleado(ActionEvent event, UsuarioEmpleado usuario) {
+        try {
+            // Cargar la vista principal
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/main-view-empleado.fxml"));
+            Parent root = loader.load();
+
+            // Obtener el controlador
+            MainViewClienteController controller = loader.getController();
+
+
 
             // Configurar la nueva escena
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -149,9 +179,10 @@ public class LoginController {
             Parent root = loader.load();
 
             RegistroController controller = loader.getController();
+            controller.inicializar();
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root, 700,800);
             stage.setTitle("Fitness360 - Registro");
             stage.setScene(scene);
             stage.show();

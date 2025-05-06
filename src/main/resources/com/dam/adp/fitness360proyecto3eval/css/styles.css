@@ -23,4 +23,12 @@
     -fx-cursor: hand;
 }
 
+#cancelarButton {
+    -fx-background-color: #f44336;
+}
+
+#errorMessage{
+    textFill: red;
+}
+
 /* Add more styles as needed */

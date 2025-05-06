@@ -17,7 +17,7 @@ public class ConsultasBasicas {
             stmt.setString(2, nombre);
             stmt.setString(3, apellidos);
             stmt.setString(4, correo);
-            stmt.setString(5, password);  // Nota: Deberías encriptar la contraseña antes de insertarla.
+            stmt.setString(5, password);
             int rowsAffected = stmt.executeUpdate();
             System.out.println(rowsAffected + " fila(s) insertada(s)");
 

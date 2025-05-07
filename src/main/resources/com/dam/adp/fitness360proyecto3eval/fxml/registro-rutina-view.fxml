@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" spacing="15.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.dam.adp.fitness360proyecto3eval.controller.RegistroRutinaController"
+      stylesheets="@../css/styles.css">
+  <padding>
+    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+  </padding>
+
+  <Label text="Fitness360 - Registro de Rutina" style="-fx-font-weight: bold;">
+    <font>
+      <Font size="24.0" />
+    </font>
+  </Label>
+
+  <!-- Selección de tipo de creador -->
+  <HBox fx:id="creadorSelectionBox" alignment="CENTER" spacing="20.0">
+    <Label text="Creado por:" />
+    <fx:define>
+      <ToggleGroup fx:id="tipoCreadorGroup" />
+    </fx:define>
+    <RadioButton text="Cliente" toggleGroup="$tipoCreadorGroup" selected="true" fx:id="clienteRadio" />
+    <RadioButton text="Empleado" toggleGroup="$tipoCreadorGroup" fx:id="empleadoRadio" />
+  </HBox>
+
+  <!-- Formulario de registro de rutina -->
+  <GridPane hgap="10" vgap="10" alignment="CENTER">
+    <padding>
+      <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
+    </padding>
+
+    <!-- Datos de la rutina -->
+    <Label text="Nombre de la Rutina:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+    <TextField fx:id="nombreRutinaField" promptText="Ingrese nombre de la rutina" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+    <Label text="Descripción:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+    <TextArea fx:id="descripcionRutinaField" promptText="Ingrese descripción detallada de la rutina" 
+              wrapText="true" prefHeight="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+    <!-- Selección de cliente creador -->
+    <VBox fx:id="clienteCreadorFields" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
+      <Label text="Cliente Creador:" />
+      <ComboBox fx:id="clienteComboBox" promptText="Seleccione el cliente creador" maxWidth="Infinity" />
+    </VBox>
+
+    <!-- Selección de empleado creador -->
+    <VBox fx:id="empleadoCreadorFields" spacing="10" visible="false" managed="false" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
+      <Label text="Empleado Creador:" />
+      <ComboBox fx:id="empleadoComboBox" promptText="Seleccione el empleado creador" maxWidth="Infinity" />
+    </VBox>
+
+    <!-- Selección de cliente para asignar la rutina (cuando el creador es un empleado) -->
+    <VBox fx:id="clienteAsignadoFields" spacing="10" visible="false" managed="false" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="2">
+      <Label text="Asignar a Cliente:" />
+      <ComboBox fx:id="clienteAsignadoComboBox" promptText="Seleccione el cliente al que asignar la rutina" maxWidth="Infinity" />
+    </VBox>
+  </GridPane>
+
+  <!-- Mensaje de error -->
+  <Label fx:id="errorMessage" visible="false" />
+
+  <!-- Botones de acción -->
+  <HBox spacing="10.0" alignment="CENTER">
+    <Button text="Registrar" fx:id="registrarButton" defaultButton="true" />
+    <Button text="Cancelar" fx:id="cancelarButton"/>
+  </HBox>
+</VBox>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.*?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dam.adp.fitness360proyecto3eval.controller.MainViewEmpleadoController">
    <top>
@@ -167,7 +167,6 @@
                                   <TableColumn fx:id="colPrecioTarifa" prefWidth="100.0" text="Precio" />
                                   <TableColumn fx:id="colPeriodoTarifa" prefWidth="100.0" text="Periodo" />
                                   <TableColumn fx:id="colDescripcionTarifa" prefWidth="200.0" text="Descripción" />
-                                  <TableColumn fx:id="colClientesAsignadosTarifa" prefWidth="120.0" text="Clientes" />
                                   <TableColumn fx:id="colAccionesTarifa" prefWidth="100.0" text="Acciones" />
                                 </columns>
                               </TableView>

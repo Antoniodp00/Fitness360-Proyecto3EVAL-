@@ -200,6 +200,31 @@ public class MainViewClienteController {
     }
 
     /**
+     * Abre la ventana de registro de rutina pasando el cliente autenticado
+     */
+    public void abrirRegistroRutina() {
+        try {
+            // Cargar la vista de registro de rutina
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/registro-rutina-view.fxml"));
+            Parent root = loader.load();
+
+            // Obtener el controlador y establecer el cliente autenticado
+            RegistroRutinaController controller = loader.getController();
+            controller.setClienteAutenticado(clienteAutenticado);
+
+            // Configurar y mostrar la nueva ventana
+            Stage stage = new Stage();
+            Scene scene = new Scene(root);
+            stage.setTitle("Fitness360 - Registro de Rutina");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            System.err.println("Error al cargar la pantalla de registro de rutina: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Inicializa el controlador y configura los eventos
      */
     @FXML
@@ -214,6 +239,8 @@ public class MainViewClienteController {
                     }
                 }
         );
+
+
 
     }
 }

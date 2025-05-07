@@ -76,6 +76,7 @@ public class MainViewClienteController {
 
     /**
      * Establece el cliente autenticado y actualiza la interfaz
+     *
      * @param cliente El cliente autenticado
      */
     public void setClienteAutenticado(UsuarioCliente cliente) {
@@ -131,7 +132,7 @@ public class MainViewClienteController {
     private void cargarRevisiones() {
 
         RevisionDAO revisionDAO = new RevisionDAO();
-        List<Revision> misRevisiones = revisionDAO.getByClientEager( clienteAutenticado.getId() );
+        List<Revision> misRevisiones = revisionDAO.getByClientEager(clienteAutenticado.getId());
 
         colFechaRevision.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         colPesoRevision.setCellValueFactory(new PropertyValueFactory<>("peso"));

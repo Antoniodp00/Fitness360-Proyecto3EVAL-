@@ -233,7 +233,7 @@ public class UsuarioEmpleadoDAO implements GenericDAO<UsuarioEmpleado> {
                 pst.setString(2, empleado.getNombre());
                 pst.setString(3, empleado.getApellidos());
                 pst.setString(4, empleado.getCorreo());
-                pst.setString(5, com.dam.adp.fitness360proyecto3eval.utilidades.HashUtil.hashPassword(empleado.getPassword()));
+                pst.setString(5, empleado.getPassword());
                 pst.setString(6, empleado.getTelefono());
                 pst.setDate(7, empleado.getFechaNacimiento() != null ? new java.sql.Date(empleado.getFechaNacimiento().getTime()) : null);
                 pst.setString(8, empleado.getSexo() != null ? empleado.getSexo().name() : null);

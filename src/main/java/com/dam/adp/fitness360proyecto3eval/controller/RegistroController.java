@@ -3,11 +3,8 @@ package com.dam.adp.fitness360proyecto3eval.controller;
 import com.dam.adp.fitness360proyecto3eval.model.*;
 import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioClienteDAO;
 import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioEmpleadoDAO;
-import com.dam.adp.fitness360proyecto3eval.exceptions.EmailInvalidoException;
-import com.dam.adp.fitness360proyecto3eval.exceptions.UsuarioYaExisteException;
 import com.dam.adp.fitness360proyecto3eval.utilidades.HashUtil;
 import com.dam.adp.fitness360proyecto3eval.utilidades.Utilidades;
-import com.dam.adp.fitness360proyecto3eval.views.MainApplication;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -18,10 +15,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.regex.Pattern;
 
 public class RegistroController {
 
@@ -88,7 +83,7 @@ public class RegistroController {
     /**
      * Inicializa el controlador después de que se haya cargado el FXML.
      */
-    public void inicializar() {
+    public void initialize() {
         // Configurar los ComboBox
         sexoComboBox.setItems(FXCollections.observableArrayList(Sexo.values()));
         especialidadComboBox.setItems(FXCollections.observableArrayList(Especialidad.values()));

@@ -35,7 +35,7 @@ public class LoginController {
     /**
      * Maneja el evento de clic en el botón de login
      * Verifica las credenciales del usuario y navega a la pantalla principal si son correctas
-     * 
+     *
      * @param actionEvent El evento de acción que desencadenó este método
      */
     public void alHacerClicEnIniciarSesion(ActionEvent actionEvent) {
@@ -53,12 +53,13 @@ public class LoginController {
         } else {
             // Buscar y autenticar como cliente
             UsuarioCliente cliente = clienteDAO.findByUserName(username);
-            if (cliente != null /*&& autenticarUsuario(cliente, password)*/) {
+
+            if (cliente != null && autenticarUsuario(cliente, password)) {
                 usuarioAutenticado = cliente;
             } else {
                 // Buscar y autenticar como empleado
                 UsuarioEmpleado empleado = empleadoDAO.findByUserName(username);
-                if (empleado != null /*&& autenticarUsuario(empleado, password)*/) {
+                if (empleado != null && autenticarUsuario(empleado, password)) {
                     usuarioAutenticado = empleado;
                 } else {
                     mensajeError = "Nombre de usuario o contraseña incorrectos";
@@ -70,7 +71,7 @@ public class LoginController {
         if (usuarioAutenticado != null) {
             if (usuarioAutenticado instanceof UsuarioCliente) {
                 navegarAPantallaPrincipalCliente(actionEvent, (UsuarioCliente) usuarioAutenticado);
-            }else {
+            } else {
                 navegarAPantallaPrincipalEmpleado(actionEvent, (UsuarioEmpleado) usuarioAutenticado);
             }
         } else {
@@ -92,7 +93,7 @@ public class LoginController {
     /**
      * Verifica si las credenciales del usuario son correctas
      *
-     * @param usuario El usuario a autenticar
+     * @param usuario  El usuario a autenticar
      * @param password La contraseña ingresada
      * @return true si la autenticación es exitosa, false en caso contrario
      */
@@ -100,9 +101,8 @@ public class LoginController {
         // Verificar que el usuario esté activo
         if (usuario.getEstado() != Estado.ACTIVO) {
             mostrarError("Usuario inactivo. Contacte al administrador.");
-           return false;
+            return false;
         }
-
         // Verificar la contraseña
         return HashUtil.verificarPassword(password, usuario.getPassword());
     }
@@ -120,7 +120,7 @@ public class LoginController {
     /**
      * Navega a la pantalla principal de cliente después de un login exitoso
      *
-     * @param event El evento que desencadenó la navegación
+     * @param event   El evento que desencadenó la navegación
      * @param usuario El usuario autenticado
      */
     private void navegarAPantallaPrincipalCliente(ActionEvent event, UsuarioCliente usuario) {
@@ -130,10 +130,10 @@ public class LoginController {
             Parent root = loader.load();
 
             // Obtener el controlador
-           MainViewClienteController controller = loader.getController();
+            MainViewClienteController controller = loader.getController();
 
-           // Establecer el usuario autenticado en el controlador
-           controller.setClienteAutenticado(usuario);
+            // Establecer el usuario autenticado en el controlador
+            controller.setClienteAutenticado(usuario);
 
             // Configurar la nueva escena
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -150,7 +150,7 @@ public class LoginController {
     /**
      * Navega a la pantalla principal de empleado después de un login exitoso
      *
-     * @param event El evento que desencadenó la navegación
+     * @param event   El evento que desencadenó la navegación
      * @param usuario El usuario autenticado
      */
     private void navegarAPantallaPrincipalEmpleado(ActionEvent event, UsuarioEmpleado usuario) {
@@ -177,22 +177,22 @@ public class LoginController {
         }
     }
 
-   private void navegarAPantallaRegistro(ActionEvent event){
+    private void navegarAPantallaRegistro(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/registro-view.fxml"));
             Parent root = loader.load();
 
             RegistroController controller = loader.getController();
-            controller.inicializar();
+            controller.initialize();
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root, 700,800);
+            Scene scene = new Scene(root, 700, 800);
             stage.setTitle("Fitness360 - Registro");
             stage.setScene(scene);
             stage.show();
-        }catch (IOException e){
+        } catch (IOException e) {
             mostrarError("Error al cargar la pantalla registro: " + e.getMessage());
             e.printStackTrace();
         }
-   }
+    }
 }

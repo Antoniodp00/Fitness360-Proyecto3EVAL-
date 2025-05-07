@@ -53,7 +53,7 @@ public class UsuarioClienteDAO implements GenericDAO<UsuarioCliente>{
             "FROM Cliente c " +
             "JOIN ClienteTarifa ct ON c.idCliente = ct.idCliente " +
             "JOIN Tarifa t ON ct.idTarifa = t.idTarifa " +
-            "WHERE t.idEmpleado = ? AND ct.estado = 'ACTIVA'";
+            "WHERE t.idEmpleado = ? AND ct.estado = 'ACTIVA' GROUP BY c.nombre";
 
     /**
      * Método auxiliar para mapear un ResultSet a un objeto UsuarioCliente
@@ -214,7 +214,7 @@ public class UsuarioClienteDAO implements GenericDAO<UsuarioCliente>{
                 pst.setString(2, cliente.getNombre());
                 pst.setString(3, cliente.getApellidos());
                 pst.setString(4, cliente.getCorreo());
-                pst.setString(5, com.dam.adp.fitness360proyecto3eval.utilidades.HashUtil.hashPassword(cliente.getPassword()));
+                pst.setString(5, cliente.getPassword());
                 pst.setString(6, cliente.getTelefono());
                 pst.setDate(7, cliente.getFechaNacimiento() != null ? new java.sql.Date(cliente.getFechaNacimiento().getTime()) : null);
                 pst.setString(8, cliente.getSexo() != null ? cliente.getSexo().name() : null);

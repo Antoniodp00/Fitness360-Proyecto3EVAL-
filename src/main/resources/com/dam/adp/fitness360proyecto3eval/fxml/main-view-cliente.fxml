@@ -187,7 +187,6 @@
                                   <TableColumn fx:id="colNombreTarifa" prefWidth="150.0" text="Nombre" />
                                   <TableColumn fx:id="colPrecioTarifa" prefWidth="100.0" text="Precio" />
                                   <TableColumn fx:id="colPeriodoTarifa" prefWidth="100.0" text="Periodo" />
-                                  <TableColumn fx:id="colEntrenadorTarifa" prefWidth="150.0" text="Entrenador" />
                                   <TableColumn fx:id="colDescripcionTarifa" prefWidth="150.0" text="Descripción" />
                                   <TableColumn fx:id="colAccionesTarifa" prefWidth="120.0" text="Contratar" />
                                 </columns>

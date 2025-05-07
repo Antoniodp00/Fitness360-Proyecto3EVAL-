@@ -1,20 +1,19 @@
 package com.dam.adp.fitness360proyecto3eval.controller;
 
-import com.dam.adp.fitness360proyecto3eval.DAO.ClienteDietaDAO;
-import com.dam.adp.fitness360proyecto3eval.DAO.ClienteRutinaDAO;
-import com.dam.adp.fitness360proyecto3eval.model.ClienteDieta;
-import com.dam.adp.fitness360proyecto3eval.model.ClienteRutina;
-import com.dam.adp.fitness360proyecto3eval.model.Rutina;
-import com.dam.adp.fitness360proyecto3eval.model.UsuarioCliente;
+import com.dam.adp.fitness360proyecto3eval.DAO.*;
+import com.dam.adp.fitness360proyecto3eval.model.*;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,6 +70,7 @@ public class MainViewClienteController {
     public TableColumn colEntrenadorTarifa;
     public TableColumn colDescripcionTarifa;
     public TableColumn colAccionesTarifa;
+    public Button btnCerrarSesion;
 
     private UsuarioCliente clienteAutenticado;
 
@@ -91,6 +91,8 @@ public class MainViewClienteController {
 
         cargarRutinas();
         cargarDietas();
+        cargarRevisiones();
+        cargarEntrenadores();
     }
 
     private void cargarRutinas() {
@@ -126,6 +128,91 @@ public class MainViewClienteController {
 
     }
 
-    private void cargarRevisiones() {}
+    private void cargarRevisiones() {
 
+        RevisionDAO revisionDAO = new RevisionDAO();
+        List<Revision> misRevisiones = revisionDAO.getByClientEager( clienteAutenticado.getId() );
+
+        colFechaRevision.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+        colPesoRevision.setCellValueFactory(new PropertyValueFactory<>("peso"));
+        colGrasaRevision.setCellValueFactory(new PropertyValueFactory<>("grasa"));
+        colMusculoRevision.setCellValueFactory(new PropertyValueFactory<>("musculo"));
+        colEntrenadorRevision.setCellValueFactory(new PropertyValueFactory<>("nombreEmpleadoCompleto"));
+        colObservacionesRevision.setCellValueFactory(new PropertyValueFactory<>("observaciones"));
+        colAccionesRevision.setCellValueFactory(new PropertyValueFactory<>("acciones"));
+
+        tablaRevisiones.getItems().clear();
+        tablaRevisiones.getItems().addAll(misRevisiones);
+
+    }
+
+    public void cargarEntrenadores() {
+
+        UsuarioEmpleadoDAO usuarioEmpleadoDAO = new UsuarioEmpleadoDAO();
+        List<UsuarioEmpleado> empleados = usuarioEmpleadoDAO.getAll();
+
+        colNombreEntrenador.setCellValueFactory(new PropertyValueFactory<>("nombreCompleto"));
+        colEspecialidadEntrenador.setCellValueFactory(new PropertyValueFactory<>("especialidad"));
+        colDescripcionEntrenador.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+        colAccionesEntrenador.setCellValueFactory(new PropertyValueFactory<>("acciones"));
+
+        tablaEntrenadores.getItems().clear();
+        tablaEntrenadores.getItems().addAll(empleados);
+    }
+
+    public void cargarTarifasEntrenador(UsuarioEmpleado empleado) {
+        TarifaDAO tarifaDAO = new TarifaDAO();
+        List<Tarifa> tarifas = tarifaDAO.getByCreator(empleado.getId());
+
+        colNombreTarifa.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        colPrecioTarifa.setCellValueFactory(new PropertyValueFactory<>("precio"));
+        colPeriodoTarifa.setCellValueFactory(new PropertyValueFactory<>("periodo"));
+        colDescripcionTarifa.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+
+        tablaTarifas.getItems().clear();
+        tablaTarifas.getItems().addAll(tarifas);
+    }
+
+    /**
+     * Maneja el evento de clic en el botón de cerrar sesión
+     * Navega de vuelta a la pantalla de login
+     *
+     * @param event El evento que desencadenó esta acción
+     */
+    @FXML
+    public void cerrarSesion(ActionEvent event) {
+        try {
+            // Cargar la vista de login
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/login-view.fxml"));
+            Parent root = loader.load();
+
+            // Configurar la nueva escena
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setTitle("Fitness360 - Login");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            System.err.println("Error al cargar la pantalla de login: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Inicializa el controlador y configura los eventos
+     */
+    @FXML
+    public void initialize() {
+        // Configurar el evento de clic para el botón de cerrar sesión
+        btnCerrarSesion.setOnAction(this::cerrarSesion);
+
+        tablaEntrenadores.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    if (newValue != null) {
+                        cargarTarifasEntrenador((UsuarioEmpleado) newValue);
+                    }
+                }
+        );
+
+    }
 }

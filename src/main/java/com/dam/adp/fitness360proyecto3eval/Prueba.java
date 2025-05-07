@@ -2,6 +2,10 @@ package com.dam.adp.fitness360proyecto3eval;
 
 import com.dam.adp.fitness360proyecto3eval.DAO.*;
 import com.dam.adp.fitness360proyecto3eval.model.*;
+import com.dam.adp.fitness360proyecto3eval.utilidades.HashUtil;
+import com.dam.adp.fitness360proyecto3eval.utilidades.Utilidades;
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
@@ -342,5 +346,11 @@ UsuarioCliente cliente = UsuarioClienteDAO.findByIdEager(1);
         } else {
             System.out.println("Error al insertar el cliente.");
         }*/
+/*
+        String passwordIngresada = "1234"; // escribe la contraseña que crees que corresponde
+        String hashGuardado = HashUtil.hashPassword(passwordIngresada);
+
+        boolean coincide = BCrypt.checkpw(passwordIngresada, hashGuardado);
+        System.out.println("¿La contraseña coincide? " + coincide);*/
     }
 }

@@ -35,7 +35,12 @@ public class RevisionDAO implements GenericDAO<Revision> {
 
     /** Consulta SQL para buscar revisiones por cliente */
     private static final String SQL_GET_BY_CLIENTE =
-            "SELECT * FROM Revision WHERE idCliente = ?";
+            "SELECT r.*, c.*, e.* " +
+                    "FROM Revision r " +
+                    "JOIN Cliente c ON r.idCliente = c.idCliente " +
+                    "JOIN Empleado e ON r.idEmpleado = e.idEmpleado " +
+                    "WHERE r.idCliente = ?";
+
 
     /** Consulta SQL para obtener todas las revisiones */
     private static final String SQL_GET_ALL =
@@ -238,6 +243,30 @@ public class RevisionDAO implements GenericDAO<Revision> {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     revisiones.add(mapearRevision(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return revisiones;
+    }
+
+    /**
+     * Obtiene todas las revisiones de un cliente específico verison Eager
+     *
+     * @param idCliente ID del cliente
+     * @return Lista de revisiones del cliente
+     */
+    public  List<Revision> getByClientEager(int idCliente) {
+        List<Revision> revisiones = new ArrayList<>();
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQL_GET_BY_CLIENTE)) {
+
+            stmt.setInt(1, idCliente);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    revisiones.add(mapearRevisionEager(rs));
                 }
             }
         } catch (SQLException e) {

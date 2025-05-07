@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.*?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dam.adp.fitness360proyecto3eval.controller.MainViewClienteController">
    <top>
@@ -58,8 +58,8 @@
                                   <TableColumn fx:id="colNombreRutina" prefWidth="150.0" text="Nombre" />
                                   <TableColumn fx:id="colDescripcionRutina" prefWidth="250.0" text="Descripción" />
                                   <TableColumn fx:id="colCreadorRutina" prefWidth="150.0" text="Creador" />
-                                  <TableColumn fx:id="colFechaRutina" prefWidth="100.0" text="Fecha" />
-                                  <TableColumn fx:id="colAccionesRutina" prefWidth="120.0" text="Acciones" />
+                                  <TableColumn fx:id="colFechaInicioRutina" prefWidth="100.0" text="FechaInicio" />
+                                  <TableColumn fx:id="colFechaFinRutina" prefWidth="120.0" text="FechaFin" />
                                 </columns>
                               </TableView>
                            </children>
@@ -92,8 +92,8 @@
                                   <TableColumn fx:id="colNombreDieta" prefWidth="150.0" text="Nombre" />
                                   <TableColumn fx:id="colDescripcionDieta" prefWidth="250.0" text="Descripción" />
                                   <TableColumn fx:id="colCreadorDieta" prefWidth="150.0" text="Nutricionista" />
-                                  <TableColumn fx:id="colFechaDieta" prefWidth="100.0" text="Fecha" />
-                                  <TableColumn fx:id="colAccionesDieta" prefWidth="120.0" text="Acciones" />
+                                  <TableColumn fx:id="colFechaInicioDieta" prefWidth="100.0" text="FechaInicio" />
+                                  <TableColumn fx:id="colFechaFinDieta" prefWidth="120.0" text="FechaFin" />
                                 </columns>
                               </TableView>
                            </children>

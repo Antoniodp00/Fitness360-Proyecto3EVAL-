@@ -35,11 +35,13 @@ public class ClienteDietaDAO implements GenericDAO<ClienteDieta> {
                     "c.idCliente, c.nombreUsuario, c.nombre, c.apellidos, c.correo, " +
                     "c.password, c.telefono, c.fechaNacimiento, c.sexo, c.altura, " +
                     "c.estado, c.createdAt, c.updatedAt, " +
-                    "d.idDieta, d.nombre as nombreDieta, d.descripcion as descripcionDieta, " +
-                    "d.createdAt as createdAtDieta, d.updatedAt as updatedAtDieta " +
+                    "d.nombre AS nombreDieta, d.descripcion AS descripcionDieta, " +
+                    "d.createdAt AS createdAtDieta, d.updatedAt AS updatedAtDieta, " +
+                    "e.idEmpleado, e.nombre AS nombreEmpleado, e.apellidos AS apellidosEmpleado " +
                     "FROM ClienteDieta cd " +
                     "JOIN Cliente c ON cd.idCliente = c.idCliente " +
                     "JOIN Dieta d ON cd.idDieta = d.idDieta " +
+                    "LEFT JOIN Empleado e ON d.idEmpleado = e.idEmpleado " +
                     "WHERE cd.idCliente = ?";
 
     /** Consulta SQL para buscar asignaciones de clientes por dieta con información completa */
@@ -341,6 +343,12 @@ public class ClienteDietaDAO implements GenericDAO<ClienteDieta> {
         dieta.setCreatedAt(rs.getTimestamp("createdAtDieta"));
         dieta.setUpdatedAt(rs.getTimestamp("updatedAtDieta"));
         cd.setDieta(dieta);
+
+        UsuarioEmpleado empleado = new UsuarioEmpleado();
+        empleado.setId(rs.getInt("idEmpleado"));
+        empleado.setNombre(rs.getString("nombreEmpleado"));
+        empleado.setApellidos(rs.getString("apellidosEmpleado"));
+        dieta.setCreador(empleado);
 
         cd.setFechaAsignacion(rs.getDate("fechaAsignacion"));
         cd.setFechaFin(rs.getDate("fechaFin"));

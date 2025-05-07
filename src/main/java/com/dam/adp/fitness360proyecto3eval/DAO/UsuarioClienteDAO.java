@@ -147,6 +147,7 @@ public class UsuarioClienteDAO implements GenericDAO<UsuarioCliente>{
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
     public UsuarioCliente findByIdEager(int idCliente) {
+        ClienteRutinaDAO clienteRutinaDAO = new ClienteRutinaDAO();
         UsuarioCliente cliente = null;
 
         try (Connection con = ConnectionDB.getConnection();
@@ -161,7 +162,7 @@ public class UsuarioClienteDAO implements GenericDAO<UsuarioCliente>{
 
             // Ahora que el cliente está mapeado, obtenemos las rutinas asignadas
             if (cliente != null) {
-                cliente.setRutinasAsignadas(ClienteRutinaDAO.findByClientEager(idCliente));
+                cliente.setRutinasAsignadas(clienteRutinaDAO.findByClientEager(idCliente));
             }
 
         } catch (SQLException e) {

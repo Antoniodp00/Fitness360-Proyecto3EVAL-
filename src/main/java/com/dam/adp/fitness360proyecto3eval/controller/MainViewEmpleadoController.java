@@ -210,18 +210,20 @@ public class MainViewEmpleadoController {
     private void cargarRevisiones() {
         RevisionDAO revisionDAO = new RevisionDAO();
         // Implementación para cargar las revisiones realizadas por el empleado
-        List<Revision> misRevisiones = revisionDAO.getByCreator(empleadoAutenticado.getId());
+        List<Revision> misRevisiones = revisionDAO.getByCreatorEager(empleadoAutenticado.getId());
 
         // Configurar las columnas de la tabla
         colFechaRevision.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+        colClienteRevision.setCellValueFactory(new PropertyValueFactory<>("nombreClienteCompleto"));
         colPesoRevision.setCellValueFactory(new PropertyValueFactory<>("peso"));
-        colGrasaRevision.setCellValueFactory(new PropertyValueFactory<>("porcentajeGrasa"));
-        colMusculoRevision.setCellValueFactory(new PropertyValueFactory<>("porcentajeMusculo"));
+        colGrasaRevision.setCellValueFactory(new PropertyValueFactory<>("grasa"));
+        colMusculoRevision.setCellValueFactory(new PropertyValueFactory<>("musculo"));
         colObservacionesRevision.setCellValueFactory(new PropertyValueFactory<>("observaciones"));
 
         // Limpiar y agregar las revisiones a la tabla
         tablaRevisiones.getItems().clear();
         tablaRevisiones.getItems().addAll(misRevisiones);
+
     }
 
     /**

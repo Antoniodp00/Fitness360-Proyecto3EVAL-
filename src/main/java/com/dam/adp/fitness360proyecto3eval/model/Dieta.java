@@ -210,6 +210,14 @@ public class Dieta {
         this.updatedAt = updatedAt;
     }
 
+
+    public String getNombreEmpleadoCompleto() {
+        if (creador == null) {
+            return "Creado por el propio cliente";
+        }
+        return creador.getNombre() + " " + creador.getApellidos();
+    }
+
     /**
      * Devuelve una representación en cadena de texto de la dieta.
      * 

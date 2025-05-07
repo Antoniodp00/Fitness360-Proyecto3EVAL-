@@ -60,7 +60,7 @@ public class ClienteTarifaDAO {
      * 
      * @param ct Objeto ClienteTarifa con los datos a insertar
      */
-    public static void insert(ClienteTarifa ct) {
+    public void insert(ClienteTarifa ct) {
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_INSERT)) {
 
@@ -83,7 +83,7 @@ public class ClienteTarifaDAO {
      * @param idCliente ID del cliente a buscar
      * @return Lista de objetos ClienteTarifa con las asignaciones encontradas
      */
-    public static List<ClienteTarifa> findByCliente(int idCliente) {
+    public List<ClienteTarifa> findByCliente(int idCliente) {
         List<ClienteTarifa> lista = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_CLIENTE)) {
@@ -104,7 +104,7 @@ public class ClienteTarifaDAO {
      * @param idTarifa ID de la tarifa a buscar
      * @return Lista de objetos ClienteTarifa con las asignaciones encontradas
      */
-    public static List<ClienteTarifa> findByTarifa(int idTarifa) {
+    public List<ClienteTarifa> findByTarifa(int idTarifa) {
         List<ClienteTarifa> lista = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_TARIFA)) {
@@ -125,7 +125,7 @@ public class ClienteTarifaDAO {
      * @param idCliente ID del cliente
      * @param idTarifa ID de la tarifa
      */
-    public static void delete(int idCliente, int idTarifa) {
+    public void delete(int idCliente, int idTarifa) {
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_DELETE)) {
             stmt.setInt(1, idCliente);
@@ -143,7 +143,7 @@ public class ClienteTarifaDAO {
      * @return Objeto ClienteTarifa con todos los datos
      * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
      */
-    private static ClienteTarifa mapearClienteTarifaEager(ResultSet rs) throws SQLException {
+    private ClienteTarifa mapearClienteTarifaEager(ResultSet rs) throws SQLException {
         ClienteTarifa ct = new ClienteTarifa();
 
         UsuarioCliente cliente = new UsuarioCliente();
@@ -188,7 +188,7 @@ public class ClienteTarifaDAO {
      * 
      * @return Lista de todas las asignaciones
      */
-    public static List<ClienteTarifa> getAll() {
+    public List<ClienteTarifa> getAll() {
         List<ClienteTarifa> lista = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_GET_ALL);
@@ -209,7 +209,7 @@ public class ClienteTarifaDAO {
      * @param ct Objeto ClienteTarifa con los datos actualizados
      * @return true si la actualización fue exitosa, false en caso contrario
      */
-    public static boolean update(ClienteTarifa ct) {
+    public boolean update(ClienteTarifa ct) {
         boolean actualizado = false;
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {

@@ -27,13 +27,14 @@ public class ClienteRutinaDAO {
                     "c.idCliente, c.nombreUsuario, c.nombre, c.apellidos, c.correo, " +
                     "c.password, c.telefono, c.fechaNacimiento, c.sexo, c.altura, " +
                     "c.estado, c.createdAt, c.updatedAt, " +
-                    "r.nombre as nombreRutina, r.descripcion as descripcionRutina, " +
-                    "r.createdAt as createdAtRutina, r.updatedAt as updatedAtRutina " +
+                    "r.nombre AS nombreRutina, r.descripcion AS descripcionRutina, " +
+                    "r.createdAt AS createdAtRutina, r.updatedAt AS updatedAtRutina, " +
+                    "e.idEmpleado, e.nombre AS nombreEmpleado, e.apellidos AS apellidosEmpleado " +
                     "FROM UsuarioRutina ur " +
                     "JOIN Cliente c ON ur.idUsuario = c.idCliente " +
                     "JOIN Rutina r ON ur.idRutina = r.idRutina " +
+                    "LEFT JOIN Empleado e ON r.idEmpleado = e.idEmpleado " +
                     "WHERE ur.idUsuario = ?";
-
     /**
      * Consulta SQL para buscar asignaciones por ID de rutina
      */
@@ -81,7 +82,7 @@ public class ClienteRutinaDAO {
      * @param cr Objeto ClienteRutina con los datos de la asignación a insertar
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static void insert(ClienteRutina cr) {
+    public void insert(ClienteRutina cr) {
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_INSERT)) {
 
@@ -103,7 +104,7 @@ public class ClienteRutinaDAO {
      * @return Lista de asignaciones de rutinas para el cliente
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static List<ClienteRutina> findByClient(int idCliente) {
+    public List<ClienteRutina> findByClient(int idCliente) {
         List<ClienteRutina> lista = new ArrayList<>();
 
         try (Connection conn = ConnectionDB.getConnection();
@@ -128,7 +129,7 @@ public class ClienteRutinaDAO {
      * @return Lista de asignaciones de rutinas para el cliente con datos completos
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static List<ClienteRutina> findByClientEager(int idCliente) {
+    public List<ClienteRutina> findByClientEager(int idCliente) {
         List<ClienteRutina> lista = new ArrayList<>();
 
         try (Connection conn = ConnectionDB.getConnection();
@@ -153,7 +154,7 @@ public class ClienteRutinaDAO {
      * @return Lista de asignaciones de clientes para la rutina
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static List<ClienteRutina> findByRutine(int idRutina){
+    public List<ClienteRutina> findByRutine(int idRutina){
         List<ClienteRutina> lista = new ArrayList<>();
 
         try (Connection conn = ConnectionDB.getConnection();
@@ -178,7 +179,7 @@ public class ClienteRutinaDAO {
      * @return Lista de asignaciones de clientes para la rutina con datos completos
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static List<ClienteRutina> findByRutineEager(int idRutina){
+    public List<ClienteRutina> findByRutineEager(int idRutina){
         List<ClienteRutina> lista = new ArrayList<>();
         Connection conn = ConnectionDB.getConnection();
         try {
@@ -202,7 +203,7 @@ public class ClienteRutinaDAO {
      * @param idRutina  ID de la rutina
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
-    public static void delete(int idCliente, int idRutina){
+    public void delete(int idCliente, int idRutina){
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_DELETE)) {
 
@@ -221,7 +222,7 @@ public class ClienteRutinaDAO {
      * @return Objeto ClienteRutina con los datos mapeados
      * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
      */
-    private static ClienteRutina mapearClienteRutina(ResultSet rs) throws SQLException {
+    private ClienteRutina mapearClienteRutina(ResultSet rs) throws SQLException {
         ClienteRutina cr = new ClienteRutina();
 
         UsuarioCliente cliente = new UsuarioCliente();
@@ -246,7 +247,7 @@ public class ClienteRutinaDAO {
      * @return Objeto ClienteRutina con los datos completos mapeados
      * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
      */
-    private static ClienteRutina mapearClienteRutinaEager(ResultSet rs) throws SQLException {
+    private ClienteRutina mapearClienteRutinaEager(ResultSet rs) throws SQLException {
         ClienteRutina cr = new ClienteRutina();
 
         // Mapeo del Cliente
@@ -284,6 +285,12 @@ public class ClienteRutinaDAO {
         rutina.setUpdatedAt(rs.getTimestamp("updatedAtRutina"));
         cr.setRutina(rutina);
 
+        UsuarioEmpleado empleado = new UsuarioEmpleado();
+        empleado.setId(rs.getInt("idEmpleado"));
+        empleado.setNombre(rs.getString("nombreEmpleado"));
+        empleado.setApellidos(rs.getString("apellidosEmpleado"));
+        rutina.setCreadorEmpleado(empleado);
+
         // Fecha de asignación y fecha de finalización
         cr.setFechaAsignacion(rs.getDate("fechaAsignacion"));
         cr.setFechaFin(rs.getDate("fechaFin"));
@@ -296,7 +303,7 @@ public class ClienteRutinaDAO {
      *
      * @return Lista de todas las asignaciones
      */
-    public static List<ClienteRutina> getAll() {
+    public List<ClienteRutina> getAll() {
         List<ClienteRutina> lista = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_GET_ALL);
@@ -317,7 +324,7 @@ public class ClienteRutinaDAO {
      * @param cr Objeto ClienteRutina con los datos actualizados
      * @return true si la actualización fue exitosa, false en caso contrario
      */
-    public static boolean update(ClienteRutina cr) {
+    public boolean update(ClienteRutina cr) {
         boolean actualizado = false;
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {

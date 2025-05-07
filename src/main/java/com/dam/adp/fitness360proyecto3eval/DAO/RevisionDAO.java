@@ -27,7 +27,11 @@ public class RevisionDAO implements GenericDAO<Revision> {
 
     /** Consulta SQL para buscar revisiones por empleado */
     private static final String SQL_GET_BY_EMPLEADO =
-            "SELECT * FROM Revision WHERE idEmpleado = ?";
+            "SELECT r.*, c.*, e.* " +
+                    "FROM Revision r " +
+                    "JOIN Cliente c ON r.idCliente = c.idCliente " +
+                    "JOIN Empleado e ON r.idEmpleado = e.idEmpleado " +
+                    "WHERE r.idEmpleado = ?";
 
     /** Consulta SQL para buscar revisiones por cliente */
     private static final String SQL_GET_BY_CLIENTE =
@@ -75,6 +79,48 @@ public class RevisionDAO implements GenericDAO<Revision> {
         int idEmpleado = rs.getInt("idEmpleado");
         UsuarioEmpleado empleado = new UsuarioEmpleado();
         empleado.setId(idEmpleado);
+        revision.setEmpleado(empleado);
+
+        revision.setCreatedAt(rs.getObject("createdAt", LocalDateTime.class));
+        revision.setUpdatedAt(rs.getObject("updatedAt", LocalDateTime.class));
+
+        return revision;
+    }
+
+    /**
+     * Mapea un ResultSet a un objeto Revision version Eager
+     *
+     * @param rs ResultSet con los datos a mapear
+     * @return Objeto Revision con todos los datos
+     * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
+     */
+    private  Revision mapearRevisionEager(ResultSet rs) throws SQLException {
+
+        Revision revision = new Revision();
+        revision.setIdRevision(rs.getInt("idRevision"));
+        revision.setFecha(rs.getObject("fecha", LocalDate.class));
+        revision.setPeso(rs.getDouble("peso"));
+        revision.setGrasa(rs.getDouble("grasa"));
+        revision.setMusculo(rs.getDouble("musculo"));
+        revision.setmPecho(rs.getDouble("mPecho"));
+        revision.setmCintura(rs.getDouble("mCintura"));
+        revision.setmCadera(rs.getDouble("mCadera"));
+        revision.setObservaciones(rs.getString("observaciones"));
+        revision.setImagen(rs.getString("imagen"));
+
+
+        int idCliente = rs.getInt("idCliente");
+        UsuarioCliente cliente = new UsuarioCliente();
+        cliente.setId(idCliente);
+        cliente.setNombre(rs.getString("nombre"));
+        cliente.setApellidos(rs.getString("apellidos"));
+        revision.setCliente(cliente);
+
+        int idEmpleado = rs.getInt("idEmpleado");
+        UsuarioEmpleado empleado = new UsuarioEmpleado();
+        empleado.setId(idEmpleado);
+        empleado.setNombre(rs.getString("nombre"));
+        empleado.setApellidos(rs.getString("apellidos"));
         revision.setEmpleado(empleado);
 
         revision.setCreatedAt(rs.getObject("createdAt", LocalDateTime.class));
@@ -144,6 +190,30 @@ public class RevisionDAO implements GenericDAO<Revision> {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     revisiones.add(mapearRevision(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return revisiones;
+    }
+
+    /**
+     * Obtiene todas las revisiones realizadas por un empleado específico version Eager
+     *
+     * @param idEmpleado ID del empleado creador
+     * @return Lista de revisiones realizadas por el empleado
+     */
+    public  List<Revision> getByCreatorEager(int idEmpleado) {
+        List<Revision> revisiones = new ArrayList<>();
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQL_GET_BY_EMPLEADO)) {
+
+            stmt.setInt(1, idEmpleado);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    revisiones.add(mapearRevisionEager(rs));
                 }
             }
         } catch (SQLException e) {

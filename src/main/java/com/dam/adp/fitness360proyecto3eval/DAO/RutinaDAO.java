@@ -145,6 +145,7 @@ public class RutinaDAO implements GenericDAO<Rutina> {
      * @throws SQLException Si ocurre un error al acceder a la base de datos
      */
     public Rutina getByIdEager(int idRutina) {
+        ClienteRutinaDAO clienteRutinaDAO = new ClienteRutinaDAO();
         Rutina rutina = null;
 
         try (Connection con = ConnectionDB.getConnection();
@@ -158,7 +159,7 @@ public class RutinaDAO implements GenericDAO<Rutina> {
             }
 
             if (rutina != null) {
-                rutina.setClientesAsignados(ClienteRutinaDAO.findByRutineEager(idRutina));
+                rutina.setClientesAsignados(clienteRutinaDAO.findByRutineEager(idRutina));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

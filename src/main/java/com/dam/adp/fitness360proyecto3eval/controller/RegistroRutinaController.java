@@ -113,7 +113,7 @@ public class RegistroRutinaController {
 
     /**
      * Establece el cliente autenticado y configura la interfaz en consecuencia.
-     * 
+     *
      * @param cliente El cliente autenticado
      */
     public void setClienteAutenticado(UsuarioCliente cliente) {
@@ -139,7 +139,7 @@ public class RegistroRutinaController {
 
     /**
      * Establece el empleado autenticado y configura la interfaz en consecuencia.
-     * 
+     *
      * @param empleado El empleado autenticado
      */
     public void setEmpleadoAutenticado(UsuarioEmpleado empleado) {
@@ -168,7 +168,7 @@ public class RegistroRutinaController {
 
     /**
      * Carga la lista de clientes con tarifas activas para un empleado específico.
-     * 
+     *
      * @param idEmpleado ID del empleado
      */
     private void cargarClientesConTarifasActivas(int idEmpleado) {
@@ -232,7 +232,7 @@ public class RegistroRutinaController {
 
     /**
      * Valida que todos los campos necesarios estén completos.
-     * 
+     *
      * @return true si todos los campos son válidos, false en caso contrario
      */
     private boolean validarCampos() {
@@ -282,7 +282,7 @@ public class RegistroRutinaController {
 
     /**
      * Registra una nueva rutina creada por un cliente y la asigna automáticamente al mismo cliente.
-     * 
+     *
      * @return true si el registro fue exitoso, false en caso contrario
      */
     private boolean registrarRutinaPorCliente() {
@@ -305,7 +305,8 @@ public class RegistroRutinaController {
 
             // Registrar la rutina
             Rutina rutinaRegistrada = rutinaDAO.insertRutinaByClient(rutina);
-
+            //Vuelvo a buscar la rutina creada para obtener el id
+            rutinaRegistrada = rutinaDAO.getByName(rutina.getNombre());
             if (rutinaRegistrada != null) {
                 // Asignar la rutina al mismo cliente que la creó
                 ClienteRutina clienteRutina = new ClienteRutina();
@@ -328,7 +329,7 @@ public class RegistroRutinaController {
 
     /**
      * Registra una nueva rutina creada por un empleado y la asigna al cliente seleccionado.
-     * 
+     *
      * @return true si el registro fue exitoso, false en caso contrario
      */
     private boolean registrarRutinaPorEmpleado() {
@@ -354,6 +355,8 @@ public class RegistroRutinaController {
 
             // Registrar la rutina
             Rutina rutinaRegistrada = rutinaDAO.insertRutinaByEmployee(rutina);
+            //Vuelvo a buscar la rutina creada para obtener el id
+            rutinaRegistrada = rutinaDAO.getByName(rutina.getNombre());
 
             if (rutinaRegistrada != null) {
                 // Asignar la rutina al cliente seleccionado
@@ -361,7 +364,6 @@ public class RegistroRutinaController {
                 clienteRutina.setCliente(clienteAsignado);
                 clienteRutina.setRutina(rutinaRegistrada);
                 clienteRutina.setFechaAsignacion(new java.sql.Date(System.currentTimeMillis()));
-
                 // Insertar la asignación en la base de datos
                 ClienteRutinaDAO clienteRutinaDAO = new ClienteRutinaDAO();
                 clienteRutinaDAO.insert(clienteRutina);
@@ -396,10 +398,10 @@ public class RegistroRutinaController {
 
     /**
      * Muestra una alerta con el título, mensaje y tipo especificados.
-     * 
-     * @param titulo Título de la alerta
+     *
+     * @param titulo  Título de la alerta
      * @param mensaje Mensaje de la alerta
-     * @param tipo Tipo de alerta
+     * @param tipo    Tipo de alerta
      */
     private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
         Alert alerta = new Alert(tipo);

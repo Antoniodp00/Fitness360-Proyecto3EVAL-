@@ -50,7 +50,6 @@ public class MainViewClienteController {
     public TableColumn colMusculoRevision;
     public TableColumn colEntrenadorRevision;
     public TableColumn colObservacionesRevision;
-    public TableColumn colAccionesRevision;
     public ComboBox comboFiltroEspecialidad;
 
     //Tab Entrenadores
@@ -70,7 +69,13 @@ public class MainViewClienteController {
     public TableColumn colEntrenadorTarifa;
     public TableColumn colDescripcionTarifa;
     public TableColumn colAccionesTarifa;
+
+    //Botones
     public Button btnCerrarSesion;
+    public Button btnCrearRutina;
+    public Button btnModificarRutina;
+    public Button btnEliminarRutina;
+    public Button btnContratarTarifa;
 
     private UsuarioCliente clienteAutenticado;
 
@@ -140,7 +145,7 @@ public class MainViewClienteController {
         colMusculoRevision.setCellValueFactory(new PropertyValueFactory<>("musculo"));
         colEntrenadorRevision.setCellValueFactory(new PropertyValueFactory<>("nombreEmpleadoCompleto"));
         colObservacionesRevision.setCellValueFactory(new PropertyValueFactory<>("observaciones"));
-        colAccionesRevision.setCellValueFactory(new PropertyValueFactory<>("acciones"));
+
 
         tablaRevisiones.getItems().clear();
         tablaRevisiones.getItems().addAll(misRevisiones);
@@ -155,7 +160,7 @@ public class MainViewClienteController {
         colNombreEntrenador.setCellValueFactory(new PropertyValueFactory<>("nombreCompleto"));
         colEspecialidadEntrenador.setCellValueFactory(new PropertyValueFactory<>("especialidad"));
         colDescripcionEntrenador.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
-        colAccionesEntrenador.setCellValueFactory(new PropertyValueFactory<>("acciones"));
+
 
         tablaEntrenadores.getItems().clear();
         tablaEntrenadores.getItems().addAll(empleados);
@@ -202,7 +207,7 @@ public class MainViewClienteController {
     /**
      * Abre la ventana de registro de rutina pasando el cliente autenticado
      */
-    public void abrirRegistroRutina() {
+    public void abrirRegistroRutina(ActionEvent event) {
         try {
             // Cargar la vista de registro de rutina
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/registro-rutina-view.fxml"));
@@ -239,7 +244,7 @@ public class MainViewClienteController {
                     }
                 }
         );
-
+        btnCrearRutina.setOnAction(this::abrirRegistroRutina);
 
 
     }

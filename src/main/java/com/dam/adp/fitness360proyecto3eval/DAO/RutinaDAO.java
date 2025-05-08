@@ -31,6 +31,9 @@ public class RutinaDAO implements GenericDAO<Rutina> {
     private static final String SQL_FIND_BY_ID =
             "SELECT * FROM Rutina WHERE idRutina = ?";
 
+    private static final String SQL_FIND_BY_NAME =
+            "SELECT * FROM Rutina WHERE nombre = ?";
+
     /**
      * Consulta SQL para obtener todas las rutinas
      */
@@ -119,6 +122,25 @@ public class RutinaDAO implements GenericDAO<Rutina> {
              PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_ID)) {
 
             stmt.setInt(1, idRutina);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    rutina = mapearRutina(rs);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return rutina;
+    }
+
+
+    public Rutina getByName(String nombreRutina) {
+        Rutina rutina = null;
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_NAME)) {
+
+            stmt.setString(1, nombreRutina);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {

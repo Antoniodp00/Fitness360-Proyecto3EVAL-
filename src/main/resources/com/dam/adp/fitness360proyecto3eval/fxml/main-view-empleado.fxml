@@ -59,7 +59,6 @@
                                   <TableColumn fx:id="colEmailCliente" prefWidth="150.0" text="Email" />
                                   <TableColumn fx:id="colTelefonoCliente" prefWidth="100.0" text="Teléfono" />
                                   <TableColumn fx:id="colFechaAltaCliente" prefWidth="100.0" text="Fecha Alta" />
-                                  <TableColumn fx:id="colAccionesCliente" prefWidth="120.0" text="Acciones" />
                                 </columns>
                               </TableView>
                            </children>
@@ -82,8 +81,10 @@
                                        </font>
                                     </Label>
                                     <ComboBox fx:id="comboFiltroRutinas" prefWidth="150.0" promptText="Filtrar por" />
-                                    <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                                    <Region prefHeight="31.0" prefWidth="125.0" HBox.hgrow="ALWAYS" />
                                     <Button fx:id="btnCrearRutina" mnemonicParsing="false" text="Crear Rutina" />
+                                    <Button fx:id="btnModificarRutina" layoutX="697.0" layoutY="20.0" mnemonicParsing="false" text="Modificar Rutina" />
+                                    <Button fx:id="btnEliminarRutina" layoutX="697.0" layoutY="20.0" style="-fx-background-color: #f44336;" mnemonicParsing="false" text="Eliminar Rutina" />
                                  </children>
                                  <padding>
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -95,7 +96,6 @@
                                   <TableColumn fx:id="colDescripcionRutina" prefWidth="250.0" text="Descripción" />
                                   <TableColumn fx:id="colFechaRutina" prefWidth="100.0" text="Fecha" />
                                   <TableColumn fx:id="colClientesAsignadosRutina" prefWidth="150.0" text="Clientes Asignados" />
-                                  <TableColumn fx:id="colAccionesRutina" prefWidth="120.0" text="Acciones" />
                                 </columns>
                               </TableView>
                            </children>
@@ -118,8 +118,10 @@
                                        </font>
                                     </Label>
                                     <ComboBox fx:id="comboFiltroDietas" prefWidth="150.0" promptText="Filtrar por" />
-                                    <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                                    <Region prefHeight="31.0" prefWidth="130.0" HBox.hgrow="ALWAYS" />
                                     <Button fx:id="btnCrearDieta" mnemonicParsing="false" text="Crear Dieta" />
+                                    <Button fx:id="btnModificarDieta" layoutX="704.0" layoutY="20.0" mnemonicParsing="false" text="Modificar Dieta" />
+                                    <Button fx:id="btnEliminarDieta" layoutX="704.0" layoutY="20.0" mnemonicParsing="false" text="Eliminar Dieta" style="-fx-background-color: #f44336;" />
                                  </children>
                                  <padding>
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -131,7 +133,6 @@
                                   <TableColumn fx:id="colDescripcionDieta" prefWidth="250.0" text="Descripción" />
                                   <TableColumn fx:id="colFechaDieta" prefWidth="100.0" text="Fecha" />
                                   <TableColumn fx:id="colClientesAsignadosDieta" prefWidth="150.0" text="Clientes Asignados" />
-                                  <TableColumn fx:id="colAccionesDieta" prefWidth="120.0" text="Acciones" />
                                 </columns>
                               </TableView>
                            </children>
@@ -154,8 +155,10 @@
                                        </font>
                                     </Label>
                                     <ComboBox fx:id="comboFiltroPeriodo" prefWidth="150.0" promptText="Periodo" />
-                                    <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                                    <Region prefHeight="31.0" prefWidth="116.0" HBox.hgrow="ALWAYS" />
                                     <Button fx:id="btnCrearTarifa" mnemonicParsing="false" text="Crear Tarifa" />
+                                    <Button fx:id="btnModificarTarifa" layoutX="701.0" layoutY="20.0" mnemonicParsing="false" text="Modificar Tarifa" />
+                                    <Button fx:id="btnEliminarTarifa" layoutX="701.0" layoutY="20.0" mnemonicParsing="false" text="Eliminar Tarifa" style="-fx-background-color: #f44336;"/>
                                  </children>
                                  <padding>
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -167,7 +170,6 @@
                                   <TableColumn fx:id="colPrecioTarifa" prefWidth="100.0" text="Precio" />
                                   <TableColumn fx:id="colPeriodoTarifa" prefWidth="100.0" text="Periodo" />
                                   <TableColumn fx:id="colDescripcionTarifa" prefWidth="200.0" text="Descripción" />
-                                  <TableColumn fx:id="colAccionesTarifa" prefWidth="100.0" text="Acciones" />
                                 </columns>
                               </TableView>
                            </children>
@@ -205,7 +207,6 @@
                                   <TableColumn fx:id="colGrasaRevision" prefWidth="80.0" text="Grasa %" />
                                   <TableColumn fx:id="colMusculoRevision" prefWidth="80.0" text="Músculo %" />
                                   <TableColumn fx:id="colObservacionesRevision" prefWidth="180.0" text="Observaciones" />
-                                  <TableColumn fx:id="colAccionesRevision" prefWidth="100.0" text="Acciones" />
                                 </columns>
                               </TableView>
                            </children>

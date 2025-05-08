@@ -44,7 +44,7 @@ public class MainViewEmpleadoController {
     public TableColumn colEmailCliente;
     public TableColumn colTelefonoCliente;
     public TableColumn colFechaAltaCliente;
-    public TableColumn colAccionesCliente;
+
 
     // Tab Rutinas
     public Tab tabRutinas;
@@ -55,7 +55,7 @@ public class MainViewEmpleadoController {
     public TableColumn colDescripcionRutina;
     public TableColumn colFechaRutina;
     public TableColumn colClientesAsignadosRutina;
-    public TableColumn colAccionesRutina;
+
 
     // Tab Dietas
     public Tab tabDietas;
@@ -66,7 +66,7 @@ public class MainViewEmpleadoController {
     public TableColumn colDescripcionDieta;
     public TableColumn colFechaDieta;
     public TableColumn colClientesAsignadosDieta;
-    public TableColumn colAccionesDieta;
+
 
     // Tab Tarifas
     public Tab tabTarifas;
@@ -78,7 +78,7 @@ public class MainViewEmpleadoController {
     public TableColumn colPeriodoTarifa;
     public TableColumn colDescripcionTarifa;
     public TableColumn colClientesAsignadosTarifa;
-    public TableColumn colAccionesTarifa;
+
 
     // Tab Revisiones
     public Tab tabRevisiones;
@@ -172,13 +172,16 @@ public class MainViewEmpleadoController {
      */
     private void cargarDietas() {
         DietaDAO dietaDAO = new DietaDAO();
+        ClienteDietaDAO clienteDietaDAO = new ClienteDietaDAO();
         // Implementación para cargar las dietas creadas por el empleado
         List<Dieta> misDietas = dietaDAO.getByCreator(empleadoAutenticado.getId());
+
 
         // Configurar las columnas de la tabla
         colNombreDieta.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colDescripcionDieta.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
         colFechaDieta.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
+        colClientesAsignadosDieta.setCellValueFactory(new PropertyValueFactory<>("clientesAsignados"));
 
         // Limpiar y agregar las dietas a la tabla
         tablaDietas.getItems().clear();

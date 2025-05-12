@@ -14,6 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -189,7 +190,7 @@ public class MainViewClienteController {
 
     /**
      * Carga las tarifas disponibles para un entrenador específico.
-     * 
+     *
      * @param empleado El entrenador del que se cargarán las tarifas
      */
     public void cargarTarifasEntrenador(UsuarioEmpleado empleado) {
@@ -255,6 +256,57 @@ public class MainViewClienteController {
         }
     }
 
+
+    public void contratarTarifa(ActionEvent event) {
+        ClienteTarifaDAO clienteTarifaDAO = new ClienteTarifaDAO();
+        Tarifa tarifaSeleccionada = (Tarifa) tablaTarifas.getSelectionModel().getSelectedItem();
+
+        if (tarifaSeleccionada == null) {
+            mostrarAlerta("Error", "Por favor, seleccione una tarifa", Alert.AlertType.WARNING);
+            return;
+        }
+
+        try {
+            // Verificar si ya existe la asignación
+            List<ClienteTarifa> tarifasCliente = clienteTarifaDAO.findByCliente(clienteAutenticado.getId());
+            boolean tarifaYaExiste = false;
+
+            for (ClienteTarifa ct : tarifasCliente) {
+                if (ct.getTarifa().getIdTarifa() == tarifaSeleccionada.getIdTarifa()
+                        && ct.getEstado() == EstadoTarifa.ACTIVA) {
+                    tarifaYaExiste = true;
+                    break;
+                }
+            }
+
+            if (tarifaYaExiste) {
+                mostrarAlerta("Error", "El cliente ya tiene esta tarifa contratada", Alert.AlertType.ERROR);
+                return;
+            }
+
+            // Crear nueva asignación
+            ClienteTarifa clienteTarifa = new ClienteTarifa();
+            clienteTarifa.setCliente(clienteAutenticado);
+            clienteTarifa.setTarifa(tarifaSeleccionada);
+            clienteTarifa.setFechaContratacion(new Date(System.currentTimeMillis()));
+            clienteTarifa.setEstado(EstadoTarifa.ACTIVA);
+
+            clienteTarifaDAO.insert(clienteTarifa);
+            mostrarAlerta("Tarifa Asignada", "Tarifa asignada correctamente", Alert.AlertType.INFORMATION);
+
+        } catch (RuntimeException e) {
+            mostrarAlerta("Error", "No se pudo asignar la tarifa", Alert.AlertType.ERROR);
+        }
+    }
+
+    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
+        Alert alert = new Alert(tipo);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+
     /**
      * Inicializa el controlador y configura los eventos
      */
@@ -263,15 +315,17 @@ public class MainViewClienteController {
         // Configurar el evento de clic para el botón de cerrar sesión
         btnCerrarSesion.setOnAction(this::cerrarSesion);
 
-        tablaEntrenadores.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    if (newValue != null) {
-                        cargarTarifasEntrenador((UsuarioEmpleado) newValue);
-                    }
-                }
-        );
+        //Configurar la seleccion de empleado para mostrar sus tarifas
+        UsuarioEmpleado empleadoSeleccionado = (UsuarioEmpleado) tablaEntrenadores.getSelectionModel().getSelectedItem();
+        if (empleadoSeleccionado != null) {
+            cargarTarifasEntrenador(empleadoSeleccionado);
+        }
+
+        //Configurar el evento de click para abrir el panel de registro de rutina
         btnCrearRutina.setOnAction(this::abrirRegistroRutina);
 
+        //Configurar el evento de click para contratar una rutina
+        btnContratarTarifa.setOnAction(this::contratarTarifa);
 
     }
 }

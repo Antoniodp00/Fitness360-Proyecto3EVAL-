@@ -18,6 +18,11 @@ import java.io.IOException;
 import java.time.ZoneId;
 import java.util.Date;
 
+/**
+ * Controlador para la pantalla de registro de usuarios.
+ * Maneja el registro de nuevos clientes y profesionales (empleados) en el sistema.
+ * Permite introducir los datos personales y específicos según el tipo de usuario.
+ */
 public class RegistroController {
 
     @FXML

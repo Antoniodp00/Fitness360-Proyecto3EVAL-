@@ -25,10 +25,21 @@ import java.io.IOException;
  * Maneja la autenticación de usuarios (clientes y empleados)
  */
 public class LoginController {
+    /**
+     * Campo para ingresar la contraseña del usuario
+     */
     @FXML
     public PasswordField passwordField;
+
+    /**
+     * Etiqueta para mostrar mensajes de error durante el proceso de login
+     */
     @FXML
     private Label errorMessage;
+
+    /**
+     * Campo para ingresar el nombre de usuario
+     */
     @FXML
     private TextField usernameField;
 
@@ -177,6 +188,11 @@ public class LoginController {
         }
     }
 
+    /**
+     * Navega a la pantalla de registro de nuevos usuarios
+     *
+     * @param event El evento que desencadenó la navegación
+     */
     private void navegarAPantallaRegistro(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/registro-view.fxml"));

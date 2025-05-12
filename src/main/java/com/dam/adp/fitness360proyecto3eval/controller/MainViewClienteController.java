@@ -17,6 +17,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controlador para la vista principal del cliente.
+ * Maneja la interfaz que muestra las rutinas, dietas, revisiones y entrenadores disponibles para el cliente.
+ * Permite al cliente ver sus datos y contratar servicios.
+ */
 public class MainViewClienteController {
     //Componentes Generales
     public TabPane tabPane;
@@ -93,14 +98,21 @@ public class MainViewClienteController {
         }
     }
 
+    /**
+     * Carga todos los datos relacionados con el cliente autenticado.
+     * Incluye rutinas, dietas, revisiones y entrenadores disponibles.
+     */
     public void cargarDatosCliente() {
-
         cargarRutinas();
         cargarDietas();
         cargarRevisiones();
         cargarEntrenadores();
     }
 
+    /**
+     * Carga las rutinas asignadas al cliente autenticado en la tabla correspondiente.
+     * Obtiene los datos de la base de datos y configura las columnas de la tabla.
+     */
     private void cargarRutinas() {
         ClienteRutinaDAO clienteRutinaDAO = new ClienteRutinaDAO();
 
@@ -118,8 +130,11 @@ public class MainViewClienteController {
 
     }
 
+    /**
+     * Carga las dietas asignadas al cliente autenticado en la tabla correspondiente.
+     * Obtiene los datos de la base de datos y configura las columnas de la tabla.
+     */
     private void cargarDietas() {
-
         ClienteDietaDAO clienteDietaDAO = new ClienteDietaDAO();
         List<ClienteDieta> misRutinas = clienteDietaDAO.findByClientEager(clienteAutenticado.getId());
 
@@ -134,8 +149,11 @@ public class MainViewClienteController {
 
     }
 
+    /**
+     * Carga las revisiones físicas del cliente autenticado en la tabla correspondiente.
+     * Obtiene los datos de la base de datos y configura las columnas de la tabla.
+     */
     private void cargarRevisiones() {
-
         RevisionDAO revisionDAO = new RevisionDAO();
         List<Revision> misRevisiones = revisionDAO.getByClientEager(clienteAutenticado.getId());
 
@@ -152,8 +170,11 @@ public class MainViewClienteController {
 
     }
 
+    /**
+     * Carga la lista de entrenadores disponibles en la tabla correspondiente.
+     * Obtiene los datos de la base de datos y configura las columnas de la tabla.
+     */
     public void cargarEntrenadores() {
-
         UsuarioEmpleadoDAO usuarioEmpleadoDAO = new UsuarioEmpleadoDAO();
         List<UsuarioEmpleado> empleados = usuarioEmpleadoDAO.getAll();
 
@@ -166,6 +187,11 @@ public class MainViewClienteController {
         tablaEntrenadores.getItems().addAll(empleados);
     }
 
+    /**
+     * Carga las tarifas disponibles para un entrenador específico.
+     * 
+     * @param empleado El entrenador del que se cargarán las tarifas
+     */
     public void cargarTarifasEntrenador(UsuarioEmpleado empleado) {
         TarifaDAO tarifaDAO = new TarifaDAO();
         List<Tarifa> tarifas = tarifaDAO.getByCreator(empleado.getId());

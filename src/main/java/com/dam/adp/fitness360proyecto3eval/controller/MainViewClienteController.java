@@ -295,6 +295,7 @@ public class MainViewClienteController {
             mostrarAlerta("Tarifa Asignada", "Tarifa asignada correctamente", Alert.AlertType.INFORMATION);
 
         } catch (RuntimeException e) {
+            System.err.println("Error al asignar la tarifa: " + e.getMessage());
             mostrarAlerta("Error", "No se pudo asignar la tarifa", Alert.AlertType.ERROR);
         }
     }
@@ -316,15 +317,17 @@ public class MainViewClienteController {
         btnCerrarSesion.setOnAction(this::cerrarSesion);
 
         //Configurar la seleccion de empleado para mostrar sus tarifas
-        UsuarioEmpleado empleadoSeleccionado = (UsuarioEmpleado) tablaEntrenadores.getSelectionModel().getSelectedItem();
-        if (empleadoSeleccionado != null) {
-            cargarTarifasEntrenador(empleadoSeleccionado);
-        }
+        tablaEntrenadores.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null){
+                UsuarioEmpleado empleado = (UsuarioEmpleado) newValue;
+                cargarTarifasEntrenador(empleado);
+            }
+        });
 
         //Configurar el evento de click para abrir el panel de registro de rutina
         btnCrearRutina.setOnAction(this::abrirRegistroRutina);
 
-        //Configurar el evento de click para contratar una rutina
+        //Configurar el evento de click para
         btnContratarTarifa.setOnAction(this::contratarTarifa);
 
     }

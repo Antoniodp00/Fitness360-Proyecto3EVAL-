@@ -225,25 +225,7 @@ public class UsuarioCliente extends Usuario {
      */
     @Override
     public String toString() {
-        return "UsuarioCliente{" +
-                "id=" + id +
-                ", nombreUsuario='" + nombreUsuario + '\'' +
-                ", nombre='" + nombre + '\'' +
-                ", apellidos='" + apellidos + '\'' +
-                ", password='" + password + '\'' +
-                ", correo='" + correo + '\'' +
-                ", telefono='" + telefono + '\'' +
-                ", fechaNacimiento=" + fechaNacimiento +
-                ", sexo=" + sexo +
-                ", estado=" + estado +
-                ", altura=" + altura +
-                ", rutinasAsignadas=" + (rutinasAsignadas != null ? rutinasAsignadas.size() : 0) + " rutinas" +
-                ", dietasAsignadas=" + (dietasAsignadas != null ? dietasAsignadas.size() : 0) + " dietas" +
-                ", revisiones=" + (revisiones != null ? revisiones.size() : 0) + " revisiones" +
-                ", tarifasContratadas=" + (tarifasContratadas != null ? tarifasContratadas.size() : 0) + " tarifas" +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
+        return this.nombre+ " " + this.apellidos + " (" + this.nombreUsuario + ")";
     }
 
     /**

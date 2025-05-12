@@ -70,9 +70,13 @@ public class RegistroRutinaController {
     private UsuarioClienteDAO usuarioClienteDAO;
     private UsuarioEmpleadoDAO usuarioEmpleadoDAO;
     private RutinaDAO rutinaDAO;
+    private ClienteRutinaDAO clienteRutinaDAO;
 
     private UsuarioCliente clienteAutenticado;
     private UsuarioEmpleado empleadoAutenticado;
+
+    // Callback para actualizar la vista principal después de registrar una rutina
+    private Runnable onRegistroExitoso;
 
     /**
      * Inicializa el controlador. Este método es llamado automáticamente
@@ -84,6 +88,7 @@ public class RegistroRutinaController {
         usuarioClienteDAO = new UsuarioClienteDAO();
         usuarioEmpleadoDAO = new UsuarioEmpleadoDAO();
         rutinaDAO = new RutinaDAO();
+        clienteRutinaDAO = new ClienteRutinaDAO();
 
         // Cargar clientes y empleados en los ComboBox
         cargarClientes();
@@ -167,6 +172,15 @@ public class RegistroRutinaController {
     }
 
     /**
+     * Establece el callback que se ejecutará después de un registro exitoso.
+     *
+     * @param callback El callback a ejecutar
+     */
+    public void setOnRegistroExitoso(Runnable callback) {
+        this.onRegistroExitoso = callback;
+    }
+
+    /**
      * Carga la lista de clientes con tarifas activas para un empleado específico.
      *
      * @param idEmpleado ID del empleado
@@ -226,6 +240,11 @@ public class RegistroRutinaController {
             if (registroExitoso) {
                 mostrarAlerta("Registro Exitoso", "La rutina ha sido registrada correctamente.", Alert.AlertType.INFORMATION);
                 limpiarCampos();
+
+                // Ejecutar el callback si existe
+                if (onRegistroExitoso != null) {
+                    onRegistroExitoso.run();
+                }
             }
         }
     }
@@ -256,18 +275,6 @@ public class RegistroRutinaController {
             // Validar que se haya seleccionado un cliente para asignar la rutina
             if (clienteAsignadoComboBox.getValue() == null) {
                 errores.append("Debe seleccionar un cliente al que asignar la rutina.\n");
-            }
-        } else {
-            // Si no hay usuario autenticado, validar según el radio button seleccionado
-            if (clienteRadio.isSelected() && clienteComboBox.getValue() == null) {
-                errores.append("Debe seleccionar un cliente creador.\n");
-            } else if (empleadoRadio.isSelected()) {
-                if (empleadoComboBox.getValue() == null) {
-                    errores.append("Debe seleccionar un empleado creador.\n");
-                }
-                if (clienteAsignadoComboBox.getValue() == null) {
-                    errores.append("Debe seleccionar un cliente al que asignar la rutina.\n");
-                }
             }
         }
 
@@ -304,7 +311,8 @@ public class RegistroRutinaController {
             rutina.setCreadorCliente(cliente);
 
             // Registrar la rutina
-            Rutina rutinaRegistrada = rutinaDAO.insertRutinaByClient(rutina);
+            rutinaDAO.insertRutinaByClient(rutina);
+            Rutina rutinaRegistrada;
             //Vuelvo a buscar la rutina creada para obtener el id
             rutinaRegistrada = rutinaDAO.getByName(rutina.getNombre());
             if (rutinaRegistrada != null) {
@@ -315,7 +323,6 @@ public class RegistroRutinaController {
                 clienteRutina.setFechaAsignacion(new java.sql.Date(System.currentTimeMillis()));
 
                 // Insertar la asignación en la base de datos
-                ClienteRutinaDAO clienteRutinaDAO = new ClienteRutinaDAO();
                 clienteRutinaDAO.insert(clienteRutina);
 
                 return true;
@@ -346,15 +353,14 @@ public class RegistroRutinaController {
             rutina.setNombre(nombreRutinaField.getText().trim());
             rutina.setDescripcion(descripcionRutinaField.getText().trim());
 
-            // Usar el empleado autenticado si está disponible, de lo contrario usar el seleccionado en el ComboBox
-            if (empleadoAutenticado != null) {
-                rutina.setCreadorEmpleado(empleadoAutenticado);
-            } else {
-                rutina.setCreadorEmpleado(empleadoComboBox.getValue());
-            }
+            // Usar el empleado autenticado
+
+            rutina.setCreadorEmpleado(empleadoAutenticado);
+
 
             // Registrar la rutina
-            Rutina rutinaRegistrada = rutinaDAO.insertRutinaByEmployee(rutina);
+            rutinaDAO.insertRutinaByEmployee(rutina);
+            Rutina rutinaRegistrada;
             //Vuelvo a buscar la rutina creada para obtener el id
             rutinaRegistrada = rutinaDAO.getByName(rutina.getNombre());
 
@@ -365,7 +371,6 @@ public class RegistroRutinaController {
                 clienteRutina.setRutina(rutinaRegistrada);
                 clienteRutina.setFechaAsignacion(new java.sql.Date(System.currentTimeMillis()));
                 // Insertar la asignación en la base de datos
-                ClienteRutinaDAO clienteRutinaDAO = new ClienteRutinaDAO();
                 clienteRutinaDAO.insert(clienteRutina);
 
                 return true;

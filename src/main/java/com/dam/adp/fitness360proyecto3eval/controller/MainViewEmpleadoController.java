@@ -10,13 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
@@ -100,18 +94,31 @@ public class MainViewEmpleadoController {
      *
      * @param empleado El empleado autenticado
      */
+    /**
+     * Establece el empleado autenticado y actualiza la interfaz
+     *
+     * @param empleado El empleado autenticado
+     */
     public void setEmpleadoAutenticado(UsuarioEmpleado empleado) {
         this.empleadoAutenticado = empleado;
         if (empleado != null) {
             labelUsuario.setText("Usuario: " + empleado.getNombreUsuario());
-            // Aquí se cargarán los datos específicos del empleado
+            // Configurar el botón de crear dieta según la especialidad
+            if (empleado.getEspecialidad() == Especialidad.DIETISTA ||
+                    empleado.getEspecialidad() == Especialidad.AMBOS) {
+                btnCrearDieta.setDisable(false);
+                btnCrearDieta.setOnAction(this::abrirRegistroDieta);
+            } else {
+                btnCrearDieta.setDisable(true);
+            }
+            // Cargar los datos específicos del empleado
             cargarDatosEmpleado();
         }
     }
 
-    /**
-     * Carga los datos específicos del empleado en la interfaz
-     */
+        /**
+         * Carga los datos específicos del empleado en la interfaz
+         */
     private void cargarDatosEmpleado() {
         // Cargar clientes asignados al empleado
         cargarClientes();
@@ -267,6 +274,12 @@ public class MainViewEmpleadoController {
             RegistroRutinaController controller = loader.getController();
             controller.setEmpleadoAutenticado(empleadoAutenticado);
 
+            // Establecer el callback para actualizar la vista principal después del registro
+            controller.setOnRegistroExitoso(() -> {
+                // Recargar las rutinas en la vista principal
+                cargarRutinas();
+            });
+
             // Configurar y mostrar la nueva ventana
             Stage stage = new Stage();
             Scene scene = new Scene(root);
@@ -279,6 +292,64 @@ public class MainViewEmpleadoController {
         }
     }
 
+    public void abrirRegistroDieta(ActionEvent event) {
+        try {
+            // Cargar la vista de registro de rutina
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/registro-dieta-view.fxml"));
+            Parent root = loader.load();
+
+            // Obtener el controlador y establecer el empleado autenticado
+            RegistroDietaController controller = loader.getController();
+            controller.setEmpleadoAutenticado(empleadoAutenticado);
+
+            // Establecer el callback para actualizar la vista principal después del registro
+            controller.setOnRegistroExitoso(() -> {
+                // Recargar las dietas en la vista principal
+                cargarDietas();
+            });
+
+            // Configurar y mostrar la nueva ventana
+            Stage stage = new Stage();
+            Scene scene = new Scene(root);
+            stage.setTitle("Fitness360 - Registro de Dieta");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            System.err.println("Error al cargar la pantalla de registro de dieta: " + e.getMessage());
+            e.printStackTrace();
+
+        }
+    }
+
+    public void abrirRegistroTarifa(ActionEvent event) {
+        try {
+            // Cargar la vista de registro de rutina
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/registro-tarifa-view.fxml"));
+            Parent root = loader.load();
+
+            // Obtener el controlador y establecer el empleado autenticado
+            RegistroTarifaController controller = loader.getController();
+            controller.setEmpleadoAutenticado(empleadoAutenticado);
+
+            // Establecer el callback para actualizar la vista principal después del registro
+            controller.setOnRegistroExitoso(() -> {
+                // Recargar las dietas en la vista principal
+                cargarTarifas();
+            });
+
+            // Configurar y mostrar la nueva ventana
+            Stage stage = new Stage();
+            Scene scene = new Scene(root);
+            stage.setTitle("Fitness360 - Registro de Dieta");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            System.err.println("Error al cargar la pantalla de registro de dieta: " + e.getMessage());
+            e.printStackTrace();
+
+        }
+    }
+
     /**
      * Inicializa el controlador y configura los eventos
      */
@@ -287,5 +358,24 @@ public class MainViewEmpleadoController {
         // Configurar el evento de clic para el botón de cerrar sesión
         btnCerrarSesion.setOnAction(this::cerrarSesion);
         btnCrearRutina.setOnAction(this::abrirRegistroRutina);
+
+        // Deshabilitar el botón de crear dieta inicialmente
+        btnCrearDieta.setDisable(true);
+        btnCrearTarifa.setOnAction(this::abrirRegistroTarifa);
+
+    }
+    /**
+     * Muestra una alerta con el título, mensaje y tipo especificados.
+     *
+     * @param titulo  Título de la alerta
+     * @param mensaje Mensaje de la alerta
+     * @param tipo    Tipo de alerta
+     */
+    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
+        Alert alerta = new Alert(tipo);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
     }
 }

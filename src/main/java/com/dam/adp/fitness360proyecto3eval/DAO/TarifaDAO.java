@@ -229,8 +229,6 @@ public class TarifaDAO implements GenericDAO<Tarifa> {
                 stmt.setString(3, entity.getDescripcion());
                 stmt.setString(4, entity.getPeriodo().name());
                 stmt.setInt(5, entity.getCreador().getId());
-                stmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
-                stmt.setTimestamp(7, new Timestamp(System.currentTimeMillis()));
 
                 stmt.executeUpdate();
             } catch (SQLException e) {

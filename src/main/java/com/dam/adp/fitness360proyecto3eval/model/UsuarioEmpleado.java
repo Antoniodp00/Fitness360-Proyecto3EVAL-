@@ -256,26 +256,7 @@ public class UsuarioEmpleado extends Usuario {
      */
     @Override
     public String toString() {
-        return "UsuarioEmpleado{" +
-                "id=" + id +
-                ", nombreUsuario='" + nombreUsuario + '\'' +
-                ", nombre='" + nombre + '\'' +
-                ", apellidos='" + apellidos + '\'' +
-                ", correo='" + correo + '\'' +
-                ", telefono='" + telefono + '\'' +
-                ", fechaNacimiento=" + fechaNacimiento +
-                ", sexo=" + sexo +
-                ", estado=" + estado +
-                ", descripcion='" + descripcion + '\'' +
-                ", rol='" + rol + '\'' +
-                ", especialidad=" + especialidad +
-                ", rutinasCreadas=" + (rutinasCreadas != null ? rutinasCreadas.size() : 0) + " rutinas" +
-                ", dietasCreadas=" + (dietasCreadas != null ? dietasCreadas.size() : 0) + " dietas" +
-                ", tarifasAsignadas=" + (tarifasAsignadas != null ? tarifasAsignadas.size() : 0) + " tarifas" +
-                ", revisiones=" + (revisiones != null ? revisiones.size() : 0) + " revisiones" +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
+        return this.nombre + " " + this.apellidos + " (" + this.rol + ")";
     }
 
     /**

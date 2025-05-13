@@ -264,11 +264,13 @@ public class MainViewEmpleadoController {
     /**
      * Abre la ventana de registro de rutina pasando el empleado autenticado
      */
-    public void abrirRegistroRutina(ActionEvent event) {
+    public void abrirRegistroRutina(Rutina rutina) {
         try {
             // Cargar la vista de registro de rutina
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/registro-rutina-view.fxml"));
             Parent root = loader.load();
+            Stage stage = new Stage();
+            Scene scene = new Scene(root);
 
             // Obtener el controlador y establecer el empleado autenticado
             RegistroRutinaController controller = loader.getController();
@@ -280,16 +282,29 @@ public class MainViewEmpleadoController {
                 cargarRutinas();
             });
 
+
             // Configurar y mostrar la nueva ventana
-            Stage stage = new Stage();
-            Scene scene = new Scene(root);
-            stage.setTitle("Fitness360 - Registro de Rutina");
+         if (rutina != null){
+             controller.setRutina(rutina);
+             stage.setTitle("Fitness360 - Modificar Rutina");
+         }else {
+             stage.setTitle("Fitness360 - Registro de Rutina");
+         }
             stage.setScene(scene);
-            stage.show();
+            stage.showAndWait();
         } catch (IOException e) {
             System.err.println("Error al cargar la pantalla de registro de rutina: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public void abrirModificarRutina(ActionEvent event) {
+        tablaRutinas.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null){
+                Rutina rutina = (Rutina) newValue;
+                abrirRegistroRutina((Rutina) newValue);
+            }
+        });
     }
 
     public void abrirRegistroDieta(ActionEvent event) {

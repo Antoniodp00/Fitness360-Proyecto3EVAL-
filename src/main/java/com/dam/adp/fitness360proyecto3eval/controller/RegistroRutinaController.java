@@ -7,6 +7,7 @@ import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioClienteDAO;
 import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioEmpleadoDAO;
 import com.dam.adp.fitness360proyecto3eval.utilidades.Utilidades;
 
+import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -74,6 +75,7 @@ public class RegistroRutinaController {
 
     private UsuarioCliente clienteAutenticado;
     private UsuarioEmpleado empleadoAutenticado;
+    private Rutina rutina;
 
     // Callback para actualizar la vista principal después de registrar una rutina
     private Runnable onRegistroExitoso;
@@ -141,6 +143,17 @@ public class RegistroRutinaController {
             clienteComboBox.setDisable(true); // Deshabilitar cambio
         }
     }
+
+ public void setRutina(Rutina rutina) {
+        this.rutina = rutina;
+        if (rutina != null) {
+            nombreRutinaField.setText(rutina.getNombre());
+            descripcionRutinaField.setText(rutina.getDescripcion());
+        }else{
+            nombreRutinaField.setText("");
+            descripcionRutinaField.setText("");
+        }
+ }
 
     /**
      * Establece el empleado autenticado y configura la interfaz en consecuencia.
@@ -248,6 +261,8 @@ public class RegistroRutinaController {
             }
         }
     }
+
+
 
     /**
      * Valida que todos los campos necesarios estén completos.

@@ -2,7 +2,10 @@ package com.dam.adp.fitness360proyecto3eval.controller;
 
 import com.dam.adp.fitness360proyecto3eval.DAO.*;
 import com.dam.adp.fitness360proyecto3eval.model.*;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -31,50 +35,55 @@ public class MainViewClienteController {
 
     //Tab Rutinas
     public Tab tabRutinas;
-    public TableView tablaRutinas;
-    public TableColumn colNombreRutina;
-    public TableColumn colDescripcionRutina;
-    public TableColumn colCreadorRutina;
-    public TableColumn colFechaInicioRutina;
-    public TableColumn colFechaFinRutina;
+    public TableView<ClienteRutina> tablaRutinas;
+    public TableColumn<ClienteRutina, String> colNombreRutina;
+    public TableColumn<ClienteRutina, String> colDescripcionRutina;
+    public TableColumn<ClienteRutina, String> colCreadorRutina;
+    public TableColumn<ClienteRutina, Date> colFechaInicioRutina;
+    public TableColumn<ClienteRutina, Date> colFechaFinRutina;
+    private ObservableList<ClienteRutina> rutinas = FXCollections.observableArrayList();
 
     //Tab Dietas
     public Tab tabDietas;
-    public TableView tablaDietas;
-    public TableColumn colNombreDieta;
-    public TableColumn colDescripcionDieta;
-    public TableColumn colCreadorDieta;
-    public TableColumn colFechaInicioDieta;
-    public TableColumn colFechaFinDieta;
+    public TableView<ClienteDieta> tablaDietas;
+    public TableColumn<ClienteDieta, String> colNombreDieta;
+    public TableColumn<ClienteDieta, String> colDescripcionDieta;
+    public TableColumn<ClienteDieta, String> colCreadorDieta;
+    public TableColumn<ClienteDieta, Date> colFechaInicioDieta;
+    public TableColumn<ClienteDieta, Date> colFechaFinDieta;
+    private ObservableList<ClienteDieta> dietas = FXCollections.observableArrayList();
 
     //Tab Revisiones
     public Tab tabRevisiones;
-    public TableView tablaRevisiones;
-    public TableColumn colFechaRevision;
-    public TableColumn colPesoRevision;
-    public TableColumn colGrasaRevision;
-    public TableColumn colMusculoRevision;
-    public TableColumn colEntrenadorRevision;
-    public TableColumn colObservacionesRevision;
+    public TableView<Revision> tablaRevisiones;
+    public TableColumn<Revision, Date> colFechaRevision;
+    public TableColumn<Revision, Double> colPesoRevision;
+    public TableColumn<Revision, Double> colGrasaRevision;
+    public TableColumn<Revision, Double> colMusculoRevision;
+    public TableColumn<Revision, String> colEntrenadorRevision;
+    public TableColumn<Revision, String> colObservacionesRevision;
     public ComboBox comboFiltroEspecialidad;
+    private ObservableList<Revision> revisiones = FXCollections.observableArrayList();
 
     //Tab Entrenadores
     public Tab tabContratarEntrenador;
-    public TableView tablaEntrenadores;
-    public TableColumn colNombreEntrenador;
-    public TableColumn colEspecialidadEntrenador;
-    public TableColumn colDescripcionEntrenador;
-    public TableColumn colAccionesEntrenador;
+    public TableView<UsuarioEmpleado> tablaEntrenadores;
+    public TableColumn<UsuarioEmpleado, String> colNombreEntrenador;
+    public TableColumn<UsuarioEmpleado, Especialidad> colEspecialidadEntrenador;
+    public TableColumn<UsuarioEmpleado, String> colDescripcionEntrenador;
+    public TableColumn<UsuarioEmpleado, String> colAccionesEntrenador;
     public ComboBox comboFiltroPeriodo;
+    private ObservableList<UsuarioEmpleado> entrenadores = FXCollections.observableArrayList();
 
     //Tab Tarifas
-    public TableView tablaTarifas;
-    public TableColumn colNombreTarifa;
-    public TableColumn colPrecioTarifa;
-    public TableColumn colPeriodoTarifa;
-    public TableColumn colEntrenadorTarifa;
-    public TableColumn colDescripcionTarifa;
-    public TableColumn colAccionesTarifa;
+    public TableView<Tarifa> tablaTarifas;
+    public TableColumn<Tarifa, String> colNombreTarifa;
+    public TableColumn<Tarifa, Double> colPrecioTarifa;
+    public TableColumn<Tarifa, Periodo> colPeriodoTarifa;
+    public TableColumn<Tarifa, String> colEntrenadorTarifa;
+    public TableColumn<Tarifa, String> colDescripcionTarifa;
+    public TableColumn<Tarifa, String> colAccionesTarifa;
+    private ObservableList<Tarifa> tarifas = FXCollections.observableArrayList();
 
     //Botones
     public Button btnCerrarSesion;
@@ -125,10 +134,12 @@ public class MainViewClienteController {
         colFechaInicioRutina.setCellValueFactory(new PropertyValueFactory<>("fechaAsignacion"));
         colFechaFinRutina.setCellValueFactory(new PropertyValueFactory<>("fechaFin"));
 
+        // Limpiar y agregar las rutinas a la lista observable
+        rutinas.clear();
+        rutinas.addAll(misRutinas);
 
-        tablaRutinas.getItems().clear();
-        tablaRutinas.getItems().addAll(misRutinas);
-
+        // Asignar la lista observable a la tabla
+        tablaRutinas.setItems(rutinas);
     }
 
     /**
@@ -137,7 +148,7 @@ public class MainViewClienteController {
      */
     private void cargarDietas() {
         ClienteDietaDAO clienteDietaDAO = new ClienteDietaDAO();
-        List<ClienteDieta> misRutinas = clienteDietaDAO.findByClientEager(clienteAutenticado.getId());
+        List<ClienteDieta> misDietas = clienteDietaDAO.findByClientEager(clienteAutenticado.getId());
 
         colNombreDieta.setCellValueFactory(new PropertyValueFactory<>("nombreDieta"));
         colDescripcionDieta.setCellValueFactory(new PropertyValueFactory<>("descripcionDieta"));
@@ -145,9 +156,12 @@ public class MainViewClienteController {
         colFechaInicioDieta.setCellValueFactory(new PropertyValueFactory<>("fechaAsignacion"));
         colFechaFinDieta.setCellValueFactory(new PropertyValueFactory<>("fechaFin"));
 
-        tablaDietas.getItems().clear();
-        tablaDietas.getItems().addAll(misRutinas);
+        // Limpiar y agregar las dietas a la lista observable
+        dietas.clear();
+        dietas.addAll(misDietas);
 
+        // Asignar la lista observable a la tabla
+        tablaDietas.setItems(dietas);
     }
 
     /**
@@ -165,10 +179,12 @@ public class MainViewClienteController {
         colEntrenadorRevision.setCellValueFactory(new PropertyValueFactory<>("nombreEmpleadoCompleto"));
         colObservacionesRevision.setCellValueFactory(new PropertyValueFactory<>("observaciones"));
 
+        // Limpiar y agregar las revisiones a la lista observable
+        revisiones.clear();
+        revisiones.addAll(misRevisiones);
 
-        tablaRevisiones.getItems().clear();
-        tablaRevisiones.getItems().addAll(misRevisiones);
-
+        // Asignar la lista observable a la tabla
+        tablaRevisiones.setItems(revisiones);
     }
 
     /**
@@ -183,9 +199,12 @@ public class MainViewClienteController {
         colEspecialidadEntrenador.setCellValueFactory(new PropertyValueFactory<>("especialidad"));
         colDescripcionEntrenador.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
 
+        // Limpiar y agregar los entrenadores a la lista observable
+        entrenadores.clear();
+        entrenadores.addAll(empleados);
 
-        tablaEntrenadores.getItems().clear();
-        tablaEntrenadores.getItems().addAll(empleados);
+        // Asignar la lista observable a la tabla
+        tablaEntrenadores.setItems(entrenadores);
     }
 
     /**
@@ -195,15 +214,19 @@ public class MainViewClienteController {
      */
     public void cargarTarifasEntrenador(UsuarioEmpleado empleado) {
         TarifaDAO tarifaDAO = new TarifaDAO();
-        List<Tarifa> tarifas = tarifaDAO.getByCreator(empleado.getId());
+        List<Tarifa> tarifasEmpleado = tarifaDAO.getByCreator(empleado.getId());
 
         colNombreTarifa.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colPrecioTarifa.setCellValueFactory(new PropertyValueFactory<>("precio"));
         colPeriodoTarifa.setCellValueFactory(new PropertyValueFactory<>("periodo"));
         colDescripcionTarifa.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
 
-        tablaTarifas.getItems().clear();
-        tablaTarifas.getItems().addAll(tarifas);
+        // Limpiar y agregar las tarifas a la lista observable
+        tarifas.clear();
+        tarifas.addAll(tarifasEmpleado);
+
+        // Asignar la lista observable a la tabla
+        tablaTarifas.setItems(tarifas);
     }
 
     /**
@@ -232,31 +255,102 @@ public class MainViewClienteController {
     }
 
     /**
-     * Abre la ventana de registro de rutina pasando el cliente autenticado
+     * Muestra el formulario para añadir o editar una rutina
+     * @param rutina La rutina a editar, o null para crear una nueva
      */
-    public void abrirRegistroRutina(ActionEvent event) {
+    public void mostrarFormularioAñadirEditarRutina(ClienteRutina rutina) {
         try {
             // Cargar la vista de registro de rutina
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/registro-rutina-view.fxml"));
-            Parent root = loader.load();
+            Scene scene = new Scene(loader.load());
+            Stage stage = new Stage();
 
             // Obtener el controlador y establecer el cliente autenticado
             RegistroRutinaController controller = loader.getController();
             controller.setClienteAutenticado(clienteAutenticado);
 
-            // Configurar y mostrar la nueva ventana
-            Stage stage = new Stage();
-            Scene scene = new Scene(root);
-            stage.setTitle("Fitness360 - Registro de Rutina");
+            // Configurar la rutina si se está editando
+            if (rutina != null) {
+                controller.setRutina(rutina.getRutina());
+                stage.setTitle("Fitness360 - Modificar Rutina");
+            } else {
+                stage.setTitle("Fitness360 - Añadir Rutina");
+            }
+
+            // Configurar la modalidad para que bloquee la ventana principal
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(scene);
-            stage.show();
+            stage.showAndWait();
+
+            // Recargar las rutinas después de cerrar el formulario
+            cargarRutinas();
         } catch (IOException e) {
             System.err.println("Error al cargar la pantalla de registro de rutina: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    /**
+     * Abre la ventana de registro de rutina pasando el cliente autenticado
+     * @param event El evento que desencadenó esta acción
+     */
+    public void abrirRegistroRutina(ActionEvent event) {
+        mostrarFormularioAñadirEditarRutina(null);
+    }
 
+    /**
+     * Abre la ventana de modificación de rutina
+     * @param event El evento que desencadenó esta acción
+     */
+    public void manejarBotonEditarRutina(ActionEvent event) {
+        ClienteRutina rutinaSeleccionada = tablaRutinas.getSelectionModel().getSelectedItem();
+        if (rutinaSeleccionada != null) {
+            mostrarFormularioAñadirEditarRutina(rutinaSeleccionada);
+        } else {
+            mostrarAlerta("Selección requerida", "Por favor, seleccione una rutina para editar", Alert.AlertType.WARNING);
+        }
+    }
+
+    /**
+     * Maneja el evento de eliminar una rutina
+     * @param event El evento que desencadenó esta acción
+     */
+    public void manejarBotonEliminarRutina(ActionEvent event) {
+        ClienteRutina rutinaSeleccionada = tablaRutinas.getSelectionModel().getSelectedItem();
+        if (rutinaSeleccionada != null) {
+            // Confirmar eliminación
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmar eliminación");
+            alert.setHeaderText("Eliminar rutina");
+            alert.setContentText("¿Está seguro que desea eliminar la rutina seleccionada?");
+
+            if (alert.showAndWait().get() == ButtonType.OK) {
+                try {
+                    // Eliminar la rutina
+                    ClienteRutinaDAO clienteRutinaDAO = new ClienteRutinaDAO();
+                    clienteRutinaDAO.delete(clienteAutenticado.getId(), rutinaSeleccionada.getRutina().getIdRutina());
+
+                    // Recargar las rutinas
+                    cargarRutinas();
+
+                    mostrarAlerta("Rutina eliminada", "La rutina ha sido eliminada correctamente", Alert.AlertType.INFORMATION);
+                } catch (Exception e) {
+                    System.err.println("Error al eliminar la rutina: " + e.getMessage());
+                    mostrarAlerta("Error", "No se pudo eliminar la rutina", Alert.AlertType.ERROR);
+                }
+            }
+        } else {
+            mostrarAlerta("Selección requerida", "Por favor, seleccione una rutina para eliminar", Alert.AlertType.WARNING);
+        }
+    }
+
+
+    /**
+     * Maneja el evento de contratar una tarifa
+     * Verifica si el cliente ya tiene la tarifa contratada y si no, la contrata
+     * 
+     * @param event El evento que desencadenó esta acción
+     */
     public void contratarTarifa(ActionEvent event) {
         ClienteTarifaDAO clienteTarifaDAO = new ClienteTarifaDAO();
         Tarifa tarifaSeleccionada = (Tarifa) tablaTarifas.getSelectionModel().getSelectedItem();
@@ -300,6 +394,13 @@ public class MainViewClienteController {
         }
     }
 
+    /**
+     * Muestra una alerta con el título, mensaje y tipo especificados
+     * 
+     * @param titulo Título de la alerta
+     * @param mensaje Mensaje de la alerta
+     * @param tipo Tipo de alerta (INFORMATION, WARNING, ERROR, etc.)
+     */
     private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
         Alert alert = new Alert(tipo);
         alert.setTitle(titulo);
@@ -327,8 +428,33 @@ public class MainViewClienteController {
         //Configurar el evento de click para abrir el panel de registro de rutina
         btnCrearRutina.setOnAction(this::abrirRegistroRutina);
 
-        //Configurar el evento de click para
-        btnContratarTarifa.setOnAction(this::contratarTarifa);
+        //Configurar el evento de click para modificar rutina
+        btnModificarRutina.setOnAction(this::manejarBotonEditarRutina);
 
+        //Configurar el evento de click para eliminar rutina
+        btnEliminarRutina.setOnAction(this::manejarBotonEliminarRutina);
+
+        //Configurar el evento de click para contratar tarifa
+        btnContratarTarifa.setOnAction(this::contratarTarifa);
+    }
+
+    /**
+     * Cierra la aplicación
+     * @param event El evento que desencadenó esta acción
+     */
+    public void cerrarAplicacion(ActionEvent event) {
+        Platform.exit();
+    }
+
+    /**
+     * Muestra información acerca de la aplicación
+     * @param event El evento que desencadenó esta acción
+     */
+    public void muestraAcercaDe(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Acerca de");
+        alert.setHeaderText("Fitness360 1.0");
+        alert.setContentText("Fitness360 es un software de gestión para gimnasios creado por Antonio Delgado");
+        alert.showAndWait();
     }
 }

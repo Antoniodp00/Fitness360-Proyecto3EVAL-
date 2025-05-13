@@ -9,6 +9,7 @@ import com.dam.adp.fitness360proyecto3eval.utilidades.Utilidades;
 
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -76,9 +77,9 @@ public class RegistroRutinaController {
     private UsuarioCliente clienteAutenticado;
     private UsuarioEmpleado empleadoAutenticado;
     private Rutina rutina;
+    private ObservableList<Rutina> rutinas;
 
-    // Callback para actualizar la vista principal después de registrar una rutina
-    private Runnable onRegistroExitoso;
+
 
     /**
      * Inicializa el controlador. Este método es llamado automáticamente
@@ -144,16 +145,22 @@ public class RegistroRutinaController {
         }
     }
 
- public void setRutina(Rutina rutina) {
+ /**
+     * Establece la rutina a editar y rellena los campos del formulario.
+     * Si la rutina es null, limpia los campos.
+     *
+     * @param rutina La rutina a editar, o null para crear una nueva
+     */
+    public void setRutina(Rutina rutina) {
         this.rutina = rutina;
         if (rutina != null) {
             nombreRutinaField.setText(rutina.getNombre());
             descripcionRutinaField.setText(rutina.getDescripcion());
-        }else{
+        } else {
             nombreRutinaField.setText("");
             descripcionRutinaField.setText("");
         }
- }
+    }
 
     /**
      * Establece el empleado autenticado y configura la interfaz en consecuencia.
@@ -184,13 +191,14 @@ public class RegistroRutinaController {
         }
     }
 
+
     /**
-     * Establece el callback que se ejecutará después de un registro exitoso.
+     * Establece la lista de rutinas que se actualizará al guardar.
      *
-     * @param callback El callback a ejecutar
+     * @param rutinas La lista observable de rutinas
      */
-    public void setOnRegistroExitoso(Runnable callback) {
-        this.onRegistroExitoso = callback;
+    public void setRutinas(ObservableList<Rutina> rutinas) {
+        this.rutinas = rutinas;
     }
 
     /**
@@ -235,7 +243,7 @@ public class RegistroRutinaController {
     }
 
     /**
-     * Maneja el proceso de registro de una nueva rutina.
+     * Maneja el proceso de registro o actualización de una rutina.
      */
     private void manejarRegistro() {
         errorMessage.setVisible(false);
@@ -243,21 +251,36 @@ public class RegistroRutinaController {
         if (validarCampos()) {
             boolean registroExitoso = false;
 
-            // Determinar el tipo de creador basado en el usuario autenticado
-            if (clienteAutenticado != null || clienteRadio.isSelected()) {
-                registroExitoso = registrarRutinaPorCliente();
+            // Si estamos editando una rutina existente
+            if (this.rutina != null) {
+                // Actualizar los datos de la rutina existente
+                rutina.setNombre(nombreRutinaField.getText().trim());
+                rutina.setDescripcion(descripcionRutinaField.getText().trim());
+
+                // Actualizar la rutina en la base de datos
+                try {
+                    rutinaDAO.update(rutina);
+                    registroExitoso = true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    mostrarAlerta("Error", "Error al actualizar la rutina: " + e.getMessage(), Alert.AlertType.ERROR);
+                }
             } else {
-                registroExitoso = registrarRutinaPorEmpleado();
+                // Determinar el tipo de creador basado en el usuario autenticado
+                if (clienteAutenticado != null || clienteRadio.isSelected()) {
+                    registroExitoso = registrarRutinaPorCliente();
+                } else {
+                    registroExitoso = registrarRutinaPorEmpleado();
+                }
             }
 
             if (registroExitoso) {
-                mostrarAlerta("Registro Exitoso", "La rutina ha sido registrada correctamente.", Alert.AlertType.INFORMATION);
-                limpiarCampos();
+                mostrarAlerta("Operación Exitosa", "La rutina ha sido guardada correctamente.", Alert.AlertType.INFORMATION);
 
-                // Ejecutar el callback si existe
-                if (onRegistroExitoso != null) {
-                    onRegistroExitoso.run();
-                }
+                // Cerrar la ventana
+                Stage stage = (Stage) nombreRutinaField.getScene().getWindow();
+                stage.close();
+
             }
         }
     }

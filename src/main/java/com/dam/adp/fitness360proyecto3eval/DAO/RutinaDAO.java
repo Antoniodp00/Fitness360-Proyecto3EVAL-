@@ -249,8 +249,21 @@ public class RutinaDAO implements GenericDAO<Rutina> {
 
                 stmt.setString(1, rutina.getNombre());
                 stmt.setString(2, rutina.getDescripcion());
-                stmt.setInt(3, rutina.getCreadorCliente().getId());
-                stmt.setInt(4, rutina.getCreadorEmpleado().getId());
+                
+                // Manejar caso donde creadorCliente es null
+                if (rutina.getCreadorCliente() != null) {
+                    stmt.setInt(3, rutina.getCreadorCliente().getId());
+                } else {
+                    stmt.setNull(3, Types.INTEGER);
+                }
+                
+                // Manejar caso donde creadorEmpleado es null
+                if (rutina.getCreadorEmpleado() != null) {
+                    stmt.setInt(4, rutina.getCreadorEmpleado().getId());
+                } else {
+                    stmt.setNull(4, Types.INTEGER);
+                }
+                
                 stmt.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
                 stmt.setInt(6, rutina.getIdRutina());
 

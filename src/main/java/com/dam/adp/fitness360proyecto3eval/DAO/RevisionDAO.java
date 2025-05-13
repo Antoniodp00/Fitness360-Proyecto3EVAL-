@@ -35,15 +35,6 @@ public class RevisionDAO implements GenericDAO<Revision> {
                     "WHERE r.idEmpleado = ?";
 
 
-    /** Consulta SQL para buscar revisiones por id empleado */
-    private static final String SQL_GET_BY_USERNAME_EMPLEADO_DATE_USERNAME_CLIENT =
-            "SELECT r.*, c.*, e.* " +
-                    "FROM Revision r " +
-                    "JOIN Cliente c ON r.idCliente = c.idCliente " +
-                    "JOIN Empleado e ON r.idEmpleado = e.idEmpleado " +
-                    "WHERE r.nombreUsuario = ? AND r.fecha = ? AND c.nombreUsuario = ?";
-
-
     /** Consulta SQL para buscar revisiones por cliente */
     private static final String SQL_GET_BY_CLIENTE =
             "SELECT r.*, c.*, e.* " +
@@ -215,33 +206,6 @@ public class RevisionDAO implements GenericDAO<Revision> {
     }
 
     /**
-     * Obtiene todas las revisiones realizadas por un empleado específico
-     *
-     * @param nombreUsuario ID del empleado creador
-     * @return Lista de revisiones realizadas por el empleado
-     */
-    public  Revision getByUserNameCreator(String nombreUsuario, Date fecha, String nombreUsuarioCliente) {
-        Revision revision = new Revision();
-        try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(SQL_GET_BY_USERNAME_EMPLEADO_DATE_USERNAME_CLIENT)) {
-
-
-            stmt.setString(1, nombreUsuario);
-            stmt.setDate(2, (java.sql.Date) fecha);
-            stmt.setString(3, nombreUsuarioCliente);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                   revision = mapearRevision(rs);
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return revision;
-    }
-
-    /**
      * Obtiene todas las revisiones realizadas por un empleado específico version Eager
      *
      * @param idEmpleado ID del empleado creador
@@ -335,8 +299,6 @@ public class RevisionDAO implements GenericDAO<Revision> {
                 stmt.setString(9, revision.getImagen());
                 stmt.setInt(10, revision.getCliente().getId());
                 stmt.setInt(11, revision.getEmpleado().getId());
-                stmt.setTimestamp(12, new Timestamp(System.currentTimeMillis()));
-                stmt.setTimestamp(13, new Timestamp(System.currentTimeMillis()));
 
                 stmt.executeUpdate();
 

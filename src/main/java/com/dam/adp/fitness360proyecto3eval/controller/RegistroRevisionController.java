@@ -29,14 +29,23 @@ public class RegistroRevisionController {
     public Button cancelarButton;
 
 
-    private RevisionDAO revisionDAO = new RevisionDAO();
-    private UsuarioClienteDAO clienteDAO = new UsuarioClienteDAO();
-    private UsuarioEmpleadoDAO empleadoDAO = new UsuarioEmpleadoDAO();
+    private RevisionDAO revisionDAO;
+    private UsuarioClienteDAO clienteDAO;
+    private UsuarioEmpleadoDAO empleadoDAO;
 
-    private UsuarioEmpleado empladoAutenticado = new UsuarioEmpleado();
+    private UsuarioEmpleado empladoAutenticado;
+
+    // Callback para actualizar la vista principal después de registrar una dieta
+    private Runnable onRegistroExitoso;
 
     @FXML
     private void initialize() {
+        revisionDAO = new RevisionDAO();
+        clienteDAO = new UsuarioClienteDAO();
+        empleadoDAO = new UsuarioEmpleadoDAO();
+
+        registrarButton.setOnAction(e -> manejarRegistro());
+        cancelarButton.setOnAction(e -> manejarCancelacion());
     }
 
     public void setEmpleadoAutenticado(UsuarioEmpleado empleadoAutenticado) {
@@ -65,6 +74,20 @@ public class RegistroRevisionController {
     }
 
     private void manejarRegistro() {
+        errorMessage.setVisible(false);
+
+        if (validarCampos()){
+            boolean registroExitoso = registrarRevision();
+
+            if (registroExitoso) {
+                mostrarAlerta("Registro Exitoso", "La revision ha sido registrada correctamente.", Alert.AlertType.INFORMATION);
+                limpiarCampos();
+
+                if (onRegistroExitoso != null) {
+                    onRegistroExitoso.run();
+                }
+            }
+        }
     }
 
     private boolean validarCampos() {
@@ -128,10 +151,6 @@ public class RegistroRevisionController {
             //insertar revision
             revisionDAO.insert(revision);
             Revision revisionRegistrada;
-
-            revisionRegistrada = revisionDAO.getByUserNameCreator(empladoAutenticado.getNombreUsuario(),fecha,cliente.getNombreUsuario());
-
-            if ()
 
             return true;
         } catch (Exception e) {

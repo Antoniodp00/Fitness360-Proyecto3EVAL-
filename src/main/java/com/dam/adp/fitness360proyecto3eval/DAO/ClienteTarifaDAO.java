@@ -20,9 +20,9 @@ public class ClienteTarifaDAO {
 
     /** Consulta SQL para buscar asignaciones de tarifas por cliente */
     private static final String SQL_FIND_BY_CLIENTE =
-            "SELECT ct.*, " +
-                    "c.*, " +
-                    "t.* " +
+            "SELECT ct.idCliente, ct.idTarifa, ct.estado AS estadoTarifa, ct.fechaContratacion, ct.fechaRenovacion, ct.fechaFin, ct.createdAt, ct.updatedAt, " +
+                    "c.idCliente, c.nombreUsuario, c.nombre, c.apellidos, c.correo, c.password, c.telefono, c.fechaNacimiento, c.sexo, c.altura, c.estado AS estadoCliente, c.createdAt, c.updatedAt, " +
+                    "t.idTarifa, t.nombre, t.descripcion, t.precio, t.createdAt, t.updatedAt " +
                     "FROM ClienteTarifa ct " +
                     "JOIN Cliente c ON ct.idCliente = c.idCliente " +
                     "JOIN Tarifa t ON ct.idTarifa = t.idTarifa " +
@@ -30,9 +30,9 @@ public class ClienteTarifaDAO {
 
     /** Consulta SQL para buscar asignaciones de clientes por tarifa */
     private static final String SQL_FIND_BY_TARIFA =
-            "SELECT ct.*, " +
-                    "c.*, " +
-                    "t.* " +
+            "SELECT ct.idCliente, ct.idTarifa, ct.estado AS estadoTarifa, ct.fechaContratacion, ct.fechaRenovacion, ct.fechaFin, ct.createdAt, ct.updatedAt, " +
+                    "c.idCliente, c.nombreUsuario, c.nombre, c.apellidos, c.correo, c.password, c.telefono, c.fechaNacimiento, c.sexo, c.altura, c.estado AS estadoCliente, c.createdAt, c.updatedAt, " +
+                    "t.idTarifa, t.nombre, t.descripcion, t.precio, t.createdAt, t.updatedAt " +
                     "FROM ClienteTarifa ct " +
                     "JOIN Cliente c ON ct.idCliente = c.idCliente " +
                     "JOIN Tarifa t ON ct.idTarifa = t.idTarifa " +
@@ -44,9 +44,9 @@ public class ClienteTarifaDAO {
 
     /** Consulta SQL para obtener todas las asignaciones de tarifas a clientes */
     private static final String SQL_GET_ALL =
-            "SELECT ct.*, " +
-                    "c.*, " +
-                    "t.* " +
+            "SELECT ct.idCliente, ct.idTarifa, ct.estado AS estadoTarifa, ct.fechaContratacion, ct.fechaRenovacion, ct.fechaFin, ct.createdAt, ct.updatedAt, " +
+                    "c.idCliente, c.nombreUsuario, c.nombre, c.apellidos, c.correo, c.password, c.telefono, c.fechaNacimiento, c.sexo, c.altura, c.estado AS estadoCliente, c.createdAt, c.updatedAt, " +
+                    "t.idTarifa, t.nombre, t.descripcion, t.precio, t.createdAt, t.updatedAt " +
                     "FROM ClienteTarifa ct " +
                     "JOIN Cliente c ON ct.idCliente = c.idCliente " +
                     "JOIN Tarifa t ON ct.idTarifa = t.idTarifa";
@@ -158,7 +158,7 @@ public class ClienteTarifaDAO {
         String sexoStr = rs.getString("sexo");
         if (sexoStr != null) cliente.setSexo(Sexo.valueOf(sexoStr));
         cliente.setAltura(rs.getDouble("altura"));
-        String estadoCliente = rs.getString("estado");
+        String estadoCliente = rs.getString("estadoCliente");
         if (estadoCliente != null) cliente.setEstado(Estado.valueOf(estadoCliente));
         cliente.setCreatedAt(rs.getTimestamp("createdAt"));
         cliente.setUpdatedAt(rs.getTimestamp("updatedAt"));
@@ -173,7 +173,7 @@ public class ClienteTarifaDAO {
 
         ct.setCliente(cliente);
         ct.setTarifa(tarifa);
-        String estadoStr = rs.getString("estado");
+        String estadoStr = rs.getString("estadoTarifa");
         if (estadoStr != null) ct.setEstado(EstadoTarifa.valueOf(estadoStr));
         ct.setFechaContratacion(rs.getDate("fechaContratacion"));
         ct.setFechaRenovacion(rs.getDate("fechaRenovacion"));

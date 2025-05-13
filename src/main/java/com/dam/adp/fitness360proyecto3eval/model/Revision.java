@@ -2,6 +2,7 @@ package com.dam.adp.fitness360proyecto3eval.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Objects;
  */
 public class Revision {
     private int idRevision;
-    private LocalDate fecha;
+    private Date fecha;
     private double peso;
     private double grasa;
     private double musculo;
@@ -24,8 +25,8 @@ public class Revision {
     private UsuarioCliente cliente;
     private UsuarioEmpleado empleado;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Date createdAt;
+    private Date updatedAt;
 
 
     /**
@@ -53,7 +54,7 @@ public class Revision {
      * @param createdAt Fecha y hora de creación del registro
      * @param updatedAt Fecha y hora de última actualización del registro
      */
-    public Revision(int idRevision, LocalDate fecha, double peso, double grasa, double musculo, double mPecho, double mCintura, double mCadera, String observaciones, String imagen, UsuarioCliente cliente, UsuarioEmpleado empleado, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Revision(int idRevision, Date fecha, double peso, double grasa, double musculo, double mPecho, double mCintura, double mCadera, String observaciones, String imagen, UsuarioCliente cliente, UsuarioEmpleado empleado, Date createdAt, Date updatedAt) {
         this.idRevision = idRevision;
         this.fecha = fecha;
         this.peso = peso;
@@ -86,7 +87,7 @@ public class Revision {
      * @param cliente Cliente al que se le realiza la revisión
      * @param empleado Empleado que realiza la revisión
      */
-    public Revision(int idRevision, LocalDate fecha, double peso, double grasa, double musculo, double mPecho, double mCintura, double mCadera, String observaciones, String imagen, UsuarioCliente cliente, UsuarioEmpleado empleado) {
+    public Revision(int idRevision, Date fecha, double peso, double grasa, double musculo, double mPecho, double mCintura, double mCadera, String observaciones, String imagen, UsuarioCliente cliente, UsuarioEmpleado empleado) {
         this.idRevision = idRevision;
         this.fecha = fecha;
         this.peso = peso;
@@ -126,7 +127,7 @@ public class Revision {
      * 
      * @return La fecha de la revisión
      */
-    public LocalDate getFecha() {
+    public Date getFecha() {
         return fecha;
     }
 
@@ -135,7 +136,7 @@ public class Revision {
      * 
      * @param fecha La nueva fecha de la revisión
      */
-    public void setFecha(LocalDate fecha) {
+    public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
 
@@ -324,7 +325,7 @@ public class Revision {
      * 
      * @return La fecha y hora en que se creó el registro
      */
-    public LocalDateTime getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
@@ -333,7 +334,7 @@ public class Revision {
      * 
      * @param createdAt La nueva fecha y hora de creación
      */
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -342,7 +343,7 @@ public class Revision {
      * 
      * @return La fecha y hora en que se actualizó por última vez el registro
      */
-    public LocalDateTime getUpdatedAt() {
+    public Date getUpdatedAt() {
         return updatedAt;
     }
 
@@ -351,7 +352,7 @@ public class Revision {
      * 
      * @param updatedAt La nueva fecha y hora de última actualización
      */
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
 

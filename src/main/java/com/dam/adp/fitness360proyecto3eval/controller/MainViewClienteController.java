@@ -103,7 +103,7 @@ public class MainViewClienteController {
         this.clienteAutenticado = cliente;
         if (cliente != null) {
             labelUsuario.setText("Usuario: " + cliente.getNombreUsuario());
-            // Aquí se pueden cargar los datos específicos del cliente
+            // Aquí se cargan los datos específicos del cliente
             cargarDatosCliente();
         }
     }
@@ -304,7 +304,14 @@ public class MainViewClienteController {
      */
     public void manejarBotonEditarRutina(ActionEvent event) {
         ClienteRutina rutinaSeleccionada = tablaRutinas.getSelectionModel().getSelectedItem();
+        System.out.println(rutinaSeleccionada.getRutina().getCreadorEmpleado());
+        System.out.println(rutinaSeleccionada.getRutina().getCreadorCliente());
         if (rutinaSeleccionada != null) {
+            // Verificar si la rutina fue creada por un entrenador y no por el cliente actual
+            if (rutinaSeleccionada.getRutina().getCreadorEmpleado().getNombre() != null) {
+                mostrarAlerta("Acción no permitida", "No puede modificar una rutina asignada por un entrenador", Alert.AlertType.WARNING);
+                return;
+            }
             mostrarFormularioAñadirEditarRutina(rutinaSeleccionada);
         } else {
             mostrarAlerta("Selección requerida", "Por favor, seleccione una rutina para editar", Alert.AlertType.WARNING);
@@ -318,6 +325,14 @@ public class MainViewClienteController {
     public void manejarBotonEliminarRutina(ActionEvent event) {
         ClienteRutina rutinaSeleccionada = tablaRutinas.getSelectionModel().getSelectedItem();
         if (rutinaSeleccionada != null) {
+            // Verificar si la rutina fue creada por un entrenador y no por el cliente actual
+            if (rutinaSeleccionada.getRutina().getCreadorEmpleado() != null && 
+                (rutinaSeleccionada.getRutina().getCreadorCliente() == null || 
+                 rutinaSeleccionada.getRutina().getCreadorCliente().getId() != clienteAutenticado.getId())) {
+                mostrarAlerta("Acción no permitida", "No puede eliminar una rutina asignada por un entrenador", Alert.AlertType.WARNING);
+                return;
+            }
+
             // Confirmar eliminación
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmar eliminación");
@@ -438,23 +453,4 @@ public class MainViewClienteController {
         btnContratarTarifa.setOnAction(this::contratarTarifa);
     }
 
-    /**
-     * Cierra la aplicación
-     * @param event El evento que desencadenó esta acción
-     */
-    public void cerrarAplicacion(ActionEvent event) {
-        Platform.exit();
-    }
-
-    /**
-     * Muestra información acerca de la aplicación
-     * @param event El evento que desencadenó esta acción
-     */
-    public void muestraAcercaDe(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Acerca de");
-        alert.setHeaderText("Fitness360 1.0");
-        alert.setContentText("Fitness360 es un software de gestión para gimnasios creado por Antonio Delgado");
-        alert.showAndWait();
-    }
 }

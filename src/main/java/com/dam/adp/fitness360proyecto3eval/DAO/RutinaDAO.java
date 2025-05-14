@@ -23,8 +23,6 @@ public class RutinaDAO implements GenericDAO<Rutina> {
     private static final String SQL_INSERT_By_Employee =
             "INSERT INTO Rutina (nombre, descripcion, idEmpleado, createdAt, updatedAt) " +
                     "VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
-
-
     /**
      * Consulta SQL para buscar una rutina por su ID
      */
@@ -45,6 +43,18 @@ public class RutinaDAO implements GenericDAO<Rutina> {
      */
     private static final String SQL_UPDATE =
             "UPDATE Rutina SET nombre = ?, descripcion = ?, idCliente = ?, idEmpleado = ?, updatedAt = ? WHERE idRutina = ?";
+
+    /**
+     * Consulta SQL para actualizar los datos de una rutina creada por un cliente
+     */
+    private static final String SQL_UPDATE_BY_CLIENT =
+            "UPDATE Rutina SET nombre = ?, descripcion = ?, updatedAt = ? WHERE idRutina = ? AND idCliente IS NOT NULL";
+
+    /**
+     * Consulta SQL para actualizar los datos de una rutina creada por un empleado
+     */
+    private static final String SQL_UPDATE_BY_EMPLOYEE =
+            "UPDATE Rutina SET nombre = ?, descripcion = ?, updatedAt = ? WHERE idRutina = ? AND idEmpleado IS NOT NULL";
 
     /**
      * Consulta SQL para eliminar una rutina
@@ -244,31 +254,51 @@ public class RutinaDAO implements GenericDAO<Rutina> {
     public boolean update(Rutina rutina) {
         boolean updated = false;
         if (rutina != null && getById(rutina.getIdRutina()) != null) {
-            try (Connection conn = ConnectionDB.getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {
+            try (Connection conn = ConnectionDB.getConnection()) {
+                PreparedStatement stmt;
 
-                stmt.setString(1, rutina.getNombre());
-                stmt.setString(2, rutina.getDescripcion());
-                
-                // Manejar caso donde creadorCliente es null
-                if (rutina.getCreadorCliente() != null) {
-                    stmt.setInt(3, rutina.getCreadorCliente().getId());
+                // Determinar qué tipo de actualización realizar basado en el creador de la rutina
+                if (rutina.getCreadorCliente() != null && rutina.getCreadorEmpleado() == null) {
+                    // Rutina creada por un cliente
+                    stmt = conn.prepareStatement(SQL_UPDATE_BY_CLIENT);
+                    stmt.setString(1, rutina.getNombre());
+                    stmt.setString(2, rutina.getDescripcion());
+                    stmt.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+                    stmt.setInt(4, rutina.getIdRutina());
+                } else if (rutina.getCreadorEmpleado() != null && rutina.getCreadorCliente() == null) {
+                    // Rutina creada por un empleado
+                    stmt = conn.prepareStatement(SQL_UPDATE_BY_EMPLOYEE);
+                    stmt.setString(1, rutina.getNombre());
+                    stmt.setString(2, rutina.getDescripcion());
+                    stmt.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+                    stmt.setInt(4, rutina.getIdRutina());
                 } else {
-                    stmt.setNull(3, Types.INTEGER);
+                    // Actualización completa
+                    stmt = conn.prepareStatement(SQL_UPDATE);
+                    stmt.setString(1, rutina.getNombre());
+                    stmt.setString(2, rutina.getDescripcion());
+
+                    // Manejar caso donde creadorCliente es null
+                    if (rutina.getCreadorCliente() != null) {
+                        stmt.setInt(3, rutina.getCreadorCliente().getId());
+                    } else {
+                        stmt.setNull(3, Types.INTEGER);
+                    }
+
+                    // Manejar caso donde creadorEmpleado es null
+                    if (rutina.getCreadorEmpleado() != null) {
+                        stmt.setInt(4, rutina.getCreadorEmpleado().getId());
+                    } else {
+                        stmt.setNull(4, Types.INTEGER);
+                    }
+
+                    stmt.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
+                    stmt.setInt(6, rutina.getIdRutina());
                 }
-                
-                // Manejar caso donde creadorEmpleado es null
-                if (rutina.getCreadorEmpleado() != null) {
-                    stmt.setInt(4, rutina.getCreadorEmpleado().getId());
-                } else {
-                    stmt.setNull(4, Types.INTEGER);
-                }
-                
-                stmt.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
-                stmt.setInt(6, rutina.getIdRutina());
 
                 int filas = stmt.executeUpdate();
                 updated = filas > 0;
+                stmt.close();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }

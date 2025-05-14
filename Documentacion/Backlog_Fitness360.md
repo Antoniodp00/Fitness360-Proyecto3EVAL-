@@ -33,19 +33,19 @@
 
 - [x]  Crear estructura de carpetas para `FXML`, `css`, etc.
 - [x]  Ventana de Login + validación con hash de contraseña
-- [ ] Registro de nuevo usuario con selección de tipo (cliente o profesional)
-- [ ] Ventana principal según el tipo de usuario
-- [ ] Carga de datos desde la BD con JavaFX (por ejemplo, tabla de rutinas asignadas)
+- [x] Registro de nuevo usuario con selección de tipo (cliente o profesional)
+- [x] Ventana principal según el tipo de usuario
+- [x] Carga de datos desde la BD con JavaFX (por ejemplo, tabla de rutinas asignadas)
 
 ---
 
 ## 🧠 Sprint 4: 11 al 15 de mayo
 **Objetivo:** Funcionalidades avanzadas
 
-- [ ] Asignar rutinas o dietas por parte del profesional
-- [ ] Mostrar las revisiones asociadas a un cliente
-- [ ] Crear nueva revisión (por parte del profesional)
-- [ ] Controlar cambios de tarifa, estado y fechas
+- [x] Asignar rutinas o dietas por parte del profesional
+- [x] Mostrar las revisiones asociadas a un cliente
+- [x] Crear nueva revisión (por parte del profesional)
+- [x] Controlar cambios de tarifa, estado y fechas
 
 ---
 

@@ -20,11 +20,7 @@
     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
   </padding>
 
-  <Label text="Fitness360 - Registro de Rutina" style="-fx-font-weight: bold;">
-    <font>
-      <Font size="24.0" />
-    </font>
-  </Label>
+  <Label text="Fitness360 - Registro de Rutina" styleClass="header-label" />
 
   <!-- Selección de tipo de creador -->
   <HBox fx:id="creadorSelectionBox" alignment="CENTER" spacing="20.0">

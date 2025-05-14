@@ -12,34 +12,57 @@ import java.util.List;
  * relacionadas con los usuarios clientes en la base de datos.
  * Proporciona métodos para obtener, buscar, insertar, actualizar y desactivar usuarios clientes.
  */
-public class UsuarioClienteDAO {
+public class UsuarioClienteDAO implements GenericDAO<UsuarioCliente>{
 
-    /** Consulta SQL para obtener todos los clientes */
+    /**
+     * Consulta SQL para obtener todos los clientes
+     */
     private final static String SQL_ALL = "SELECT * FROM Cliente";
 
-    /** Consulta SQL para buscar un cliente por su ID */
+    /**
+     * Consulta SQL para buscar un cliente por su ID
+     */
     private final static String SQL_FIND_BY_ID = "SELECT * FROM Cliente WHERE idCliente= ?";
 
-    /** Consulta SQL para buscar un cliente por su nombre de usuario */
+    /**
+     * Consulta SQL para buscar un cliente por su nombre de usuario
+     */
     private final static String SQL_FIND_BY_NAME_USER = "SELECT * FROM Cliente WHERE nombreUsuario = ?";
 
-    /** Consulta SQL para insertar un nuevo cliente */
-    private final static String SQL_INSERT ="INSERT INTO Cliente (nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, altura, estado, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    /**
+     * Consulta SQL para insertar un nuevo cliente
+     */
+    private final static String SQL_INSERT = "INSERT INTO Cliente (nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, altura, estado, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    /** Consulta SQL para desactivar un cliente */
+    /**
+     * Consulta SQL para desactivar un cliente
+     */
     private final static String SQL_DISABLE = "UPDATE Cliente SET estado = ?, updatedAt = ? WHERE idCliente = ?";
 
-    /** Consulta SQL para actualizar los datos de un cliente */
+    /**
+     * Consulta SQL para actualizar los datos de un cliente
+     */
     private static final String SQL_UPDATE = "UPDATE Cliente SET nombreUsuario = ?, nombre = ?, apellidos = ?, correo = ?, password = ?, telefono = ?, fechaNacimiento = ?, sexo = ?, altura = ?, estado = ?, updatedAt = ? WHERE idCliente = ?";
 
     /**
+     * Consulta SQL para eliminar un cliente
+     */
+    private static final String SQL_DELETE = "DELETE FROM Cliente WHERE idCliente = ?";
+
+    private static final String SQL_GET_CLIENTES_POR_TARIFA = "SELECT c.* " +
+            "FROM Cliente c " +
+            "JOIN ClienteTarifa ct ON c.idCliente = ct.idCliente " +
+            "JOIN Tarifa t ON ct.idTarifa = t.idTarifa " +
+            "WHERE t.idEmpleado = ? AND ct.estado = 'ACTIVA' GROUP BY c.nombre";
+
+    /**
      * Método auxiliar para mapear un ResultSet a un objeto UsuarioCliente
-     * 
+     *
      * @param rs ResultSet con los datos del cliente
      * @return Objeto UsuarioCliente con los datos mapeados
      * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
      */
-    private static UsuarioCliente mapearCliente(ResultSet rs) throws SQLException {
+    private UsuarioCliente mapearCliente(ResultSet rs) throws SQLException {
         UsuarioCliente cliente = new UsuarioCliente();
         cliente.setId(rs.getInt("idCliente"));
         cliente.setNombreUsuario(rs.getString("nombreUsuario"));
@@ -67,11 +90,11 @@ public class UsuarioClienteDAO {
 
     /**
      * Obtiene todos los clientes de la base de datos
-     * 
+     *
      * @return Lista de todos los clientes
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static List<UsuarioCliente> getAll() {
+    public  List<UsuarioCliente> getAll() {
         List<UsuarioCliente> clientes = new ArrayList<>();
 
         try (Connection con = ConnectionDB.getConnection();
@@ -91,12 +114,12 @@ public class UsuarioClienteDAO {
 
     /**
      * Busca un cliente por su ID
-     * 
+     *
      * @param idCliente ID del cliente a buscar
      * @return Objeto UsuarioCliente si se encuentra, null en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static UsuarioCliente findById(int idCliente) {
+    public UsuarioCliente getById(int idCliente) {
         UsuarioCliente cliente = null;
 
         try (Connection con = ConnectionDB.getConnection();
@@ -118,12 +141,13 @@ public class UsuarioClienteDAO {
 
     /**
      * Busca un cliente por su ID y carga sus rutinas asignadas (carga ansiosa/eager loading)
-     * 
+     *
      * @param idCliente ID del cliente a buscar
      * @return Objeto UsuarioCliente con sus rutinas asignadas si se encuentra, null en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static UsuarioCliente findByIdEager(int idCliente) {
+    public UsuarioCliente findByIdEager(int idCliente) {
+        ClienteRutinaDAO clienteRutinaDAO = new ClienteRutinaDAO();
         UsuarioCliente cliente = null;
 
         try (Connection con = ConnectionDB.getConnection();
@@ -138,7 +162,7 @@ public class UsuarioClienteDAO {
 
             // Ahora que el cliente está mapeado, obtenemos las rutinas asignadas
             if (cliente != null) {
-                cliente.setRutinasAsignadas(ClienteRutinaDAO.findByClientEager(idCliente));
+                cliente.setRutinasAsignadas(clienteRutinaDAO.findByClientEager(idCliente));
             }
 
         } catch (SQLException e) {
@@ -151,12 +175,12 @@ public class UsuarioClienteDAO {
 
     /**
      * Busca un cliente por su nombre de usuario
-     * 
+     *
      * @param nombreUsuario Nombre de usuario del cliente a buscar
      * @return Objeto UsuarioCliente si se encuentra, null en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static UsuarioCliente finByUserName(String nombreUsuario) {
+    public UsuarioCliente findByUserName(String nombreUsuario) {
         UsuarioCliente cliente = null;
 
         try (Connection con = ConnectionDB.getConnection();
@@ -176,13 +200,13 @@ public class UsuarioClienteDAO {
 
     /**
      * Inserta un nuevo cliente en la base de datos
-     * 
+     *
      * @param cliente Objeto UsuarioCliente con los datos del cliente a insertar
      * @return El objeto UsuarioCliente insertado si la operación fue exitosa, null si el cliente ya existe o es nulo
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static UsuarioCliente insertCliente(UsuarioCliente cliente) {
-        if (cliente != null && finByUserName(cliente.getNombreUsuario()) == null) {
+    public UsuarioCliente insert(UsuarioCliente cliente) {
+        if (cliente != null && findByUserName(cliente.getNombreUsuario()) == null) {
             try (Connection con = ConnectionDB.getConnection();
                  PreparedStatement pst = con.prepareStatement(SQL_INSERT)) {
 
@@ -210,13 +234,13 @@ public class UsuarioClienteDAO {
 
     /**
      * Desactiva un cliente en la base de datos cambiando su estado a INACTIVO
-     * 
+     *
      * @param id ID del cliente a desactivar
      * @return true si el cliente fue desactivado correctamente, false si el cliente no existe o hubo un error
      */
-    public static boolean disableUsuarioCliente(int id) {
+    public boolean disableUsuarioCliente(int id) {
         boolean disabled = false;
-        if (findById(id) != null) {
+        if (getById(id) != null) {
             try (Connection con = ConnectionDB.getConnection();
                  PreparedStatement pst = con.prepareStatement(SQL_DISABLE)) {
 
@@ -234,11 +258,11 @@ public class UsuarioClienteDAO {
 
     /**
      * Actualiza los datos de un cliente en la base de datos
-     * 
+     *
      * @param cliente Objeto UsuarioCliente con los datos actualizados
      * @return true si la actualización fue exitosa, false en caso contrario
      */
-    public static boolean updateCliente(UsuarioCliente cliente) {
+    public boolean update(UsuarioCliente cliente) {
         boolean actualizado = false;
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {
@@ -247,7 +271,7 @@ public class UsuarioClienteDAO {
             stmt.setString(2, cliente.getNombre());
             stmt.setString(3, cliente.getApellidos());
             stmt.setString(4, cliente.getCorreo());
-            stmt.setString(5, cliente.getPassword());
+            stmt.setString(5, com.dam.adp.fitness360proyecto3eval.utilidades.HashUtil.hashPassword(cliente.getPassword()));
             stmt.setString(6, cliente.getTelefono());
             stmt.setDate(7, cliente.getFechaNacimiento() != null ? new java.sql.Date(cliente.getFechaNacimiento().getTime()) : null);
             stmt.setString(8, cliente.getSexo() != null ? cliente.getSexo().name() : null);
@@ -264,5 +288,48 @@ public class UsuarioClienteDAO {
         return actualizado;
     }
 
+    public List<UsuarioCliente> findClientesByEmpleadoTarifa(int idEmpleado) {
+        List<UsuarioCliente> clientes = new ArrayList<>();
 
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQL_GET_CLIENTES_POR_TARIFA)) {
+
+            stmt.setInt(1, idEmpleado);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    UsuarioCliente cliente = mapearCliente(rs);
+                    clientes.add(cliente);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return clientes;
+    }
+
+    /**
+     * Elimina un cliente de la base de datos
+     *
+     * @param cliente Objeto UsuarioCliente a eliminar
+     * @return true si la eliminación fue exitosa, false en caso contrario
+     */
+    public boolean delete(UsuarioCliente cliente) {
+
+        boolean deleted = false;
+        if (cliente != null && getById(cliente.getId()) != null) {
+            try (Connection conn = ConnectionDB.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(SQL_DELETE)) {
+
+                stmt.setInt(1, cliente.getId());
+                stmt.executeUpdate();
+                deleted = true;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return deleted;
+    }
 }

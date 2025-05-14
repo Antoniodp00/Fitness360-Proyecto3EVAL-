@@ -2,6 +2,10 @@ package com.dam.adp.fitness360proyecto3eval;
 
 import com.dam.adp.fitness360proyecto3eval.DAO.*;
 import com.dam.adp.fitness360proyecto3eval.model.*;
+import com.dam.adp.fitness360proyecto3eval.utilidades.HashUtil;
+import com.dam.adp.fitness360proyecto3eval.utilidades.Utilidades;
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
@@ -290,7 +294,7 @@ public class Prueba {
                 } else {
                     System.out.println("No se encontró la rutina para actualizar o eliminar.");
                 }*/
-
+/*
         // Crear dieta de prueba (id debe existir en la BD)
         Dieta dieta = new Dieta();
         dieta.setIdDieta(2); // Asegúrate de que la dieta con ID 2 exista
@@ -317,7 +321,36 @@ UsuarioCliente cliente = UsuarioClienteDAO.findByIdEager(1);
         // Eliminar la asignación
         ClienteDietaDAO.delete(cliente.getId(), dieta.getIdDieta());
         System.out.println("Asignación eliminada correctamente.");
+   */
+/*
+        String nombreUsuario = "testUserFX";
+        String nombre = "TestFX";
+        String apellidos = "UsuarioFX";
+        String correo = "testFx@correo.com";
+        String password = "password123";
+        String telefono = "123456789";
+        Date fechaNacimiento = new Date(2000,01,07);  // Fecha actual
+        Sexo sexo = Sexo.M;  // Suponiendo que tienes un enum Sexo con MASCULINO, FEMENINO, etc.
+        Estado estado = Estado.ACTIVO;  // Suponiendo que tienes un enum Estado con ACTIVO, INACTIVO, etc.
+        double altura = 180.0;  // Altura en centímetros
+
+
+        // Crear el cliente
+        UsuarioCliente nuevoCliente = new UsuarioCliente(
+                nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, estado, altura
+        );
+
+        UsuarioCliente insertado = UsuarioClienteDAO.insertCliente(nuevoCliente);
+        if (insertado != null) {
+            System.out.println("Cliente insertado con éxito: " + insertado.getNombreUsuario());
+        } else {
+            System.out.println("Error al insertar el cliente.");
+        }*/
+/*
+        String passwordIngresada = "1234"; // escribe la contraseña que crees que corresponde
+        String hashGuardado = HashUtil.hashPassword(passwordIngresada);
+
+        boolean coincide = BCrypt.checkpw(passwordIngresada, hashGuardado);
+        System.out.println("¿La contraseña coincide? " + coincide);*/
     }
-
-
 }

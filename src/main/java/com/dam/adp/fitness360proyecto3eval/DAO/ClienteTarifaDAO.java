@@ -20,9 +20,9 @@ public class ClienteTarifaDAO {
 
     /** Consulta SQL para buscar asignaciones de tarifas por cliente */
     private static final String SQL_FIND_BY_CLIENTE =
-            "SELECT ct.*, " +
-                    "c.*, " +
-                    "t.* " +
+            "SELECT ct.idCliente, ct.idTarifa, ct.estado AS estadoTarifa, ct.fechaContratacion, ct.fechaRenovacion, ct.fechaFin, ct.createdAt, ct.updatedAt, " +
+                    "c.idCliente, c.nombreUsuario, c.nombre, c.apellidos, c.correo, c.password, c.telefono, c.fechaNacimiento, c.sexo, c.altura, c.estado AS estadoCliente, c.createdAt, c.updatedAt, " +
+                    "t.idTarifa, t.nombre, t.descripcion, t.precio, t.createdAt, t.updatedAt " +
                     "FROM ClienteTarifa ct " +
                     "JOIN Cliente c ON ct.idCliente = c.idCliente " +
                     "JOIN Tarifa t ON ct.idTarifa = t.idTarifa " +
@@ -30,9 +30,9 @@ public class ClienteTarifaDAO {
 
     /** Consulta SQL para buscar asignaciones de clientes por tarifa */
     private static final String SQL_FIND_BY_TARIFA =
-            "SELECT ct.*, " +
-                    "c.*, " +
-                    "t.* " +
+            "SELECT ct.idCliente, ct.idTarifa, ct.estado AS estadoTarifa, ct.fechaContratacion, ct.fechaRenovacion, ct.fechaFin, ct.createdAt, ct.updatedAt, " +
+                    "c.idCliente, c.nombreUsuario, c.nombre, c.apellidos, c.correo, c.password, c.telefono, c.fechaNacimiento, c.sexo, c.altura, c.estado AS estadoCliente, c.createdAt, c.updatedAt, " +
+                    "t.idTarifa, t.nombre, t.descripcion, t.precio, t.createdAt, t.updatedAt " +
                     "FROM ClienteTarifa ct " +
                     "JOIN Cliente c ON ct.idCliente = c.idCliente " +
                     "JOIN Tarifa t ON ct.idTarifa = t.idTarifa " +
@@ -42,12 +42,25 @@ public class ClienteTarifaDAO {
     private static final String SQL_DELETE =
             "DELETE FROM ClienteTarifa WHERE idCliente = ? AND idTarifa = ?";
 
+    /** Consulta SQL para obtener todas las asignaciones de tarifas a clientes */
+    private static final String SQL_GET_ALL =
+            "SELECT ct.idCliente, ct.idTarifa, ct.estado AS estadoTarifa, ct.fechaContratacion, ct.fechaRenovacion, ct.fechaFin, ct.createdAt, ct.updatedAt, " +
+                    "c.idCliente, c.nombreUsuario, c.nombre, c.apellidos, c.correo, c.password, c.telefono, c.fechaNacimiento, c.sexo, c.altura, c.estado AS estadoCliente, c.createdAt, c.updatedAt, " +
+                    "t.idTarifa, t.nombre, t.descripcion, t.precio, t.createdAt, t.updatedAt " +
+                    "FROM ClienteTarifa ct " +
+                    "JOIN Cliente c ON ct.idCliente = c.idCliente " +
+                    "JOIN Tarifa t ON ct.idTarifa = t.idTarifa";
+
+    /** Consulta SQL para actualizar una asignación de tarifa a cliente */
+    private static final String SQL_UPDATE =
+            "UPDATE ClienteTarifa SET estado = ?, fechaContratacion = ?, fechaRenovacion = ?, fechaFin = ? WHERE idCliente = ? AND idTarifa = ?";
+
     /**
      * Inserta una nueva asignación de tarifa a cliente en la base de datos
      * 
      * @param ct Objeto ClienteTarifa con los datos a insertar
      */
-    public static void insert(ClienteTarifa ct) {
+    public void insert(ClienteTarifa ct) {
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_INSERT)) {
 
@@ -70,7 +83,7 @@ public class ClienteTarifaDAO {
      * @param idCliente ID del cliente a buscar
      * @return Lista de objetos ClienteTarifa con las asignaciones encontradas
      */
-    public static List<ClienteTarifa> findByCliente(int idCliente) {
+    public List<ClienteTarifa> findByCliente(int idCliente) {
         List<ClienteTarifa> lista = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_CLIENTE)) {
@@ -91,7 +104,7 @@ public class ClienteTarifaDAO {
      * @param idTarifa ID de la tarifa a buscar
      * @return Lista de objetos ClienteTarifa con las asignaciones encontradas
      */
-    public static List<ClienteTarifa> findByTarifa(int idTarifa) {
+    public List<ClienteTarifa> findByTarifa(int idTarifa) {
         List<ClienteTarifa> lista = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_TARIFA)) {
@@ -112,7 +125,7 @@ public class ClienteTarifaDAO {
      * @param idCliente ID del cliente
      * @param idTarifa ID de la tarifa
      */
-    public static void delete(int idCliente, int idTarifa) {
+    public void delete(int idCliente, int idTarifa) {
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_DELETE)) {
             stmt.setInt(1, idCliente);
@@ -130,7 +143,7 @@ public class ClienteTarifaDAO {
      * @return Objeto ClienteTarifa con todos los datos
      * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
      */
-    private static ClienteTarifa mapearClienteTarifaEager(ResultSet rs) throws SQLException {
+    private ClienteTarifa mapearClienteTarifaEager(ResultSet rs) throws SQLException {
         ClienteTarifa ct = new ClienteTarifa();
 
         UsuarioCliente cliente = new UsuarioCliente();
@@ -145,7 +158,7 @@ public class ClienteTarifaDAO {
         String sexoStr = rs.getString("sexo");
         if (sexoStr != null) cliente.setSexo(Sexo.valueOf(sexoStr));
         cliente.setAltura(rs.getDouble("altura"));
-        String estadoCliente = rs.getString("estado");
+        String estadoCliente = rs.getString("estadoCliente");
         if (estadoCliente != null) cliente.setEstado(Estado.valueOf(estadoCliente));
         cliente.setCreatedAt(rs.getTimestamp("createdAt"));
         cliente.setUpdatedAt(rs.getTimestamp("updatedAt"));
@@ -160,7 +173,7 @@ public class ClienteTarifaDAO {
 
         ct.setCliente(cliente);
         ct.setTarifa(tarifa);
-        String estadoStr = rs.getString("estado");
+        String estadoStr = rs.getString("estadoTarifa");
         if (estadoStr != null) ct.setEstado(EstadoTarifa.valueOf(estadoStr));
         ct.setFechaContratacion(rs.getDate("fechaContratacion"));
         ct.setFechaRenovacion(rs.getDate("fechaRenovacion"));
@@ -170,4 +183,49 @@ public class ClienteTarifaDAO {
         return ct;
     }
 
+    /**
+     * Obtiene todas las asignaciones de tarifas a clientes
+     * 
+     * @return Lista de todas las asignaciones
+     */
+    public List<ClienteTarifa> getAll() {
+        List<ClienteTarifa> lista = new ArrayList<>();
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQL_GET_ALL);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                lista.add(mapearClienteTarifaEager(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return lista;
+    }
+
+    /**
+     * Actualiza una asignación de tarifa a cliente
+     * 
+     * @param ct Objeto ClienteTarifa con los datos actualizados
+     * @return true si la actualización fue exitosa, false en caso contrario
+     */
+    public boolean update(ClienteTarifa ct) {
+        boolean actualizado = false;
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {
+
+            stmt.setString(1, ct.getEstado().name());
+            stmt.setDate(2, (Date) ct.getFechaContratacion());
+            stmt.setDate(3, (Date) ct.getFechaRenovacion());
+            stmt.setDate(4, (Date) ct.getFechaFin());
+            stmt.setInt(5, ct.getCliente().getId());
+            stmt.setInt(6, ct.getTarifa().getIdTarifa());
+
+            int filas = stmt.executeUpdate();
+            actualizado = filas > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return actualizado;
+    }
 }

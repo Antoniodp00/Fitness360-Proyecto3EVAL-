@@ -12,13 +12,13 @@ import java.util.List;
  * relacionadas con la asignación de dietas a clientes en la base de datos.
  * Proporciona métodos para insertar, buscar y eliminar asignaciones de dietas a clientes.
  */
-public class ClienteDietaDAO {
+public class ClienteDietaDAO implements GenericDAO<ClienteDieta> {
     /** Consulta SQL para insertar una nueva asignación de dieta a cliente */
     private static final String SQL_INSERT =
             "INSERT INTO ClienteDieta (idCliente, idDieta, fechaAsignacion, fechaFin) VALUES (?, ?, ?, ?)";
 
-    /** Consulta SQL para buscar asignaciones de dietas por cliente con información completa */
-    private static final String SQL_FIND_BY_CLIENTE =
+    /** Consulta SQL para obtener todas las asignaciones de dietas a clientes */
+    private static final String SQL_GET_ALL =
             "SELECT cd.*, " +
                     "c.idCliente, c.nombreUsuario, c.nombre, c.apellidos, c.correo, " +
                     "c.password, c.telefono, c.fechaNacimiento, c.sexo, c.altura, " +
@@ -27,7 +27,21 @@ public class ClienteDietaDAO {
                     "d.createdAt as createdAtDieta, d.updatedAt as updatedAtDieta " +
                     "FROM ClienteDieta cd " +
                     "JOIN Cliente c ON cd.idCliente = c.idCliente " +
+                    "JOIN Dieta d ON cd.idDieta = d.idDieta";
+
+    /** Consulta SQL para buscar asignaciones de dietas por cliente con información completa */
+    private static final String SQL_FIND_BY_CLIENTE =
+            "SELECT cd.*, " +
+                    "c.idCliente, c.nombreUsuario, c.nombre, c.apellidos, c.correo, " +
+                    "c.password, c.telefono, c.fechaNacimiento, c.sexo, c.altura, " +
+                    "c.estado, c.createdAt, c.updatedAt, " +
+                    "d.nombre AS nombreDieta, d.descripcion AS descripcionDieta, " +
+                    "d.createdAt AS createdAtDieta, d.updatedAt AS updatedAtDieta, " +
+                    "e.idEmpleado, e.nombre AS nombreEmpleado, e.apellidos AS apellidosEmpleado " +
+                    "FROM ClienteDieta cd " +
+                    "JOIN Cliente c ON cd.idCliente = c.idCliente " +
                     "JOIN Dieta d ON cd.idDieta = d.idDieta " +
+                    "LEFT JOIN Empleado e ON d.idEmpleado = e.idEmpleado " +
                     "WHERE cd.idCliente = ?";
 
     /** Consulta SQL para buscar asignaciones de clientes por dieta con información completa */
@@ -48,20 +62,98 @@ public class ClienteDietaDAO {
             "DELETE FROM ClienteDieta WHERE idCliente = ? AND idDieta = ?";
 
     /**
+     * Obtiene todas las asignaciones de dietas a clientes
+     * 
+     * @return Lista de objetos ClienteDieta con todas las asignaciones
+     */
+    @Override
+    public List<ClienteDieta> getAll() {
+        List<ClienteDieta> lista = new ArrayList<>();
+
+        try (Connection conn = ConnectionDB.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(SQL_GET_ALL)) {
+
+            while (rs.next()) {
+                lista.add(mapearClienteDietaEager(rs));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return lista;
+    }
+
+    /**
+     * Obtiene una asignación de dieta a cliente por su ID
+     * Nota: En este caso, no hay un ID único para ClienteDieta, por lo que este método
+     * no es aplicable directamente. Se implementa para cumplir con la interfaz.
+     * 
+     * @param id ID de la asignación (no aplicable)
+     * @return null ya que no hay un ID único
+     */
+    @Override
+    public ClienteDieta getById(int id) {
+        // No hay un ID único para ClienteDieta, por lo que este método no es aplicable
+        return null;
+    }
+
+    /**
      * Inserta una nueva asignación de dieta a cliente en la base de datos
      * 
-     * @param cd Objeto ClienteDieta con los datos a insertar
+     * @param entity Objeto ClienteDieta con los datos a insertar
+     * @return El objeto ClienteDieta insertado
      */
-    public static void insert(ClienteDieta cd) {
+    @Override
+    public ClienteDieta insert(ClienteDieta entity) {
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_INSERT)) {
 
-            stmt.setInt(1, cd.getCliente().getId());
-            stmt.setInt(2, cd.getDieta().getIdDieta());
-            stmt.setDate(3, (Date) cd.getFechaAsignacion());
-            stmt.setDate(4, (Date) cd.getFechaFin());
+            stmt.setInt(1, entity.getCliente().getId());
+            stmt.setInt(2, entity.getDieta().getIdDieta());
+            stmt.setDate(3, (Date) entity.getFechaAsignacion());
+            stmt.setDate(4, (Date) entity.getFechaFin());
 
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return entity;
+    }
+
+    /**
+     * Actualiza una asignación de dieta a cliente en la base de datos
+     * Nota: En este caso, no hay una operación de actualización específica para ClienteDieta,
+     * por lo que este método simplemente elimina la asignación existente y crea una nueva.
+     * 
+     * @param entity Objeto ClienteDieta con los datos actualizados
+     * @return true si la actualización fue exitosa, false en caso contrario
+     */
+    @Override
+    public boolean update(ClienteDieta entity) {
+        try {
+            delete(entity);
+            insert(entity);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Elimina una asignación de dieta a cliente de la base de datos
+     * 
+     * @param entity Objeto ClienteDieta a eliminar
+     * @return true si la eliminación fue exitosa, false en caso contrario
+     */
+    @Override
+    public boolean delete(ClienteDieta entity) {
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQL_DELETE)) {
+
+            stmt.setInt(1, entity.getCliente().getId());
+            stmt.setInt(2, entity.getDieta().getIdDieta());
+            stmt.executeUpdate();
+            return true;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -73,7 +165,7 @@ public class ClienteDietaDAO {
      * @param idCliente ID del cliente a buscar
      * @return Lista de objetos ClienteDieta con las asignaciones encontradas
      */
-    public static List<ClienteDieta> findByClient(int idCliente) {
+    public List<ClienteDieta> findByClient(int idCliente) {
         List<ClienteDieta> lista = new ArrayList<>();
 
         try (Connection conn = ConnectionDB.getConnection();
@@ -98,7 +190,7 @@ public class ClienteDietaDAO {
      * @param idCliente ID del cliente a buscar
      * @return Lista de objetos ClienteDieta con las asignaciones encontradas y datos completos
      */
-    public static List<ClienteDieta> findByClientEager(int idCliente) {
+    public List<ClienteDieta> findByClientEager(int idCliente) {
         List<ClienteDieta> lista = new ArrayList<>();
 
         try (Connection conn = ConnectionDB.getConnection();
@@ -122,7 +214,7 @@ public class ClienteDietaDAO {
      * @param idDieta ID de la dieta a buscar
      * @return Lista de objetos ClienteDieta con las asignaciones encontradas
      */
-    public static List<ClienteDieta> findByDieta(int idDieta) {
+    public List<ClienteDieta> findByDieta(int idDieta) {
         List<ClienteDieta> lista = new ArrayList<>();
 
         try (Connection conn = ConnectionDB.getConnection();
@@ -147,7 +239,7 @@ public class ClienteDietaDAO {
      * @param idDieta ID de la dieta a buscar
      * @return Lista de objetos ClienteDieta con las asignaciones encontradas y datos completos
      */
-    public static List<ClienteDieta> findByDietaEager(int idDieta) {
+    public List<ClienteDieta> findByDietaEager(int idDieta) {
         List<ClienteDieta> lista = new ArrayList<>();
 
         try (Connection conn = ConnectionDB.getConnection();
@@ -171,7 +263,7 @@ public class ClienteDietaDAO {
      * @param idCliente ID del cliente
      * @param idDieta ID de la dieta
      */
-    public static void delete(int idCliente, int idDieta) {
+    public void deleteByIds(int idCliente, int idDieta) {
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_DELETE)) {
 
@@ -191,7 +283,7 @@ public class ClienteDietaDAO {
      * @return Objeto ClienteDieta con datos básicos
      * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
      */
-    private static ClienteDieta mapearClienteDieta(ResultSet rs) throws SQLException {
+    private ClienteDieta mapearClienteDieta(ResultSet rs) throws SQLException {
         ClienteDieta cd = new ClienteDieta();
 
         UsuarioCliente cliente = new UsuarioCliente();
@@ -215,7 +307,7 @@ public class ClienteDietaDAO {
      * @return Objeto ClienteDieta con todos los datos relacionados
      * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
      */
-    private static ClienteDieta mapearClienteDietaEager(ResultSet rs) throws SQLException {
+    private ClienteDieta mapearClienteDietaEager(ResultSet rs) throws SQLException {
         ClienteDieta cd = new ClienteDieta();
 
         UsuarioCliente cliente = new UsuarioCliente();
@@ -251,6 +343,12 @@ public class ClienteDietaDAO {
         dieta.setCreatedAt(rs.getTimestamp("createdAtDieta"));
         dieta.setUpdatedAt(rs.getTimestamp("updatedAtDieta"));
         cd.setDieta(dieta);
+
+        UsuarioEmpleado empleado = new UsuarioEmpleado();
+        empleado.setId(rs.getInt("idEmpleado"));
+        empleado.setNombre(rs.getString("nombreEmpleado"));
+        empleado.setApellidos(rs.getString("apellidosEmpleado"));
+        dieta.setCreador(empleado);
 
         cd.setFechaAsignacion(rs.getDate("fechaAsignacion"));
         cd.setFechaFin(rs.getDate("fechaFin"));

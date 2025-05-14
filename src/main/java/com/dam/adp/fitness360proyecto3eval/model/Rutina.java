@@ -224,6 +224,14 @@ public class Rutina {
         this.updatedAt = updatedAt;
     }
 
+    public String getNombreEmpleadoCompleto() {
+        if (creadorEmpleado == null) {
+            return "Creado por el propio cliente";
+        }
+        return creadorEmpleado.getNombre() + " " + creadorEmpleado.getApellidos();
+    }
+
+
     /**
      * Devuelve una representación en cadena de texto de la rutina.
      * 

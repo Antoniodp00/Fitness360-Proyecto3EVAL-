@@ -12,29 +12,45 @@ import java.util.List;
  * relacionadas con las tarifas en la base de datos.
  * Proporciona constantes SQL para insertar, buscar, actualizar y eliminar tarifas.
  */
-public class TarifaDAO {
-    /** Consulta SQL para insertar una nueva tarifa */
+public class TarifaDAO implements GenericDAO<Tarifa> {
+    /**
+     * Consulta SQL para insertar una nueva tarifa
+     */
     private static final String SQL_INSERT =
             "INSERT INTO Tarifa (nombre, precio, descripcion, periodo, idEmpleado, createdAt, updatedAt) " +
                     "VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
 
-    /** Consulta SQL para buscar una tarifa por su ID */
+    /**
+     * Consulta SQL para buscar una tarifa por su ID
+     */
     private static final String SQL_GET_BY_ID =
             "SELECT * FROM Tarifa WHERE idTarifa = ?";
 
-    /** Consulta SQL para obtener tarifas creadas por un empleado específico */
+    /**
+     * Consulta SQL para obtener tarifas creadas por un empleado específico
+     */
     private static final String SQL_GET_BY_CREATOR =
-            "SELECT * FROM Tarifa WHERE idEmpleado = ?";
+            "SELECT t.*, e.nombre AS nombreEmpleado, e.apellidos AS apellidosEmpleado " +
+                    "FROM Tarifa t " +
+                    "JOIN Empleado e ON t.idEmpleado = e.idEmpleado " +
+                    "WHERE t.idEmpleado = ?";
 
-    /** Consulta SQL para obtener todas las tarifas */
+
+    /**
+     * Consulta SQL para obtener todas las tarifas
+     */
     private static final String SQL_GET_ALL =
             "SELECT * FROM Tarifa";
 
-    /** Consulta SQL para actualizar los datos de una tarifa */
+    /**
+     * Consulta SQL para actualizar los datos de una tarifa
+     */
     private static final String SQL_UPDATE =
             "UPDATE Tarifa SET nombre = ?, precio = ?, descripcion = ?, periodo = ?, idEmpleado = ?, updatedAt = ? WHERE idTarifa = ?";
 
-    /** Consulta SQL para eliminar una tarifa */
+    /**
+     * Consulta SQL para eliminar una tarifa
+     */
     private static final String SQL_DELETE =
             "DELETE FROM Tarifa WHERE idTarifa = ?";
 
@@ -46,7 +62,7 @@ public class TarifaDAO {
      * @return Objeto Tarifa con los datos mapeados
      * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
      */
-    private static Tarifa mapearTarifa(ResultSet rs) throws SQLException {
+    private Tarifa mapearTarifa(ResultSet rs) throws SQLException {
         Tarifa tarifa = new Tarifa();
         tarifa.setIdTarifa(rs.getInt("idTarifa"));
         tarifa.setNombre(rs.getString("nombre"));
@@ -68,13 +84,43 @@ public class TarifaDAO {
     }
 
     /**
+     * Método auxiliar para mapear un ResultSet a un objeto Tarifa
+     *
+     * @param rs ResultSet con los datos de la tarifa
+     * @return Objeto Tarifa con los datos mapeados
+     * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
+     */
+    private Tarifa mapearTarifaEager(ResultSet rs) throws SQLException {
+        Tarifa tarifa = new Tarifa();
+        tarifa.setIdTarifa(rs.getInt("idTarifa"));
+        tarifa.setNombre(rs.getString("nombre"));
+        tarifa.setPrecio(rs.getDouble("precio"));
+        tarifa.setDescripcion(rs.getString("descripcion"));
+        String periodoStr = rs.getString("periodo");
+        if (periodoStr != null) {
+            tarifa.setPeriodo(Periodo.valueOf(periodoStr));
+        }
+        int idEmpleado = rs.getInt("idEmpleado");
+        if (!rs.wasNull()) {
+            UsuarioEmpleado empleado = new UsuarioEmpleado();
+            empleado.setId(idEmpleado);
+            empleado.setNombre(rs.getString("nombreEmpleado"));
+            empleado.setApellidos(rs.getString("apellidosEmpleado"));
+            tarifa.setCreador(empleado);
+        }
+        tarifa.setCreatedAt(rs.getTimestamp("createdAt"));
+        tarifa.setUpdatedAt(rs.getTimestamp("updatedAt"));
+        return tarifa;
+    }
+
+    /**
      * Obtiene todas las tarifas de la base de datos
      *
      * @return Lista de todas las tarifas
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static List<Tarifa> getAll() {
-
+    @Override
+    public List<Tarifa> getAll() {
         List<Tarifa> tarifas = new ArrayList<>();
         Connection con = ConnectionDB.getConnection();
 
@@ -94,18 +140,19 @@ public class TarifaDAO {
     /**
      * Busca una tarifa por su ID
      *
-     * @param idTarifa ID de la tarifa a buscar
+     * @param id ID de la tarifa a buscar
      * @return Objeto Tarifa si se encuentra, null en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static Tarifa getById(int idTarifa) {
+    @Override
+    public Tarifa getById(int id) {
         Tarifa tarifa = null;
 
         Connection con = ConnectionDB.getConnection();
 
         try {
             PreparedStatement pstmt = con.prepareStatement(SQL_GET_BY_ID);
-            pstmt.setInt(1, idTarifa);
+            pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 tarifa = mapearTarifa(rs);
@@ -123,7 +170,32 @@ public class TarifaDAO {
      * @return Lista de tarifas creadas por el empleado especificado
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static List<Tarifa> getByCreator(int idEmpleado) {
+    public List<Tarifa> getByCreator(int idEmpleado) {
+        List<Tarifa> tarifas = new ArrayList<>();
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQL_GET_BY_CREATOR)) {
+
+            stmt.setInt(1, idEmpleado);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    tarifas.add(mapearTarifa(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return tarifas;
+    }
+
+    /**
+     * Obtiene todas las tarifas creadas por un empleado específico verison eager
+     *
+     * @param idEmpleado ID del empleado creador de las tarifas
+     * @return Lista de tarifas creadas por el empleado especificado
+     * @throws RuntimeException Si ocurre un error al acceder a la base de datos
+     */
+    public List<Tarifa> getByCreatorEager(int idEmpleado) {
         List<Tarifa> tarifas = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_GET_BY_CREATOR)) {
@@ -144,81 +216,80 @@ public class TarifaDAO {
     /**
      * Inserta una nueva tarifa en la base de datos
      *
-     * @param tarifa Objeto Tarifa con los datos de la tarifa a insertar
+     * @param entity Objeto Tarifa con los datos de la tarifa a insertar
      * @return El objeto Tarifa insertado con su ID generado
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static Tarifa insertTarifa(Tarifa tarifa) {
-        if (tarifa != null) {
-
+    @Override
+    public Tarifa insert(Tarifa entity) {
+        if (entity != null) {
             try (PreparedStatement stmt = ConnectionDB.getConnection().prepareStatement(SQL_INSERT)) {
-
-                stmt.setString(1, tarifa.getNombre());
-                stmt.setDouble(2, tarifa.getPrecio());
-                stmt.setString(3, tarifa.getDescripcion());
-                stmt.setString(4, tarifa.getPeriodo().name());
-                stmt.setInt(5, tarifa.getCreador().getId());
-                stmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
-                stmt.setTimestamp(7, new Timestamp(System.currentTimeMillis()));
-
+                stmt.setString(1, entity.getNombre());
+                stmt.setDouble(2, entity.getPrecio());
+                stmt.setString(3, entity.getDescripcion());
+                stmt.setString(4, entity.getPeriodo().name());
+                stmt.setInt(5, entity.getCreador().getId());
 
                 stmt.executeUpdate();
-
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-        }else {
-            tarifa = null;
+        } else {
+            entity = null;
         }
-        return tarifa;
+        return entity;
     }
 
     /**
      * Actualiza los datos de una tarifa existente en la base de datos
      *
-     * @param tarifa Objeto Tarifa con los nuevos datos a actualizar
+     * @param entity Objeto Tarifa con los nuevos datos a actualizar
+     * @return true si la actualización fue exitosa, false en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static void updateTarifa(Tarifa tarifa) {
-        if (tarifa != null && getById(tarifa.getIdTarifa())!=null) {
+    @Override
+    public boolean update(Tarifa entity) {
+        boolean updated = false;
+        if (entity != null && getById(entity.getIdTarifa()) != null) {
             try (Connection conn = ConnectionDB.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {
 
-                stmt.setString(1, tarifa.getNombre());
-                stmt.setDouble(2, tarifa.getPrecio());
-                stmt.setString(3, tarifa.getDescripcion());
-                stmt.setString(4, tarifa.getPeriodo().name());
-                stmt.setInt(5, tarifa.getCreador().getId());
+                stmt.setString(1, entity.getNombre());
+                stmt.setDouble(2, entity.getPrecio());
+                stmt.setString(3, entity.getDescripcion());
+                stmt.setString(4, entity.getPeriodo().name());
+                stmt.setInt(5, entity.getCreador().getId());
                 stmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
-                stmt.setTimestamp(7, new Timestamp(System.currentTimeMillis()));
+                stmt.setInt(7, entity.getIdTarifa());
 
                 stmt.executeUpdate();
+                updated = true;
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
+        return updated;
     }
 
     /**
      * Elimina una tarifa de la base de datos
      *
-     * @param tarifa Objeto Tarifa a eliminar
+     * @param entity Objeto Tarifa a eliminar
      * @return true si la tarifa fue eliminada correctamente, false en caso contrario
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
-    public static boolean deleteTarifa(Tarifa tarifa) {
+    @Override
+    public boolean delete(Tarifa entity) {
         boolean deleted = false;
-        if (tarifa != null && getById(tarifa.getIdTarifa())!=null) {
-            try(PreparedStatement pst= ConnectionDB.getConnection().prepareStatement(SQL_DELETE)){
-                pst.setInt(1,tarifa.getIdTarifa());
+        if (entity != null && getById(entity.getIdTarifa()) != null) {
+            try (PreparedStatement pst = ConnectionDB.getConnection().prepareStatement(SQL_DELETE)) {
+                pst.setInt(1, entity.getIdTarifa());
                 pst.executeUpdate();
                 deleted = true;
-            }catch (SQLException e) {
+            } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
         return deleted;
     }
-
-
 }

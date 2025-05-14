@@ -167,6 +167,19 @@ public class ClienteRutina {
         this.updatedAt = updatedAt;
     }
 
+
+    public String getNombreRutina() {
+        return rutina.getNombre();
+    }
+
+    public String getDescripcionRutina() {
+        return rutina.getDescripcion();
+    }
+
+    public String getCreadorRutina() {
+        return rutina.getNombreEmpleadoCompleto();
+    }
+
     /**
      * Devuelve una representación en cadena de texto de la relación cliente-rutina.
      * 

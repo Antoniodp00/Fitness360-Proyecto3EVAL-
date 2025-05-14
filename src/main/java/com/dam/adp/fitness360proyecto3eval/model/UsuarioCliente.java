@@ -72,6 +72,29 @@ public class UsuarioCliente extends Usuario {
     }
 
     /**
+     * Constructor con parámetros básicos para crear un cliente.
+     *
+     * @param nombreUsuario Nombre de usuario para acceso al sistema
+     * @param nombre Nombre real del cliente
+     * @param apellidos Apellidos del cliente
+     * @param correo Correo electrónico del cliente
+     * @param password Contraseña de acceso al sistema
+     * @param telefono Número de teléfono del cliente
+     * @param fechaNacimiento Fecha de nacimiento del cliente
+     * @param sexo Sexo o género del cliente
+     * @param estado Estado del cliente en el sistema
+     * @param altura Altura del cliente en centímetros
+
+     */
+    public UsuarioCliente( String nombreUsuario, String nombre, String apellidos, String correo,
+                           String password, String telefono, Date fechaNacimiento, Sexo sexo, Estado estado,
+                           double altura) {
+        super(nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, estado);
+        this.altura = altura;
+    }
+
+
+    /**
      * Constructor completo para crear un cliente con todos los atributos.
      * 
      * @param id Identificador único del cliente
@@ -202,24 +225,7 @@ public class UsuarioCliente extends Usuario {
      */
     @Override
     public String toString() {
-        return "UsuarioCliente{" +
-                "id=" + id +
-                ", nombreUsuario='" + nombreUsuario + '\'' +
-                ", nombre='" + nombre + '\'' +
-                ", apellidos='" + apellidos + '\'' +
-                ", correo='" + correo + '\'' +
-                ", telefono='" + telefono + '\'' +
-                ", fechaNacimiento=" + fechaNacimiento +
-                ", sexo=" + sexo +
-                ", estado=" + estado +
-                ", altura=" + altura +
-                ", rutinasAsignadas=" + (rutinasAsignadas != null ? rutinasAsignadas.size() : 0) + " rutinas" +
-                ", dietasAsignadas=" + (dietasAsignadas != null ? dietasAsignadas.size() : 0) + " dietas" +
-                ", revisiones=" + (revisiones != null ? revisiones.size() : 0) + " revisiones" +
-                ", tarifasContratadas=" + (tarifasContratadas != null ? tarifasContratadas.size() : 0) + " tarifas" +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
+        return this.nombre+ " " + this.apellidos + " (" + this.nombreUsuario + ")";
     }
 
     /**

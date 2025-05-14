@@ -7,6 +7,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -15,7 +16,7 @@ import java.util.List;
  * relacionadas con las revisiones físicas de los clientes en la base de datos.
  * Proporciona constantes SQL para insertar, buscar, actualizar y eliminar revisiones.
  */
-public class RevisionDAO {
+public class RevisionDAO implements GenericDAO<Revision> {
     /** Consulta SQL para insertar una nueva revisión física */
     private static final String SQL_INSERT =
             "INSERT INTO Revision (fecha, peso, grasa, musculo, mPecho, mCintura, mCadera, observaciones, imagen, idCliente, idEmpleado, createdAt, updatedAt) " +
@@ -25,13 +26,23 @@ public class RevisionDAO {
     private static final String SQL_GET_BY_ID =
             "SELECT * FROM Revision WHERE idRevision = ?";
 
-    /** Consulta SQL para buscar revisiones por empleado */
-    private static final String SQL_GET_BY_EMPLEADO =
-            "SELECT * FROM Revision WHERE idEmpleado = ?";
+    /** Consulta SQL para buscar revisiones por id empleado */
+    private static final String SQL_GET_BY_IDEMPLEADO =
+            "SELECT r.*, c.*, e.* " +
+                    "FROM Revision r " +
+                    "JOIN Cliente c ON r.idCliente = c.idCliente " +
+                    "JOIN Empleado e ON r.idEmpleado = e.idEmpleado " +
+                    "WHERE r.idEmpleado = ?";
+
 
     /** Consulta SQL para buscar revisiones por cliente */
     private static final String SQL_GET_BY_CLIENTE =
-            "SELECT * FROM Revision WHERE idCliente = ?";
+            "SELECT r.*, c.*, e.* " +
+                    "FROM Revision r " +
+                    "JOIN Cliente c ON r.idCliente = c.idCliente " +
+                    "JOIN Empleado e ON r.idEmpleado = e.idEmpleado " +
+                    "WHERE r.idCliente = ?";
+
 
     /** Consulta SQL para obtener todas las revisiones */
     private static final String SQL_GET_ALL =
@@ -53,10 +64,10 @@ public class RevisionDAO {
      * @return Objeto Revision con todos los datos
      * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
      */
-    private static Revision mapearRevision(ResultSet rs) throws SQLException {
+    private  Revision mapearRevision(ResultSet rs) throws SQLException {
         Revision revision = new Revision();
         revision.setIdRevision(rs.getInt("idRevision"));
-        revision.setFecha(rs.getObject("fecha", LocalDate.class));
+        revision.setFecha(rs.getObject("fecha", Date.class));
         revision.setPeso(rs.getDouble("peso"));
         revision.setGrasa(rs.getDouble("grasa"));
         revision.setMusculo(rs.getDouble("musculo"));
@@ -77,8 +88,50 @@ public class RevisionDAO {
         empleado.setId(idEmpleado);
         revision.setEmpleado(empleado);
 
-        revision.setCreatedAt(rs.getObject("createdAt", LocalDateTime.class));
-        revision.setUpdatedAt(rs.getObject("updatedAt", LocalDateTime.class));
+        revision.setCreatedAt(rs.getObject("createdAt", Date.class));
+        revision.setUpdatedAt(rs.getObject("updatedAt", Date.class));
+
+        return revision;
+    }
+
+    /**
+     * Mapea un ResultSet a un objeto Revision version Eager
+     *
+     * @param rs ResultSet con los datos a mapear
+     * @return Objeto Revision con todos los datos
+     * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet
+     */
+    private  Revision mapearRevisionEager(ResultSet rs) throws SQLException {
+
+        Revision revision = new Revision();
+        revision.setIdRevision(rs.getInt("idRevision"));
+        revision.setFecha(rs.getObject("fecha", Date.class));
+        revision.setPeso(rs.getDouble("peso"));
+        revision.setGrasa(rs.getDouble("grasa"));
+        revision.setMusculo(rs.getDouble("musculo"));
+        revision.setmPecho(rs.getDouble("mPecho"));
+        revision.setmCintura(rs.getDouble("mCintura"));
+        revision.setmCadera(rs.getDouble("mCadera"));
+        revision.setObservaciones(rs.getString("observaciones"));
+        revision.setImagen(rs.getString("imagen"));
+
+
+        int idCliente = rs.getInt("idCliente");
+        UsuarioCliente cliente = new UsuarioCliente();
+        cliente.setId(idCliente);
+        cliente.setNombre(rs.getString("nombre"));
+        cliente.setApellidos(rs.getString("apellidos"));
+        revision.setCliente(cliente);
+
+        int idEmpleado = rs.getInt("idEmpleado");
+        UsuarioEmpleado empleado = new UsuarioEmpleado();
+        empleado.setId(idEmpleado);
+        empleado.setNombre(rs.getString("nombre"));
+        empleado.setApellidos(rs.getString("apellidos"));
+        revision.setEmpleado(empleado);
+
+        revision.setCreatedAt(rs.getObject("createdAt", Date.class));
+        revision.setUpdatedAt(rs.getObject("updatedAt", Date.class));
 
         return revision;
     }
@@ -87,7 +140,7 @@ public class RevisionDAO {
      * 
      * @return Lista con todas las revisiones
      */
-    public static List<Revision> getAll() {
+    public List<Revision> getAll() {
         List<Revision> revisiones = new ArrayList<>();
         Connection con = ConnectionDB.getConnection();
 
@@ -110,7 +163,7 @@ public class RevisionDAO {
      * @param idRevision ID de la revisión a buscar
      * @return Objeto Revision si se encuentra, null en caso contrario
      */
-    public static Revision getById(int idRevision) {
+    public  Revision getById(int idRevision) {
         Revision revision = null;
 
         Connection con = ConnectionDB.getConnection();
@@ -134,10 +187,10 @@ public class RevisionDAO {
      * @param idEmpleado ID del empleado creador
      * @return Lista de revisiones realizadas por el empleado
      */
-    public static List<Revision> getByCreator(int idEmpleado) {
+    public  List<Revision> getByCreator(int idEmpleado) {
         List<Revision> revisiones = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(SQL_GET_BY_EMPLEADO)) {
+             PreparedStatement stmt = conn.prepareStatement(SQL_GET_BY_IDEMPLEADO)) {
 
             stmt.setInt(1, idEmpleado);
 
@@ -153,12 +206,36 @@ public class RevisionDAO {
     }
 
     /**
+     * Obtiene todas las revisiones realizadas por un empleado específico version Eager
+     *
+     * @param idEmpleado ID del empleado creador
+     * @return Lista de revisiones realizadas por el empleado
+     */
+    public  List<Revision> getByCreatorEager(int idEmpleado) {
+        List<Revision> revisiones = new ArrayList<>();
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQL_GET_BY_IDEMPLEADO)) {
+
+            stmt.setInt(1, idEmpleado);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    revisiones.add(mapearRevisionEager(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return revisiones;
+    }
+
+    /**
      * Obtiene todas las revisiones de un cliente específico
      * 
      * @param idCliente ID del cliente
      * @return Lista de revisiones del cliente
      */
-    public static List<Revision> getByClient(int idCliente) {
+    public  List<Revision> getByClient(int idCliente) {
         List<Revision> revisiones = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_GET_BY_CLIENTE)) {
@@ -177,12 +254,36 @@ public class RevisionDAO {
     }
 
     /**
+     * Obtiene todas las revisiones de un cliente específico verison Eager
+     *
+     * @param idCliente ID del cliente
+     * @return Lista de revisiones del cliente
+     */
+    public  List<Revision> getByClientEager(int idCliente) {
+        List<Revision> revisiones = new ArrayList<>();
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQL_GET_BY_CLIENTE)) {
+
+            stmt.setInt(1, idCliente);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    revisiones.add(mapearRevisionEager(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return revisiones;
+    }
+
+    /**
      * Inserta una nueva revisión en la base de datos
      * 
      * @param revision Objeto Revision con los datos a insertar
      * @return El objeto Revision insertado, o null si hubo un error
      */
-    public static Revision insertRevision(Revision revision) {
+    public  Revision insert(Revision revision) {
         if (revision != null) {
 
             try (PreparedStatement stmt = ConnectionDB.getConnection().prepareStatement(SQL_INSERT)) {
@@ -198,8 +299,6 @@ public class RevisionDAO {
                 stmt.setString(9, revision.getImagen());
                 stmt.setInt(10, revision.getCliente().getId());
                 stmt.setInt(11, revision.getEmpleado().getId());
-                stmt.setTimestamp(12, new Timestamp(System.currentTimeMillis()));
-                stmt.setTimestamp(13, new Timestamp(System.currentTimeMillis()));
 
                 stmt.executeUpdate();
 
@@ -216,8 +315,10 @@ public class RevisionDAO {
      * Actualiza los datos de una revisión existente en la base de datos
      * 
      * @param revision Objeto Revision con los datos actualizados
+     * @return true si la actualización fue exitosa, false en caso contrario
      */
-    public static void updateRevision(Revision revision) {
+    public  boolean update(Revision revision) {
+        boolean actualizado = false;
         if (revision != null && getById(revision.getIdRevision())!=null) {
             try (Connection conn = ConnectionDB.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE)) {
@@ -233,14 +334,16 @@ public class RevisionDAO {
                 stmt.setString(9, revision.getImagen());
                 stmt.setInt(10, revision.getCliente().getId());
                 stmt.setInt(11, revision.getEmpleado().getId());
-                stmt.setTimestamp(13, new Timestamp(System.currentTimeMillis()));
+                stmt.setTimestamp(12, new Timestamp(System.currentTimeMillis()));
+                stmt.setInt(13, revision.getIdRevision());
 
-
-                stmt.executeUpdate();
+                int filas = stmt.executeUpdate();
+                actualizado = filas > 0;
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
+        return actualizado;
     }
 
     /**
@@ -249,7 +352,7 @@ public class RevisionDAO {
      * @param revision Objeto Revision a eliminar
      * @return true si se eliminó correctamente, false en caso contrario
      */
-    public static boolean deleteRevision(Revision revision) {
+    public  boolean delete(Revision revision) {
         boolean deleted = false;
         if (revision != null && getById(revision.getIdRevision())!=null) {
             try(PreparedStatement pst= ConnectionDB.getConnection().prepareStatement(SQL_DELETE)){

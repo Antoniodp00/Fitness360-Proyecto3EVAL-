@@ -407,7 +407,7 @@ public class MainViewEmpleadoController {
         if (rutinaSeleccionada != null) {
             mostrarFormularioAñadirEditarRutina(rutinaSeleccionada);
         } else {
-            mostrarAlerta("Selección requerida", "Por favor, seleccione una rutina para editar", Alert.AlertType.WARNING);
+            Utilidades.mostrarAlerta("Selección requerida", "Por favor, seleccione una rutina para editar", Alert.AlertType.WARNING);
         }
     }
 
@@ -476,7 +476,7 @@ public class MainViewEmpleadoController {
         if (dietaSeleccionada != null) {
             mostrarFormularioAñadirEditarDieta(dietaSeleccionada);
         } else {
-            mostrarAlerta("Selección requerida", "Por favor, seleccione una dieta para editar", Alert.AlertType.WARNING);
+            Utilidades.mostrarAlerta("Selección requerida", "Por favor, seleccione una dieta para editar", Alert.AlertType.WARNING);
         }
     }
 
@@ -536,7 +536,7 @@ public class MainViewEmpleadoController {
         if (tarifaSeleccionada != null) {
             mostrarFormularioAñadirEditarTarifa(tarifaSeleccionada);
         } else {
-            mostrarAlerta("Selección requerida", "Por favor, seleccione una tarifa para editar", Alert.AlertType.WARNING);
+            Utilidades.mostrarAlerta("Selección requerida", "Por favor, seleccione una tarifa para editar", Alert.AlertType.WARNING);
         }
     }
 
@@ -596,7 +596,7 @@ public class MainViewEmpleadoController {
         if (revisionSeleccionada != null) {
             mostrarFormularioAñadirEditarRevision(revisionSeleccionada);
         } else {
-            mostrarAlerta("Selección requerida", "Por favor, seleccione una revisión para editar", Alert.AlertType.WARNING);
+            Utilidades.mostrarAlerta("Selección requerida", "Por favor, seleccione una revisión para editar", Alert.AlertType.WARNING);
         }
     }
 
@@ -640,18 +640,6 @@ public class MainViewEmpleadoController {
     }
 
     /**
-     * Muestra una alerta con el título, mensaje y tipo especificados.
-     *
-     * @param titulo  Título de la alerta
-     * @param mensaje Mensaje de la alerta
-     * @param tipo    Tipo de alerta
-     * @deprecated Use Utilidades.mostrarAlerta instead
-     */
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Utilidades.mostrarAlerta(titulo, mensaje, tipo);
-    }
-
-    /**
      * Maneja el evento de eliminar una rutina
      *
      * @param event El evento que desencadenó esta acción
@@ -674,14 +662,14 @@ public class MainViewEmpleadoController {
                     // Eliminar de la lista observable
                     rutinas.remove(rutinaSeleccionada);
 
-                    mostrarAlerta("Rutina eliminada", "La rutina ha sido eliminada correctamente", Alert.AlertType.INFORMATION);
+                    Utilidades.mostrarAlerta("Rutina eliminada", "La rutina ha sido eliminada correctamente", Alert.AlertType.INFORMATION);
                 } catch (Exception e) {
                     System.err.println("Error al eliminar la rutina: " + e.getMessage());
-                    mostrarAlerta("Error", "No se pudo eliminar la rutina", Alert.AlertType.ERROR);
+                    Utilidades.mostrarAlerta("Error", "No se pudo eliminar la rutina", Alert.AlertType.ERROR);
                 }
             }
         } else {
-            mostrarAlerta("Selección requerida", "Por favor, seleccione una rutina para eliminar", Alert.AlertType.WARNING);
+            Utilidades.mostrarAlerta("Selección requerida", "Por favor, seleccione una rutina para eliminar", Alert.AlertType.WARNING);
         }
     }
 
@@ -708,14 +696,14 @@ public class MainViewEmpleadoController {
                     // Eliminar de la lista observable
                     dietas.remove(dietaSeleccionada);
 
-                    mostrarAlerta("Dieta eliminada", "La dieta ha sido eliminada correctamente", Alert.AlertType.INFORMATION);
+                    Utilidades.mostrarAlerta("Dieta eliminada", "La dieta ha sido eliminada correctamente", Alert.AlertType.INFORMATION);
                 } catch (Exception e) {
                     System.err.println("Error al eliminar la dieta: " + e.getMessage());
-                    mostrarAlerta("Error", "No se pudo eliminar la dieta", Alert.AlertType.ERROR);
+                    Utilidades.mostrarAlerta("Error", "No se pudo eliminar la dieta", Alert.AlertType.ERROR);
                 }
             }
         } else {
-            mostrarAlerta("Selección requerida", "Por favor, seleccione una dieta para eliminar", Alert.AlertType.WARNING);
+            Utilidades.mostrarAlerta("Selección requerida", "Por favor, seleccione una dieta para eliminar", Alert.AlertType.WARNING);
         }
     }
 
@@ -742,14 +730,14 @@ public class MainViewEmpleadoController {
                     // Eliminar de la lista observable
                     tarifas.remove(tarifaSeleccionada);
 
-                    mostrarAlerta("Tarifa eliminada", "La tarifa ha sido eliminada correctamente", Alert.AlertType.INFORMATION);
+                    Utilidades.mostrarAlerta("Tarifa eliminada", "La tarifa ha sido eliminada correctamente", Alert.AlertType.INFORMATION);
                 } catch (Exception e) {
                     System.err.println("Error al eliminar la tarifa: " + e.getMessage());
-                    mostrarAlerta("Error", "No se pudo eliminar la tarifa", Alert.AlertType.ERROR);
+                    Utilidades.mostrarAlerta("Error", "No se pudo eliminar la tarifa", Alert.AlertType.ERROR);
                 }
             }
         } else {
-            mostrarAlerta("Selección requerida", "Por favor, seleccione una tarifa para eliminar", Alert.AlertType.WARNING);
+            Utilidades.mostrarAlerta("Selección requerida", "Por favor, seleccione una tarifa para eliminar", Alert.AlertType.WARNING);
         }
     }
 }

@@ -1,10 +1,12 @@
 package com.dam.adp.fitness360proyecto3eval.controller;
 
 import com.dam.adp.fitness360proyecto3eval.DAO.*;
+import com.dam.adp.fitness360proyecto3eval.exceptions.*;
 import com.dam.adp.fitness360proyecto3eval.model.ClienteTarifa;
 import com.dam.adp.fitness360proyecto3eval.model.Periodo;
 import com.dam.adp.fitness360proyecto3eval.model.Tarifa;
 import com.dam.adp.fitness360proyecto3eval.model.UsuarioEmpleado;
+import com.dam.adp.fitness360proyecto3eval.utilidades.Utilidades;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -111,7 +113,7 @@ public class RegistroTarifaController {
                     tarifaDAO.update(tarifa);
                     registroExitoso = true;
                 } catch (Exception e) {
-                    mostrarAlerta("Error", "Error al actualizar la tarifa: " + e.getMessage(), Alert.AlertType.ERROR);
+                    Utilidades.mostrarAlerta("Error", "Error al actualizar la tarifa: " + e.getMessage(), Alert.AlertType.ERROR);
                 }
             } else {
                 // Crear una nueva tarifa
@@ -119,7 +121,7 @@ public class RegistroTarifaController {
             }
 
             if (registroExitoso) {
-                mostrarAlerta("Operación Exitosa", "La tarifa ha sido guardada correctamente.", Alert.AlertType.INFORMATION);
+                Utilidades.mostrarAlerta("Operación Exitosa", "La tarifa ha sido guardada correctamente.", Alert.AlertType.INFORMATION);
 
                 // Cerrar la ventana
                 Stage stage = (Stage) nombreTarifaField.getScene().getWindow();
@@ -137,29 +139,28 @@ public class RegistroTarifaController {
      * @return true si todos los campos son válidos, false en caso contrario
      */
     private boolean validarCampos() {
+        boolean valido = true;
         StringBuilder errores = new StringBuilder();
 
-        if (nombreTarifaField.getText().trim().isEmpty()) {
-            errores.append("El nombre de la tarifa es obligatorio.\n");
-        }
-        if (descripcionTarifaField.getText().trim().isEmpty()) {
-            errores.append("La descripcion de la tarifa es obligatoria.\n");
-        }
+        try {
+            // Validar campos de texto
+            Utilidades.validarCampoNoVacio(nombreTarifaField.getText(), "nombre de la tarifa");
+            Utilidades.validarCampoNoVacio(descripcionTarifaField.getText(), "descripción de la tarifa");
 
-        if (precioTarifaField.getText().trim().isEmpty()) {
-            errores.append("El precio de la tarifa es obligatorio.\n");
-        }
+            // Validar precio como número decimal positivo
+            Utilidades.validarDecimalPositivo(precioTarifaField.getText(), "precio");
 
-        if (periodoComboBox.getValue() == null) {
-            errores.append("El perido de la tarifa es obligatorio.\n");
-        }
+            // Validar selección de periodo
+            Utilidades.validarComboBox(periodoComboBox, "periodo");
 
-        if (errores.length() > 0) {
+        } catch (IllegalArgumentException e) {
+            errores.append(e.getMessage()).append("\n");
             errorMessage.setText(errores.toString());
             errorMessage.setVisible(true);
-            return false;
+            valido = false;
         }
-        return true;
+
+        return valido;
     }
 
     /**
@@ -170,48 +171,27 @@ public class RegistroTarifaController {
      */
     public boolean registrarTarifa(){
         try {
+            // Validar y obtener el precio como número decimal positivo
+            double precio = Utilidades.validarDecimalPositivo(precioTarifaField.getText(), "precio");
+
             Tarifa tarifa = new Tarifa();
             tarifa.setNombre(nombreTarifaField.getText().trim());
             tarifa.setDescripcion(descripcionTarifaField.getText().trim());
-            tarifa.setPrecio(Double.parseDouble(precioTarifaField.getText().trim()));
+            tarifa.setPrecio(precio);
             tarifa.setPeriodo(periodoComboBox.getValue());
             tarifa.setCreador(empleadoAutenticado);
 
             tarifaDAO.insert(tarifa);
-           return true;
+            return true;
+        } catch (IllegalArgumentException e) {
+            errorMessage.setText(e.getMessage());
+            errorMessage.setVisible(true);
+            return false;
         } catch (Exception e) {
             e.printStackTrace();
-           mostrarAlerta("Error","Error al registrar la tarifa", Alert.AlertType.ERROR);
+            Utilidades.mostrarAlerta("Error","Error al registrar la tarifa: " + e.getMessage(), Alert.AlertType.ERROR);
             return false;
         }
-    }
-
-    /**
-     * Muestra una alerta con el título, mensaje y tipo especificados.
-     * 
-     * @param titulo Título de la alerta
-     * @param mensaje Mensaje de la alerta
-     * @param tipo Tipo de alerta (INFORMATION, WARNING, ERROR, etc.)
-     */
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        alerta.showAndWait();
-    }
-
-    /**
-     * Limpia todos los campos del formulario.
-     * Restablece los campos de texto, deselecciona el periodo en el ComboBox,
-     * y oculta los mensajes de error.
-     */
-    private void limpiarCampos() {
-        nombreTarifaField.clear();
-        descripcionTarifaField.clear();
-        precioTarifaField.clear();
-        periodoComboBox.getSelectionModel().clearSelection();
-        errorMessage.setVisible(false);
     }
 
     /**

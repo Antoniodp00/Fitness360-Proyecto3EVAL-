@@ -264,12 +264,12 @@ public class RegistroRutinaController {
                     registroExitoso = true;
                 } catch (Exception e) {
                     e.printStackTrace();
-                    mostrarAlerta("Error", "Error al actualizar la rutina: " + e.getMessage(), Alert.AlertType.ERROR);
+                    Utilidades.mostrarAlerta("Error", "Error al actualizar la rutina: " + e.getMessage(), Alert.AlertType.ERROR);
                 }
             } else {
                 // Verificar si el empleado es dietista (comprobación adicional de seguridad)
                 if (empleadoAutenticado != null && empleadoAutenticado.getEspecialidad() == Especialidad.DIETISTA) {
-                    mostrarAlerta("Acceso denegado", "Los dietistas no pueden crear rutinas.", Alert.AlertType.ERROR);
+                    Utilidades.mostrarAlerta("Acceso denegado", "Los dietistas no pueden crear rutinas.", Alert.AlertType.ERROR);
                     Stage stage = (Stage) nombreRutinaField.getScene().getWindow();
                     stage.close();
                     return;
@@ -284,7 +284,7 @@ public class RegistroRutinaController {
             }
 
             if (registroExitoso) {
-                mostrarAlerta("Operación Exitosa", "La rutina ha sido guardada correctamente.", Alert.AlertType.INFORMATION);
+                Utilidades.mostrarAlerta("Operación Exitosa", "La rutina ha sido guardada correctamente.", Alert.AlertType.INFORMATION);
 
                 // Cerrar la ventana
                 Stage stage = (Stage) nombreRutinaField.getScene().getWindow();
@@ -376,7 +376,7 @@ public class RegistroRutinaController {
             }
             return false;
         } catch (Exception e) {
-            mostrarAlerta("Error", "Error al registrar la rutina: " + e.getMessage(), Alert.AlertType.ERROR);
+            Utilidades.mostrarAlerta("Error", "Error al registrar la rutina: " + e.getMessage(), Alert.AlertType.ERROR);
             return false;
         }
     }
@@ -391,7 +391,7 @@ public class RegistroRutinaController {
             // Obtener el cliente al que se asignará la rutina
             UsuarioCliente clienteAsignado = clienteAsignadoComboBox.getValue();
             if (clienteAsignado == null) {
-                mostrarAlerta("Error", "Debe seleccionar un cliente al que asignar la rutina.", Alert.AlertType.ERROR);
+                Utilidades.mostrarAlerta("Error", "Debe seleccionar un cliente al que asignar la rutina.", Alert.AlertType.ERROR);
                 return false;
             }
 
@@ -424,20 +424,9 @@ public class RegistroRutinaController {
             }
             return false;
         } catch (Exception e) {
-            mostrarAlerta("Error", "Error al registrar la rutina: " + e.getMessage(), Alert.AlertType.ERROR);
+            Utilidades.mostrarAlerta("Error", "Error al registrar la rutina: " + e.getMessage(), Alert.AlertType.ERROR);
             return false;
         }
-    }
-
-    /**
-     * Limpia todos los campos del formulario.
-     */
-    private void limpiarCampos() {
-        nombreRutinaField.clear();
-        descripcionRutinaField.clear();
-        clienteComboBox.setValue(null);
-        empleadoComboBox.setValue(null);
-        errorMessage.setVisible(false);
     }
 
     /**
@@ -448,18 +437,4 @@ public class RegistroRutinaController {
         stage.close();
     }
 
-    /**
-     * Muestra una alerta con el título, mensaje y tipo especificados.
-     *
-     * @param titulo  Título de la alerta
-     * @param mensaje Mensaje de la alerta
-     * @param tipo    Tipo de alerta
-     */
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        alerta.showAndWait();
-    }
 }

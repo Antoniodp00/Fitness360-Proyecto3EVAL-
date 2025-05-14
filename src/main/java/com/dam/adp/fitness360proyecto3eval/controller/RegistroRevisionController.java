@@ -6,6 +6,7 @@ import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioEmpleadoDAO;
 import com.dam.adp.fitness360proyecto3eval.model.Revision;
 import com.dam.adp.fitness360proyecto3eval.model.UsuarioCliente;
 import com.dam.adp.fitness360proyecto3eval.model.UsuarioEmpleado;
+import com.dam.adp.fitness360proyecto3eval.utilidades.Utilidades;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -145,7 +146,7 @@ public class RegistroRevisionController {
                 try {
                     UsuarioCliente cliente = clienteComboBox.getValue();
                     if (cliente == null) {
-                        mostrarAlerta("Error", "Error al registrar la revisión: cliente vacío", Alert.AlertType.ERROR);
+                        Utilidades.mostrarAlerta("Error", "Error al registrar la revisión: cliente vacío", Alert.AlertType.ERROR);
                         return;
                     }
 
@@ -165,7 +166,7 @@ public class RegistroRevisionController {
                     revisionDAO.update(revision);
                     registroExitoso = true;
                 } catch (Exception e) {
-                    mostrarAlerta("Error", "Error al actualizar la revisión: " + e.getMessage(), Alert.AlertType.ERROR);
+                    Utilidades.mostrarAlerta("Error", "Error al actualizar la revisión: " + e.getMessage(), Alert.AlertType.ERROR);
                 }
             } else {
                 // Crear una nueva revisión
@@ -173,7 +174,7 @@ public class RegistroRevisionController {
             }
 
             if (registroExitoso) {
-                mostrarAlerta("Operación Exitosa", "La revisión ha sido guardada correctamente.", Alert.AlertType.INFORMATION);
+                Utilidades.mostrarAlerta("Operación Exitosa", "La revisión ha sido guardada correctamente.", Alert.AlertType.INFORMATION);
 
                 // Cerrar la ventana
                 Stage stage = (Stage) pesoField.getScene().getWindow();
@@ -234,7 +235,7 @@ public class RegistroRevisionController {
         try {
             UsuarioCliente cliente = (UsuarioCliente) clienteComboBox.getValue();
             if (cliente == null) {
-                mostrarAlerta("Error", "Error al registrar la revision cliente vacio", Alert.AlertType.ERROR);
+                Utilidades.mostrarAlerta("Error", "Error al registrar la revision cliente vacio", Alert.AlertType.ERROR);
                 return false;
             }
 
@@ -261,38 +262,6 @@ public class RegistroRevisionController {
             e.printStackTrace();
             return false;
         }
-    }
-
-    /**
-     * Muestra una alerta con el título, mensaje y tipo especificados.
-     * 
-     * @param titulo Título de la alerta
-     * @param mensaje Mensaje de la alerta
-     * @param tipo Tipo de alerta (INFORMATION, WARNING, ERROR, etc.)
-     */
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        alerta.showAndWait();
-    }
-
-    /**
-     * Limpia todos los campos del formulario.
-     * Restablece la fecha, los campos de texto de medidas corporales,
-     * y oculta los mensajes de error.
-     */
-    private void limpiarCampos() {
-        fechaRevisionPicker.setValue(null);
-        pesoField.clear();
-        grasaField.clear();
-        musculoField.clear();
-        pechoField.clear();
-        cinturaField.clear();
-        caderaField.clear();
-        observacionesField.clear();
-        errorMessage.setVisible(false);
     }
 
     /**

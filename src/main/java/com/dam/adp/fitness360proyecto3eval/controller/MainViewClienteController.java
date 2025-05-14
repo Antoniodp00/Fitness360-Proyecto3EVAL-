@@ -333,12 +333,12 @@ public class MainViewClienteController {
         if (rutinaSeleccionada != null) {
             // Verificar si la rutina fue creada por un entrenador y no por el cliente actual
             if (rutinaSeleccionada.getRutina().getCreadorEmpleado().getNombre() != null) {
-                mostrarAlerta("Acción no permitida", "No puede modificar una rutina asignada por un entrenador", Alert.AlertType.WARNING);
+                Utilidades.mostrarAlerta("Acción no permitida", "No puede modificar una rutina asignada por un entrenador", Alert.AlertType.WARNING);
                 return;
             }
             mostrarFormularioAñadirEditarRutina(rutinaSeleccionada);
         } else {
-            mostrarAlerta("Selección requerida", "Por favor, seleccione una rutina para editar", Alert.AlertType.WARNING);
+            Utilidades.mostrarAlerta("Selección requerida", "Por favor, seleccione una rutina para editar", Alert.AlertType.WARNING);
         }
     }
 
@@ -353,7 +353,7 @@ public class MainViewClienteController {
             if (rutinaSeleccionada.getRutina().getCreadorEmpleado() != null && 
                 (rutinaSeleccionada.getRutina().getCreadorCliente() == null || 
                  rutinaSeleccionada.getRutina().getCreadorCliente().getId() != clienteAutenticado.getId())) {
-                mostrarAlerta("Acción no permitida", "No puede eliminar una rutina asignada por un entrenador", Alert.AlertType.WARNING);
+                Utilidades.mostrarAlerta("Acción no permitida", "No puede eliminar una rutina asignada por un entrenador", Alert.AlertType.WARNING);
                 return;
             }
 
@@ -372,14 +372,14 @@ public class MainViewClienteController {
                     // Recargar las rutinas
                     cargarRutinas();
 
-                    mostrarAlerta("Rutina eliminada", "La rutina ha sido eliminada correctamente", Alert.AlertType.INFORMATION);
+                    Utilidades.mostrarAlerta("Rutina eliminada", "La rutina ha sido eliminada correctamente", Alert.AlertType.INFORMATION);
                 } catch (Exception e) {
                     System.err.println("Error al eliminar la rutina: " + e.getMessage());
-                    mostrarAlerta("Error", "No se pudo eliminar la rutina", Alert.AlertType.ERROR);
+                    Utilidades.mostrarAlerta("Error", "No se pudo eliminar la rutina", Alert.AlertType.ERROR);
                 }
             }
         } else {
-            mostrarAlerta("Selección requerida", "Por favor, seleccione una rutina para eliminar", Alert.AlertType.WARNING);
+            Utilidades.mostrarAlerta("Selección requerida", "Por favor, seleccione una rutina para eliminar", Alert.AlertType.WARNING);
         }
     }
 
@@ -395,7 +395,7 @@ public class MainViewClienteController {
         Tarifa tarifaSeleccionada = (Tarifa) tablaTarifas.getSelectionModel().getSelectedItem();
 
         if (tarifaSeleccionada == null) {
-            mostrarAlerta("Error", "Por favor, seleccione una tarifa", Alert.AlertType.WARNING);
+            Utilidades.mostrarAlerta("Error", "Por favor, seleccione una tarifa", Alert.AlertType.WARNING);
             return;
         }
 
@@ -413,7 +413,7 @@ public class MainViewClienteController {
             }
 
             if (tarifaYaExiste) {
-                mostrarAlerta("Error", "El cliente ya tiene esta tarifa contratada", Alert.AlertType.ERROR);
+                Utilidades.mostrarAlerta("Error", "El cliente ya tiene esta tarifa contratada", Alert.AlertType.ERROR);
                 return;
             }
 
@@ -425,25 +425,14 @@ public class MainViewClienteController {
             clienteTarifa.setEstado(EstadoTarifa.ACTIVA);
 
             clienteTarifaDAO.insert(clienteTarifa);
-            mostrarAlerta("Tarifa Asignada", "Tarifa asignada correctamente", Alert.AlertType.INFORMATION);
+            Utilidades.mostrarAlerta("Tarifa Asignada", "Tarifa asignada correctamente", Alert.AlertType.INFORMATION);
 
         } catch (RuntimeException e) {
             System.err.println("Error al asignar la tarifa: " + e.getMessage());
-            mostrarAlerta("Error", "No se pudo asignar la tarifa", Alert.AlertType.ERROR);
+            Utilidades.mostrarAlerta("Error", "No se pudo asignar la tarifa", Alert.AlertType.ERROR);
         }
     }
 
-    /**
-     * Muestra una alerta con el título, mensaje y tipo especificados
-     * 
-     * @param titulo Título de la alerta
-     * @param mensaje Mensaje de la alerta
-     * @param tipo Tipo de alerta (INFORMATION, WARNING, ERROR, etc.)
-     * @deprecated Use Utilidades.mostrarAlerta instead
-     */
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Utilidades.mostrarAlerta(titulo, mensaje, tipo);
-    }
 
     /**
      * Inicializa el controlador y configura los eventos

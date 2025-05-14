@@ -3,8 +3,7 @@ package com.dam.adp.fitness360proyecto3eval.controller;
 import com.dam.adp.fitness360proyecto3eval.model.*;
 import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioClienteDAO;
 import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioEmpleadoDAO;
-import com.dam.adp.fitness360proyecto3eval.exceptions.EmailInvalidoException;
-import com.dam.adp.fitness360proyecto3eval.exceptions.UsuarioYaExisteException;
+import com.dam.adp.fitness360proyecto3eval.exceptions.*;
 import com.dam.adp.fitness360proyecto3eval.utilidades.HashUtil;
 import com.dam.adp.fitness360proyecto3eval.utilidades.Utilidades;
 
@@ -149,7 +148,7 @@ public class RegistroController {
 
             // Solo mostrar mensaje de éxito y redirigir si el registro fue exitoso
             if (registroExitoso) {
-                mostrarAlerta("Registro exitoso", "Usuario registrado correctamente", Alert.AlertType.INFORMATION);
+                Utilidades.mostrarAlerta("Registro exitoso", "Usuario registrado correctamente", Alert.AlertType.INFORMATION);
                 irALogin();
             }
         } catch (UsuarioYaExisteException e) {
@@ -165,34 +164,32 @@ public class RegistroController {
      */
     private boolean validarCamposComunes() {
         boolean valido = true;
-        // Verificar que los campos no estén vacíos
-        if (usernameField.getText().isEmpty() || 
-            nombreField.getText().isEmpty() || 
-            apellidosField.getText().isEmpty() || 
-            correoField.getText().isEmpty() || 
-            passwordField.getText().isEmpty() || 
-            confirmPasswordField.getText().isEmpty() || 
-            telefonoField.getText().isEmpty() ||
-            fechaNacimientoField.getValue() == null || 
-            sexoComboBox.getValue() == null) {
+        StringBuilder errores = new StringBuilder();
 
-            errorMessage.setText("Error: Todos los campos son obligatorios");
-            errorMessage.setVisible(true);
-            valido = false;
-        }
-
-        // Verificar que las contraseñas coincidan
-        if (!passwordField.getText().equals(confirmPasswordField.getText())) {
-            errorMessage.setText("Error: Las contraseñas no coinciden");
-            errorMessage.setVisible(true);
-            valido = false;
-        }
-
-        // Validar formato de correo electrónico
         try {
+            // Validar campos de texto
+            Utilidades.validarCampoNoVacio(usernameField.getText(), "nombre de usuario");
+            Utilidades.validarCampoNoVacio(nombreField.getText(), "nombre");
+            Utilidades.validarCampoNoVacio(apellidosField.getText(), "apellidos");
+
+            // Validar correo electrónico
             Utilidades.validarEmail(correoField.getText());
-        } catch (EmailInvalidoException e) {
-            errorMessage.setText("Error: " + e.getMessage());
+
+            // Validar contraseñas
+            Utilidades.validarPasswordsCoinciden(passwordField.getText(), confirmPasswordField.getText());
+
+            // Validar teléfono
+            Utilidades.validarTelefono(telefonoField.getText(), "teléfono");
+
+            // Validar fecha de nacimiento
+            Utilidades.validarFechaNacimiento(fechaNacimientoField.getValue(), "fecha de nacimiento");
+
+            // Validar selección de sexo
+            Utilidades.validarComboBox(sexoComboBox, "sexo");
+
+        } catch (RuntimeException e) {
+            errores.append("Error: ").append(e.getMessage());
+            errorMessage.setText(errores.toString());
             errorMessage.setVisible(true);
             valido = false;
         }
@@ -207,22 +204,12 @@ public class RegistroController {
     private boolean registrarCliente() {
         UsuarioClienteDAO clienteDAO = new UsuarioClienteDAO();
         double altura = 0;
-        // Validar campo específico de cliente
-        if (alturaField.getText().isEmpty()) {
-            errorMessage.setText("Error: Debe ingresar la altura");
-            errorMessage.setVisible(true);
-            return false;
-        }
 
         try {
-            altura = Double.parseDouble(alturaField.getText());
-            if (altura <= 0) {
-                errorMessage.setText("Error: La altura debe ser un número positivo");
-                errorMessage.setVisible(true);
-                return false;
-            }
-        } catch (NumberFormatException e) {
-            errorMessage.setText("Error: La altura debe ser un número válido");
+            // Validar y obtener la altura como número decimal positivo
+            altura = Utilidades.validarDecimalPositivo(alturaField.getText(), "altura");
+        } catch (DecimalNoPositivoException e) {
+            errorMessage.setText("Error: " + e.getMessage());
             errorMessage.setVisible(true);
             return false;
         }
@@ -308,11 +295,4 @@ public class RegistroController {
         }
     }
 
-    /**
-     * Muestra una alerta con el mensaje especificado.
-     * @deprecated Use Utilidades.mostrarAlerta instead
-     */
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Utilidades.mostrarAlerta(titulo, mensaje, tipo);
-    }
 }

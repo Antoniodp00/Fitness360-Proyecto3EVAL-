@@ -3,6 +3,8 @@ package com.dam.adp.fitness360proyecto3eval.controller;
 import com.dam.adp.fitness360proyecto3eval.model.*;
 import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioClienteDAO;
 import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioEmpleadoDAO;
+import com.dam.adp.fitness360proyecto3eval.exceptions.EmailInvalidoException;
+import com.dam.adp.fitness360proyecto3eval.exceptions.UsuarioYaExisteException;
 import com.dam.adp.fitness360proyecto3eval.utilidades.HashUtil;
 import com.dam.adp.fitness360proyecto3eval.utilidades.Utilidades;
 
@@ -54,6 +56,7 @@ public class RegistroController {
 
     @FXML
     private DatePicker fechaNacimientoField;
+
 
     @FXML
     private ComboBox<Sexo> sexoComboBox;
@@ -149,8 +152,8 @@ public class RegistroController {
                 mostrarAlerta("Registro exitoso", "Usuario registrado correctamente", Alert.AlertType.INFORMATION);
                 irALogin();
             }
-
-        } catch (Exception e) {
+        } catch (UsuarioYaExisteException e) {
+            // Mostrar mensaje específico para usuario ya existente
             errorMessage.setText("Error: " + e.getMessage());
             errorMessage.setVisible(true);
         }
@@ -169,7 +172,7 @@ public class RegistroController {
             correoField.getText().isEmpty() || 
             passwordField.getText().isEmpty() || 
             confirmPasswordField.getText().isEmpty() || 
-            telefonoField.getText().isEmpty() || 
+            telefonoField.getText().isEmpty() ||
             fechaNacimientoField.getValue() == null || 
             sexoComboBox.getValue() == null) {
 
@@ -186,8 +189,10 @@ public class RegistroController {
         }
 
         // Validar formato de correo electrónico
-        if (!Utilidades.validarEmail(correoField.getText())) {
-            errorMessage.setText("Error: Formato de correo electrónico inválido");
+        try {
+            Utilidades.validarEmail(correoField.getText());
+        } catch (EmailInvalidoException e) {
+            errorMessage.setText("Error: " + e.getMessage());
             errorMessage.setVisible(true);
             valido = false;
         }
@@ -305,12 +310,9 @@ public class RegistroController {
 
     /**
      * Muestra una alerta con el mensaje especificado.
+     * @deprecated Use Utilidades.mostrarAlerta instead
      */
     private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Alert alert = new Alert(tipo);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
+        Utilidades.mostrarAlerta(titulo, mensaje, tipo);
     }
 }

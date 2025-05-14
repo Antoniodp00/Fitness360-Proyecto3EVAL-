@@ -2,8 +2,8 @@ package com.dam.adp.fitness360proyecto3eval.controller;
 
 import com.dam.adp.fitness360proyecto3eval.DAO.*;
 import com.dam.adp.fitness360proyecto3eval.model.*;
-import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
+import com.dam.adp.fitness360proyecto3eval.model.Sesion;
+import com.dam.adp.fitness360proyecto3eval.utilidades.Utilidades;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -19,8 +19,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.Date;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Controlador para la vista principal del cliente.
@@ -39,8 +40,8 @@ public class MainViewClienteController {
     public TableColumn<ClienteRutina, String> colNombreRutina;
     public TableColumn<ClienteRutina, String> colDescripcionRutina;
     public TableColumn<ClienteRutina, String> colCreadorRutina;
-    public TableColumn<ClienteRutina, Date> colFechaInicioRutina;
-    public TableColumn<ClienteRutina, Date> colFechaFinRutina;
+    public TableColumn<ClienteRutina, String> colFechaInicioRutina;
+    public TableColumn<ClienteRutina, String> colFechaFinRutina;
     private ObservableList<ClienteRutina> rutinas = FXCollections.observableArrayList();
 
     //Tab Dietas
@@ -49,14 +50,14 @@ public class MainViewClienteController {
     public TableColumn<ClienteDieta, String> colNombreDieta;
     public TableColumn<ClienteDieta, String> colDescripcionDieta;
     public TableColumn<ClienteDieta, String> colCreadorDieta;
-    public TableColumn<ClienteDieta, Date> colFechaInicioDieta;
-    public TableColumn<ClienteDieta, Date> colFechaFinDieta;
+    public TableColumn<ClienteDieta, String> colFechaInicioDieta;
+    public TableColumn<ClienteDieta, String> colFechaFinDieta;
     private ObservableList<ClienteDieta> dietas = FXCollections.observableArrayList();
 
     //Tab Revisiones
     public Tab tabRevisiones;
     public TableView<Revision> tablaRevisiones;
-    public TableColumn<Revision, Date> colFechaRevision;
+    public TableColumn<Revision, String> colFechaRevision;
     public TableColumn<Revision, Double> colPesoRevision;
     public TableColumn<Revision, Double> colGrasaRevision;
     public TableColumn<Revision, Double> colMusculoRevision;
@@ -131,8 +132,17 @@ public class MainViewClienteController {
         colNombreRutina.setCellValueFactory(new PropertyValueFactory<>("nombreRutina"));
         colDescripcionRutina.setCellValueFactory(new PropertyValueFactory<>("descripcionRutina"));
         colCreadorRutina.setCellValueFactory(new PropertyValueFactory<>("creadorRutina"));
-        colFechaInicioRutina.setCellValueFactory(new PropertyValueFactory<>("fechaAsignacion"));
-        colFechaFinRutina.setCellValueFactory(new PropertyValueFactory<>("fechaFin"));
+        // Formatear la fecha de inicio en español
+        colFechaInicioRutina.setCellValueFactory(cellData -> {
+            java.util.Date fecha = cellData.getValue().getFechaAsignacion();
+            return new javafx.beans.property.SimpleStringProperty(Utilidades.formatearFechaEspanol(fecha));
+        });
+
+        // Formatear la fecha de fin en español
+        colFechaFinRutina.setCellValueFactory(cellData -> {
+            java.util.Date fecha = cellData.getValue().getFechaFin();
+            return new javafx.beans.property.SimpleStringProperty(Utilidades.formatearFechaEspanol(fecha));
+        });
 
         // Limpiar y agregar las rutinas a la lista observable
         rutinas.clear();
@@ -153,8 +163,17 @@ public class MainViewClienteController {
         colNombreDieta.setCellValueFactory(new PropertyValueFactory<>("nombreDieta"));
         colDescripcionDieta.setCellValueFactory(new PropertyValueFactory<>("descripcionDieta"));
         colCreadorDieta.setCellValueFactory(new PropertyValueFactory<>("creadorDieta"));
-        colFechaInicioDieta.setCellValueFactory(new PropertyValueFactory<>("fechaAsignacion"));
-        colFechaFinDieta.setCellValueFactory(new PropertyValueFactory<>("fechaFin"));
+        // Formatear la fecha de inicio en español
+        colFechaInicioDieta.setCellValueFactory(cellData -> {
+            java.util.Date fecha = cellData.getValue().getFechaAsignacion();
+            return new javafx.beans.property.SimpleStringProperty(Utilidades.formatearFechaEspanol(fecha));
+        });
+
+        // Formatear la fecha de fin en español
+        colFechaFinDieta.setCellValueFactory(cellData -> {
+            java.util.Date fecha = cellData.getValue().getFechaFin();
+            return new javafx.beans.property.SimpleStringProperty(Utilidades.formatearFechaEspanol(fecha));
+        });
 
         // Limpiar y agregar las dietas a la lista observable
         dietas.clear();
@@ -172,7 +191,11 @@ public class MainViewClienteController {
         RevisionDAO revisionDAO = new RevisionDAO();
         List<Revision> misRevisiones = revisionDAO.getByClientEager(clienteAutenticado.getId());
 
-        colFechaRevision.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+        // Formatear la fecha en español
+        colFechaRevision.setCellValueFactory(cellData -> {
+            java.util.Date fecha = cellData.getValue().getFecha();
+            return new javafx.beans.property.SimpleStringProperty(Utilidades.formatearFechaEspanol(fecha));
+        });
         colPesoRevision.setCellValueFactory(new PropertyValueFactory<>("peso"));
         colGrasaRevision.setCellValueFactory(new PropertyValueFactory<>("grasa"));
         colMusculoRevision.setCellValueFactory(new PropertyValueFactory<>("musculo"));
@@ -231,13 +254,16 @@ public class MainViewClienteController {
 
     /**
      * Maneja el evento de clic en el botón de cerrar sesión
-     * Navega de vuelta a la pantalla de login
+     * Cierra la sesión actual y navega de vuelta a la pantalla de login
      *
      * @param event El evento que desencadenó esta acción
      */
     @FXML
     public void cerrarSesion(ActionEvent event) {
         try {
+            // Cerrar la sesión actual
+            Sesion.getInstance().cerrarSesion();
+
             // Cargar la vista de login
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/login-view.fxml"));
             Parent root = loader.load();
@@ -413,13 +439,10 @@ public class MainViewClienteController {
      * @param titulo Título de la alerta
      * @param mensaje Mensaje de la alerta
      * @param tipo Tipo de alerta (INFORMATION, WARNING, ERROR, etc.)
+     * @deprecated Use Utilidades.mostrarAlerta instead
      */
     private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Alert alert = new Alert(tipo);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
+        Utilidades.mostrarAlerta(titulo, mensaje, tipo);
     }
 
     /**
@@ -449,6 +472,11 @@ public class MainViewClienteController {
 
         //Configurar el evento de click para contratar tarifa
         btnContratarTarifa.setOnAction(this::contratarTarifa);
+
+        // Obtener el cliente autenticado de la sesión
+        if (Sesion.getInstance().isCliente()) {
+            setClienteAutenticado(Sesion.getInstance().getClienteAutenticado());
+        }
     }
 
 }

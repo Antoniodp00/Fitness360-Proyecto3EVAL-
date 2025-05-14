@@ -6,6 +6,7 @@ import com.dam.adp.fitness360proyecto3eval.model.Estado;
 import com.dam.adp.fitness360proyecto3eval.model.Usuario;
 import com.dam.adp.fitness360proyecto3eval.model.UsuarioCliente;
 import com.dam.adp.fitness360proyecto3eval.model.UsuarioEmpleado;
+import com.dam.adp.fitness360proyecto3eval.model.Sesion;
 import com.dam.adp.fitness360proyecto3eval.utilidades.HashUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -80,10 +81,13 @@ public class LoginController {
 
         // Ejecutar navegación o mostrar error según el resultado
         if (usuarioAutenticado != null) {
+            // Guardar el usuario autenticado en la sesión
+            Sesion.getInstance().setUsuarioAutenticado(usuarioAutenticado);
+
             if (usuarioAutenticado instanceof UsuarioCliente) {
-                navegarAPantallaPrincipalCliente(actionEvent, (UsuarioCliente) usuarioAutenticado);
+                navegarAPantallaPrincipalCliente(actionEvent);
             } else {
-                navegarAPantallaPrincipalEmpleado(actionEvent, (UsuarioEmpleado) usuarioAutenticado);
+                navegarAPantallaPrincipalEmpleado(actionEvent);
             }
         } else {
             mostrarError(mensajeError);
@@ -131,10 +135,9 @@ public class LoginController {
     /**
      * Navega a la pantalla principal de cliente después de un login exitoso
      *
-     * @param event   El evento que desencadenó la navegación
-     * @param usuario El usuario autenticado
+     * @param event El evento que desencadenó la navegación
      */
-    private void navegarAPantallaPrincipalCliente(ActionEvent event, UsuarioCliente usuario) {
+    private void navegarAPantallaPrincipalCliente(ActionEvent event) {
         try {
             // Cargar la vista principal
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/main-view-cliente.fxml"));
@@ -143,8 +146,8 @@ public class LoginController {
             // Obtener el controlador
             MainViewClienteController controller = loader.getController();
 
-            // Establecer el usuario autenticado en el controlador
-            controller.setClienteAutenticado(usuario);
+            // El usuario autenticado ya está en la sesión, no es necesario pasarlo al controlador
+            // controller.setClienteAutenticado(usuario);
 
             // Configurar la nueva escena
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -161,10 +164,9 @@ public class LoginController {
     /**
      * Navega a la pantalla principal de empleado después de un login exitoso
      *
-     * @param event   El evento que desencadenó la navegación
-     * @param usuario El usuario autenticado
+     * @param event El evento que desencadenó la navegación
      */
-    private void navegarAPantallaPrincipalEmpleado(ActionEvent event, UsuarioEmpleado usuario) {
+    private void navegarAPantallaPrincipalEmpleado(ActionEvent event) {
         try {
             // Cargar la vista principal de empleado
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/main-view-empleado.fxml"));
@@ -173,8 +175,8 @@ public class LoginController {
             // Obtener el controlador
             MainViewEmpleadoController controller = loader.getController();
 
-            // Establecer el usuario autenticado en el controlador
-            controller.setEmpleadoAutenticado(usuario);
+            // El usuario autenticado ya está en la sesión, no es necesario pasarlo al controlador
+            // controller.setEmpleadoAutenticado(usuario);
 
             // Configurar la nueva escena
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

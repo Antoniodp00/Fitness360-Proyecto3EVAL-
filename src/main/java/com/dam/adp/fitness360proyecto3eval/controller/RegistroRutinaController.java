@@ -172,6 +172,7 @@ public class RegistroRutinaController {
         this.clienteAutenticado = null;
 
         if (empleado != null) {
+
             // Ocultar la selección de tipo de creador
             if (creadorSelectionBox != null) {
                 creadorSelectionBox.setVisible(false);
@@ -266,6 +267,14 @@ public class RegistroRutinaController {
                     mostrarAlerta("Error", "Error al actualizar la rutina: " + e.getMessage(), Alert.AlertType.ERROR);
                 }
             } else {
+                // Verificar si el empleado es dietista (comprobación adicional de seguridad)
+                if (empleadoAutenticado != null && empleadoAutenticado.getEspecialidad() == Especialidad.DIETISTA) {
+                    mostrarAlerta("Acceso denegado", "Los dietistas no pueden crear rutinas.", Alert.AlertType.ERROR);
+                    Stage stage = (Stage) nombreRutinaField.getScene().getWindow();
+                    stage.close();
+                    return;
+                }
+
                 // Determinar el tipo de creador basado en el usuario autenticado
                 if (clienteAutenticado != null || clienteRadio.isSelected()) {
                     registroExitoso = registrarRutinaPorCliente();

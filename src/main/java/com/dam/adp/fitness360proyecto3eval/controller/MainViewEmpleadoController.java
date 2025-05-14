@@ -2,9 +2,8 @@ package com.dam.adp.fitness360proyecto3eval.controller;
 
 import com.dam.adp.fitness360proyecto3eval.DAO.*;
 import com.dam.adp.fitness360proyecto3eval.model.*;
-import com.dam.adp.fitness360proyecto3eval.views.MainApplication;
-import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
+import com.dam.adp.fitness360proyecto3eval.model.Sesion;
+import com.dam.adp.fitness360proyecto3eval.utilidades.Utilidades;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -15,13 +14,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Controlador para la vista principal del empleado
@@ -42,7 +42,7 @@ public class MainViewEmpleadoController {
     public TableColumn<UsuarioCliente, String> colApellidosCliente;
     public TableColumn<UsuarioCliente, String> colEmailCliente;
     public TableColumn<UsuarioCliente, String> colTelefonoCliente;
-    public TableColumn<UsuarioCliente, Date> colFechaAltaCliente;
+    public TableColumn<UsuarioCliente, String> colFechaAltaCliente;
     private ObservableList<UsuarioCliente> clientes = FXCollections.observableArrayList();
 
     // Tab Rutinas
@@ -115,22 +115,32 @@ public class MainViewEmpleadoController {
         this.empleadoAutenticado = empleado;
         if (empleado != null) {
             labelUsuario.setText("Usuario: " + empleado.getNombreUsuario());
-            // Configurar el botón de crear dieta según la especialidad
-            if (empleado.getEspecialidad() == Especialidad.DIETISTA ||
-                    empleado.getEspecialidad() == Especialidad.AMBOS) {
-                btnCrearDieta.setDisable(false);
+
+            // Configurar los botones según la especialidad del empleado
+            Especialidad especialidad = empleado.getEspecialidad();
+
+            // Botón Crear Dieta
+            boolean puedeCrearDieta = (especialidad == Especialidad.DIETISTA || especialidad == Especialidad.AMBOS);
+            btnCrearDieta.setDisable(!puedeCrearDieta);
+            if (puedeCrearDieta) {
                 btnCrearDieta.setOnAction(this::abrirRegistroDieta);
-            } else {
-                btnCrearDieta.setDisable(true);
             }
+
+            // Botón Crear Rutina
+            boolean puedeCrearRutina = (especialidad == Especialidad.ENTRENADOR || especialidad == Especialidad.AMBOS);
+            btnCrearRutina.setDisable(!puedeCrearRutina);
+            if (puedeCrearRutina) {
+                btnCrearRutina.setOnAction(this::manejarBotonCrearRutina);
+            }
+
             // Cargar los datos específicos del empleado
             cargarDatosEmpleado();
         }
     }
 
-        /**
-         * Carga los datos específicos del empleado en la interfaz
-         */
+    /**
+     * Carga los datos específicos del empleado en la interfaz
+     */
     private void cargarDatosEmpleado() {
         // Cargar clientes asignados al empleado
         cargarClientes();
@@ -161,7 +171,7 @@ public class MainViewEmpleadoController {
         colApellidosCliente.setCellValueFactory(new PropertyValueFactory<>("apellidos"));
         colEmailCliente.setCellValueFactory(new PropertyValueFactory<>("correo"));
         colTelefonoCliente.setCellValueFactory(new PropertyValueFactory<>("telefono"));
-        // Usar fechaContratacion de ClienteTarifa
+        // Usar fechaContratacion de ClienteTarifa y formatear en español
         colFechaAltaCliente.setCellValueFactory(cellData -> {
             UsuarioCliente cliente = cellData.getValue();
             ClienteTarifaDAO clienteTarifaDAO = new ClienteTarifaDAO();
@@ -169,12 +179,13 @@ public class MainViewEmpleadoController {
             // Buscar la tarifa activa
             for (ClienteTarifa tarifa : tarifas) {
                 if (tarifa.getEstado() == EstadoTarifa.ACTIVA) {
-                    return new javafx.beans.property.SimpleObjectProperty<>(tarifa.getFechaContratacion());
+                    return new javafx.beans.property.SimpleStringProperty(Utilidades.formatearFechaEspanol(tarifa.getFechaContratacion()));
                 }
             }
             // Si no hay tarifa activa, usar la fecha de creación del cliente
-            return new javafx.beans.property.SimpleObjectProperty<>(cliente.getCreatedAt());
+            return new javafx.beans.property.SimpleStringProperty(Utilidades.formatearFechaEspanol(cliente.getCreatedAt()));
         });
+
 
         // Limpiar y agregar los clientes a la lista observable
         clientes.clear();
@@ -197,6 +208,19 @@ public class MainViewEmpleadoController {
         colDescripcionRutina.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
         colFechaRutina.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
 
+        // Formatear la fecha en español
+        colFechaRutina.setCellFactory(column -> new TableCell<Rutina, Date>() {
+            @Override
+            protected void updateItem(Date item, boolean empty) {
+                super.updateItem(item, empty);
+                if(empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(Utilidades.formatearFechaEspanol(item));
+                }
+            }
+        });
+
         // Limpiar y agregar las rutinas a la lista observable
         rutinas.clear();
         rutinas.addAll(misRutinas);
@@ -218,6 +242,19 @@ public class MainViewEmpleadoController {
         colNombreDieta.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colDescripcionDieta.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
         colFechaDieta.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
+
+        // Formatear la fecha en español
+        colFechaDieta.setCellFactory(column -> new TableCell<Dieta, Date>() {
+            @Override
+            protected void updateItem(Date item, boolean empty) {
+                super.updateItem(item, empty);
+                if(empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(Utilidades.formatearFechaEspanol(item));
+                }
+            }
+        });
         colClientesAsignadosDieta.setCellValueFactory(new PropertyValueFactory<>("clientesAsignados"));
 
         // Limpiar y agregar las dietas a la lista observable
@@ -260,6 +297,18 @@ public class MainViewEmpleadoController {
 
         // Configurar las columnas de la tabla
         colFechaRevision.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+        // Formatear la fecha en español
+        colFechaRevision.setCellFactory(column -> new TableCell<Revision, Date>() {
+            @Override
+            protected void updateItem(Date item, boolean empty) {
+                super.updateItem(item, empty);
+                if(empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(Utilidades.formatearFechaEspanol(item));
+                }
+            }
+        });
         colClienteRevision.setCellValueFactory(new PropertyValueFactory<>("nombreClienteCompleto"));
         colPesoRevision.setCellValueFactory(new PropertyValueFactory<>("peso"));
         colGrasaRevision.setCellValueFactory(new PropertyValueFactory<>("grasa"));
@@ -276,13 +325,16 @@ public class MainViewEmpleadoController {
 
     /**
      * Maneja el evento de clic en el botón de cerrar sesión
-     * Navega de vuelta a la pantalla de login
+     * Cierra la sesión actual y navega de vuelta a la pantalla de login
      *
      * @param event El evento que desencadenó esta acción
      */
     @FXML
     public void cerrarSesion(ActionEvent event) {
         try {
+            // Cerrar la sesión actual
+            Sesion.getInstance().cerrarSesion();
+
             // Cargar la vista de login
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/login-view.fxml"));
             Parent root = loader.load();
@@ -301,6 +353,7 @@ public class MainViewEmpleadoController {
 
     /**
      * Muestra el formulario para añadir o editar una rutina
+     *
      * @param rutina La rutina a editar, o null para crear una nueva
      */
     public void mostrarFormularioAñadirEditarRutina(Rutina rutina) {
@@ -337,6 +390,7 @@ public class MainViewEmpleadoController {
 
     /**
      * Abre la ventana de registro de rutina pasando el empleado autenticado
+     *
      * @param rutina La rutina a editar, o null para crear una nueva
      */
     public void abrirRegistroRutina(Rutina rutina) {
@@ -345,6 +399,7 @@ public class MainViewEmpleadoController {
 
     /**
      * Abre la ventana de modificación de rutina
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void manejarBotonEditarRutina(ActionEvent event) {
@@ -358,6 +413,7 @@ public class MainViewEmpleadoController {
 
     /**
      * Método obsoleto, reemplazado por manejarBotonEditarRutina
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void abrirModificarRutina(ActionEvent event) {
@@ -366,6 +422,7 @@ public class MainViewEmpleadoController {
 
     /**
      * Muestra el formulario para añadir o editar una dieta
+     *
      * @param dieta La dieta a editar, o null para crear una nueva
      */
     public void mostrarFormularioAñadirEditarDieta(Dieta dieta) {
@@ -402,6 +459,7 @@ public class MainViewEmpleadoController {
 
     /**
      * Abre la ventana de registro de dieta
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void abrirRegistroDieta(ActionEvent event) {
@@ -410,6 +468,7 @@ public class MainViewEmpleadoController {
 
     /**
      * Abre la ventana de modificación de dieta
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void manejarBotonEditarDieta(ActionEvent event) {
@@ -423,6 +482,7 @@ public class MainViewEmpleadoController {
 
     /**
      * Muestra el formulario para añadir o editar una tarifa
+     *
      * @param tarifa La tarifa a editar, o null para crear una nueva
      */
     public void mostrarFormularioAñadirEditarTarifa(Tarifa tarifa) {
@@ -459,6 +519,7 @@ public class MainViewEmpleadoController {
 
     /**
      * Abre la ventana de registro de tarifa
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void abrirRegistroTarifa(ActionEvent event) {
@@ -467,6 +528,7 @@ public class MainViewEmpleadoController {
 
     /**
      * Abre la ventana de modificación de tarifa
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void manejarBotonEditarTarifa(ActionEvent event) {
@@ -480,6 +542,7 @@ public class MainViewEmpleadoController {
 
     /**
      * Muestra el formulario para añadir o editar una revisión
+     *
      * @param revision La revisión a editar, o null para crear una nueva
      */
     public void mostrarFormularioAñadirEditarRevision(Revision revision) {
@@ -516,6 +579,7 @@ public class MainViewEmpleadoController {
 
     /**
      * Abre la ventana de registro de revisión
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void abrirRegistroRevision(ActionEvent event) {
@@ -524,6 +588,7 @@ public class MainViewEmpleadoController {
 
     /**
      * Abre la ventana de modificación de revisión
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void manejarBotonEditarRevision(ActionEvent event) {
@@ -537,6 +602,7 @@ public class MainViewEmpleadoController {
 
     /**
      * Método para manejar el evento de crear rutina
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void manejarBotonCrearRutina(ActionEvent event) {
@@ -566,24 +632,28 @@ public class MainViewEmpleadoController {
         btnEliminarRutina.setOnAction(this::manejarBotonBorrarRutina);
         btnEliminarDieta.setOnAction(this::manejarBotonBorrarDieta);
         btnEliminarTarifa.setOnAction(this::manejarBotonBorrarTarifa);
+
+        // Obtener el empleado autenticado de la sesión
+        if (Sesion.getInstance().isEmpleado()) {
+            setEmpleadoAutenticado(Sesion.getInstance().getEmpleadoAutenticado());
+        }
     }
+
     /**
      * Muestra una alerta con el título, mensaje y tipo especificados.
      *
      * @param titulo  Título de la alerta
      * @param mensaje Mensaje de la alerta
      * @param tipo    Tipo de alerta
+     * @deprecated Use Utilidades.mostrarAlerta instead
      */
     private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        alerta.showAndWait();
+        Utilidades.mostrarAlerta(titulo, mensaje, tipo);
     }
 
     /**
      * Maneja el evento de eliminar una rutina
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void manejarBotonBorrarRutina(ActionEvent event) {
@@ -617,6 +687,7 @@ public class MainViewEmpleadoController {
 
     /**
      * Maneja el evento de eliminar una dieta
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void manejarBotonBorrarDieta(ActionEvent event) {
@@ -650,6 +721,7 @@ public class MainViewEmpleadoController {
 
     /**
      * Maneja el evento de eliminar una tarifa
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void manejarBotonBorrarTarifa(ActionEvent event) {

@@ -304,8 +304,6 @@ public class MainViewClienteController {
      */
     public void manejarBotonEditarRutina(ActionEvent event) {
         ClienteRutina rutinaSeleccionada = tablaRutinas.getSelectionModel().getSelectedItem();
-        System.out.println(rutinaSeleccionada.getRutina().getCreadorEmpleado());
-        System.out.println(rutinaSeleccionada.getRutina().getCreadorCliente());
         if (rutinaSeleccionada != null) {
             // Verificar si la rutina fue creada por un entrenador y no por el cliente actual
             if (rutinaSeleccionada.getRutina().getCreadorEmpleado().getNombre() != null) {

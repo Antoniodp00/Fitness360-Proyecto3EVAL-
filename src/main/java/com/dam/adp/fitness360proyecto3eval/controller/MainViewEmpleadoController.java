@@ -161,7 +161,20 @@ public class MainViewEmpleadoController {
         colApellidosCliente.setCellValueFactory(new PropertyValueFactory<>("apellidos"));
         colEmailCliente.setCellValueFactory(new PropertyValueFactory<>("correo"));
         colTelefonoCliente.setCellValueFactory(new PropertyValueFactory<>("telefono"));
-        colFechaAltaCliente.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
+        // Usar fechaContratacion de ClienteTarifa
+        colFechaAltaCliente.setCellValueFactory(cellData -> {
+            UsuarioCliente cliente = cellData.getValue();
+            ClienteTarifaDAO clienteTarifaDAO = new ClienteTarifaDAO();
+            List<ClienteTarifa> tarifas = clienteTarifaDAO.findByCliente(cliente.getId());
+            // Buscar la tarifa activa
+            for (ClienteTarifa tarifa : tarifas) {
+                if (tarifa.getEstado() == EstadoTarifa.ACTIVA) {
+                    return new javafx.beans.property.SimpleObjectProperty<>(tarifa.getFechaContratacion());
+                }
+            }
+            // Si no hay tarifa activa, usar la fecha de creación del cliente
+            return new javafx.beans.property.SimpleObjectProperty<>(cliente.getCreatedAt());
+        });
 
         // Limpiar y agregar los clientes a la lista observable
         clientes.clear();

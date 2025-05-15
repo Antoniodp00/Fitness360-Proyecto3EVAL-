@@ -223,7 +223,8 @@ public class TarifaDAO implements GenericDAO<Tarifa> {
     @Override
     public Tarifa insert(Tarifa entity) {
         if (entity != null) {
-            try (PreparedStatement stmt = ConnectionDB.getConnection().prepareStatement(SQL_INSERT)) {
+            try (Connection conn = ConnectionDB.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
                 stmt.setString(1, entity.getNombre());
                 stmt.setDouble(2, entity.getPrecio());
                 stmt.setString(3, entity.getDescripcion());
@@ -231,6 +232,13 @@ public class TarifaDAO implements GenericDAO<Tarifa> {
                 stmt.setInt(5, entity.getCreador().getId());
 
                 stmt.executeUpdate();
+
+                // Obtener el ID generado
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        entity.setIdTarifa(generatedKeys.getInt(1));
+                    }
+                }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }

@@ -2,7 +2,8 @@ package com.dam.adp.fitness360proyecto3eval.controller;
 
 import com.dam.adp.fitness360proyecto3eval.DAO.*;
 import com.dam.adp.fitness360proyecto3eval.model.*;
-import javafx.application.Platform;
+import com.dam.adp.fitness360proyecto3eval.model.Sesion;
+import com.dam.adp.fitness360proyecto3eval.utilidades.Utilidades;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,8 +20,12 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.Date;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Controlador para la vista principal del cliente.
@@ -28,6 +33,7 @@ import java.util.List;
  * Permite al cliente ver sus datos y contratar servicios.
  */
 public class MainViewClienteController {
+    private static final Logger logger = LoggerFactory.getLogger(MainViewClienteController.class);
     //Componentes Generales
     public TabPane tabPane;
     public Label labelUsuario;
@@ -39,8 +45,8 @@ public class MainViewClienteController {
     public TableColumn<ClienteRutina, String> colNombreRutina;
     public TableColumn<ClienteRutina, String> colDescripcionRutina;
     public TableColumn<ClienteRutina, String> colCreadorRutina;
-    public TableColumn<ClienteRutina, Date> colFechaInicioRutina;
-    public TableColumn<ClienteRutina, Date> colFechaFinRutina;
+    public TableColumn<ClienteRutina, String> colFechaInicioRutina;
+    public TableColumn<ClienteRutina, String> colFechaFinRutina;
     private ObservableList<ClienteRutina> rutinas = FXCollections.observableArrayList();
 
     //Tab Dietas
@@ -49,17 +55,20 @@ public class MainViewClienteController {
     public TableColumn<ClienteDieta, String> colNombreDieta;
     public TableColumn<ClienteDieta, String> colDescripcionDieta;
     public TableColumn<ClienteDieta, String> colCreadorDieta;
-    public TableColumn<ClienteDieta, Date> colFechaInicioDieta;
-    public TableColumn<ClienteDieta, Date> colFechaFinDieta;
+    public TableColumn<ClienteDieta, String> colFechaInicioDieta;
+    public TableColumn<ClienteDieta, String> colFechaFinDieta;
     private ObservableList<ClienteDieta> dietas = FXCollections.observableArrayList();
 
     //Tab Revisiones
     public Tab tabRevisiones;
     public TableView<Revision> tablaRevisiones;
-    public TableColumn<Revision, Date> colFechaRevision;
-    public TableColumn<Revision, Double> colPesoRevision;
-    public TableColumn<Revision, Double> colGrasaRevision;
-    public TableColumn<Revision, Double> colMusculoRevision;
+    public TableColumn<Revision, String> colFechaRevision;
+    public TableColumn<Revision, String> colPesoRevision;
+    public TableColumn<Revision, String> colGrasaRevision;
+    public TableColumn<Revision, String> colMusculoRevision;
+    public TableColumn<Revision, String> colPechoRevision;
+    public TableColumn<Revision, String> colCinturaRevision;
+    public TableColumn<Revision, String> colCaderaRevision;
     public TableColumn<Revision, String> colEntrenadorRevision;
     public TableColumn<Revision, String> colObservacionesRevision;
     public ComboBox comboFiltroEspecialidad;
@@ -69,7 +78,7 @@ public class MainViewClienteController {
     public Tab tabContratarEntrenador;
     public TableView<UsuarioEmpleado> tablaEntrenadores;
     public TableColumn<UsuarioEmpleado, String> colNombreEntrenador;
-    public TableColumn<UsuarioEmpleado, Especialidad> colEspecialidadEntrenador;
+    public TableColumn<UsuarioEmpleado, String> colEspecialidadEntrenador;
     public TableColumn<UsuarioEmpleado, String> colDescripcionEntrenador;
     public TableColumn<UsuarioEmpleado, String> colAccionesEntrenador;
     public ComboBox comboFiltroPeriodo;
@@ -78,8 +87,8 @@ public class MainViewClienteController {
     //Tab Tarifas
     public TableView<Tarifa> tablaTarifas;
     public TableColumn<Tarifa, String> colNombreTarifa;
-    public TableColumn<Tarifa, Double> colPrecioTarifa;
-    public TableColumn<Tarifa, Periodo> colPeriodoTarifa;
+    public TableColumn<Tarifa, String> colPrecioTarifa;
+    public TableColumn<Tarifa, String> colPeriodoTarifa;
     public TableColumn<Tarifa, String> colEntrenadorTarifa;
     public TableColumn<Tarifa, String> colDescripcionTarifa;
     public TableColumn<Tarifa, String> colAccionesTarifa;
@@ -100,11 +109,15 @@ public class MainViewClienteController {
      * @param cliente El cliente autenticado
      */
     public void setClienteAutenticado(UsuarioCliente cliente) {
+        logger.debug("Estableciendo cliente autenticado");
         this.clienteAutenticado = cliente;
         if (cliente != null) {
+            logger.info("Cliente autenticado: {}", cliente.getNombre());
             labelUsuario.setText("Usuario: " + cliente.getNombreUsuario());
             // Aquí se cargan los datos específicos del cliente
             cargarDatosCliente();
+        } else {
+            logger.warn("Se intentó establecer un cliente nulo");
         }
     }
 
@@ -113,10 +126,12 @@ public class MainViewClienteController {
      * Incluye rutinas, dietas, revisiones y entrenadores disponibles.
      */
     public void cargarDatosCliente() {
+        logger.debug("Iniciando carga de datos del cliente");
         cargarRutinas();
         cargarDietas();
         cargarRevisiones();
         cargarEntrenadores();
+        logger.info("Datos del cliente cargados correctamente");
     }
 
     /**
@@ -124,22 +139,46 @@ public class MainViewClienteController {
      * Obtiene los datos de la base de datos y configura las columnas de la tabla.
      */
     private void cargarRutinas() {
+        logger.debug("Iniciando carga de rutinas");
         ClienteRutinaDAO clienteRutinaDAO = new ClienteRutinaDAO();
 
+        logger.debug("Buscando rutinas para el cliente ID: {}", clienteAutenticado.getId());
         List<ClienteRutina> misRutinas = clienteRutinaDAO.findByClientEager(clienteAutenticado.getId());
 
-        colNombreRutina.setCellValueFactory(new PropertyValueFactory<>("nombreRutina"));
-        colDescripcionRutina.setCellValueFactory(new PropertyValueFactory<>("descripcionRutina"));
-        colCreadorRutina.setCellValueFactory(new PropertyValueFactory<>("creadorRutina"));
-        colFechaInicioRutina.setCellValueFactory(new PropertyValueFactory<>("fechaAsignacion"));
-        colFechaFinRutina.setCellValueFactory(new PropertyValueFactory<>("fechaFin"));
+        logger.debug("Configurando columnas de la tabla de rutinas");
 
-        // Limpiar y agregar las rutinas a la lista observable
+        colNombreRutina.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getRutina().getNombre())
+        );
+
+        colDescripcionRutina.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getRutina().getDescripcion())
+        );
+
+        colCreadorRutina.setCellValueFactory(cellData -> {
+            String creador = cellData.getValue().getRutina().getCreadorEmpleado().getNombre();
+            String textoCreador = (creador != null && !creador.isBlank())
+                    ? creador
+                    : clienteAutenticado.getNombre();
+            return new SimpleStringProperty(textoCreador);
+        });
+
+        colFechaInicioRutina.setCellValueFactory(cellData -> {
+            java.util.Date fecha = cellData.getValue().getFechaAsignacion();
+            return new SimpleStringProperty(Utilidades.formatearFechaEspanol(fecha));
+        });
+
+        colFechaFinRutina.setCellValueFactory(cellData -> {
+            java.util.Date fecha = cellData.getValue().getFechaFin();
+            return new SimpleStringProperty(Utilidades.formatearFechaEspanol(fecha));
+        });
+
+        logger.debug("Actualizando lista observable de rutinas");
         rutinas.clear();
         rutinas.addAll(misRutinas);
 
-        // Asignar la lista observable a la tabla
         tablaRutinas.setItems(rutinas);
+        logger.info("Se han cargado {} rutinas para el cliente", misRutinas.size());
     }
 
     /**
@@ -147,21 +186,43 @@ public class MainViewClienteController {
      * Obtiene los datos de la base de datos y configura las columnas de la tabla.
      */
     private void cargarDietas() {
+        logger.debug("Iniciando carga de dietas");
         ClienteDietaDAO clienteDietaDAO = new ClienteDietaDAO();
+        logger.debug("Buscando dietas para el cliente ID: {}", clienteAutenticado.getId());
         List<ClienteDieta> misDietas = clienteDietaDAO.findByClientEager(clienteAutenticado.getId());
 
-        colNombreDieta.setCellValueFactory(new PropertyValueFactory<>("nombreDieta"));
-        colDescripcionDieta.setCellValueFactory(new PropertyValueFactory<>("descripcionDieta"));
-        colCreadorDieta.setCellValueFactory(new PropertyValueFactory<>("creadorDieta"));
-        colFechaInicioDieta.setCellValueFactory(new PropertyValueFactory<>("fechaAsignacion"));
-        colFechaFinDieta.setCellValueFactory(new PropertyValueFactory<>("fechaFin"));
+        logger.debug("Configurando columnas de la tabla de dietas");
+        colNombreDieta.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDieta().getNombre())
+        );
+
+        colDescripcionDieta.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDieta().getDescripcion())
+        );
+
+        colCreadorDieta.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDieta().getCreador().getNombre())
+        );
+        // Formatear la fecha de inicio en español
+        colFechaInicioDieta.setCellValueFactory(cellData -> {
+            java.util.Date fecha = cellData.getValue().getFechaAsignacion();
+            return new javafx.beans.property.SimpleStringProperty(Utilidades.formatearFechaEspanol(fecha));
+        });
+
+        // Formatear la fecha de fin en español
+        colFechaFinDieta.setCellValueFactory(cellData -> {
+            java.util.Date fecha = cellData.getValue().getFechaFin();
+            return new javafx.beans.property.SimpleStringProperty(Utilidades.formatearFechaEspanol(fecha));
+        });
 
         // Limpiar y agregar las dietas a la lista observable
+        logger.debug("Actualizando lista observable de dietas");
         dietas.clear();
         dietas.addAll(misDietas);
 
         // Asignar la lista observable a la tabla
         tablaDietas.setItems(dietas);
+        logger.info("Se han cargado {} dietas para el cliente", misDietas.size());
     }
 
     /**
@@ -169,42 +230,103 @@ public class MainViewClienteController {
      * Obtiene los datos de la base de datos y configura las columnas de la tabla.
      */
     private void cargarRevisiones() {
+        logger.debug("Iniciando carga de revisiones");
         RevisionDAO revisionDAO = new RevisionDAO();
+        logger.debug("Buscando revisiones para el cliente ID: {}", clienteAutenticado.getId());
         List<Revision> misRevisiones = revisionDAO.getByClientEager(clienteAutenticado.getId());
 
-        colFechaRevision.setCellValueFactory(new PropertyValueFactory<>("fecha"));
-        colPesoRevision.setCellValueFactory(new PropertyValueFactory<>("peso"));
-        colGrasaRevision.setCellValueFactory(new PropertyValueFactory<>("grasa"));
-        colMusculoRevision.setCellValueFactory(new PropertyValueFactory<>("musculo"));
-        colEntrenadorRevision.setCellValueFactory(new PropertyValueFactory<>("nombreEmpleadoCompleto"));
-        colObservacionesRevision.setCellValueFactory(new PropertyValueFactory<>("observaciones"));
+        logger.debug("Configurando columnas de la tabla de revisiones");
 
-        // Limpiar y agregar las revisiones a la lista observable
+        // Fecha formateada
+        colFechaRevision.setCellValueFactory(cellData -> {
+            java.util.Date fecha = cellData.getValue().getFecha();
+            return new SimpleStringProperty(Utilidades.formatearFechaEspanol(fecha));
+        });
+
+        colPesoRevision.setCellValueFactory(cellData -> {
+            Double peso = cellData.getValue().getPeso();
+            String textoPeso = (peso != null) ? String.format("%.2f", peso) + " kg" : "N/D";
+            return new SimpleStringProperty(textoPeso);
+        });
+
+        colGrasaRevision.setCellValueFactory(cellData -> {
+            Double grasa = cellData.getValue().getGrasa();
+            String textoGrasa = (grasa != null) ? String.format("%.2f", grasa) + " %" : "N/D";
+            return new SimpleStringProperty(textoGrasa);
+        });
+
+        colMusculoRevision.setCellValueFactory(cellData -> {
+            Double musculo = cellData.getValue().getMusculo();
+            String textoMusculo = (musculo != null) ? String.format("%.2f", musculo) + " %" : "N/D";
+            return new SimpleStringProperty(textoMusculo);
+        });
+
+        colPechoRevision.setCellValueFactory(cellData -> {
+            Double pecho = cellData.getValue().getmPecho();
+            String textoPecho = (pecho != null) ? String.format("%.2f", pecho) + " cm" : "N/D";
+            return new SimpleStringProperty(textoPecho);
+        });
+
+        colCinturaRevision.setCellValueFactory(cellData -> {
+            Double cintura = cellData.getValue().getmCintura();
+            String textoCintura = (cintura != null) ? String.format("%.2f", cintura) + " cm" : "N/D";
+            return new SimpleStringProperty(textoCintura);
+        });
+
+        colCaderaRevision.setCellValueFactory(cellData -> {
+            Double cadera = cellData.getValue().getmCadera();
+            String textoCadera = (cadera != null) ? String.format("%.2f", cadera) + " cm" : "N/D";
+            return new SimpleStringProperty(textoCadera);
+        });
+
+        // Texto del nombre completo del entrenador
+        colEntrenadorRevision.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getEmpleado().getNombre())
+        );
+
+        colObservacionesRevision.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getObservaciones())
+        );
+
+        logger.debug("Actualizando lista observable de revisiones");
         revisiones.clear();
         revisiones.addAll(misRevisiones);
 
-        // Asignar la lista observable a la tabla
         tablaRevisiones.setItems(revisiones);
+        logger.info("Se han cargado {} revisiones para el cliente", misRevisiones.size());
     }
+
 
     /**
      * Carga la lista de entrenadores disponibles en la tabla correspondiente.
      * Obtiene los datos de la base de datos y configura las columnas de la tabla.
      */
     public void cargarEntrenadores() {
+        logger.debug("Iniciando carga de entrenadores");
         UsuarioEmpleadoDAO usuarioEmpleadoDAO = new UsuarioEmpleadoDAO();
+        logger.debug("Buscando todos los empleados");
         List<UsuarioEmpleado> empleados = usuarioEmpleadoDAO.getAll();
 
-        colNombreEntrenador.setCellValueFactory(new PropertyValueFactory<>("nombreCompleto"));
-        colEspecialidadEntrenador.setCellValueFactory(new PropertyValueFactory<>("especialidad"));
-        colDescripcionEntrenador.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+        logger.debug("Configurando columnas de la tabla de entrenadores");
+        colNombreEntrenador.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getNombre())
+        );
+        colEspecialidadEntrenador.setCellValueFactory(cellData -> {
+            Especialidad especialidad = cellData.getValue().getEspecialidad();
+            return new SimpleStringProperty(especialidad != null ? especialidad.toString() : "N/D");
+        });
+        colDescripcionEntrenador.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDescripcion())
+        );
 
         // Limpiar y agregar los entrenadores a la lista observable
+        logger.debug("Actualizando lista observable de entrenadores");
         entrenadores.clear();
         entrenadores.addAll(empleados);
 
         // Asignar la lista observable a la tabla
         tablaEntrenadores.setItems(entrenadores);
+        logger.info("Se han cargado {} entrenadores disponibles", empleados.size());
     }
 
     /**
@@ -213,31 +335,48 @@ public class MainViewClienteController {
      * @param empleado El entrenador del que se cargarán las tarifas
      */
     public void cargarTarifasEntrenador(UsuarioEmpleado empleado) {
+        logger.debug("Iniciando carga de tarifas para el entrenador ID: {}", empleado.getId());
         TarifaDAO tarifaDAO = new TarifaDAO();
         List<Tarifa> tarifasEmpleado = tarifaDAO.getByCreator(empleado.getId());
 
-        colNombreTarifa.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-        colPrecioTarifa.setCellValueFactory(new PropertyValueFactory<>("precio"));
-        colPeriodoTarifa.setCellValueFactory(new PropertyValueFactory<>("periodo"));
-        colDescripcionTarifa.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+        logger.debug("Configurando columnas de la tabla de tarifas");
+        colNombreTarifa.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getNombre())
+                );
+        colPrecioTarifa.setCellValueFactory(cellData->
+                new SimpleStringProperty(String.format("%.2f", cellData.getValue().getPrecio())+" €")
+        );
+        colPeriodoTarifa.setCellValueFactory(cellData -> {
+            Periodo periodo = cellData.getValue().getPeriodo();
+            return new SimpleStringProperty(periodo != null ? periodo.toString() : "Sin especificar");
+        });
+
+        colDescripcionTarifa.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDescripcion())
+        );
 
         // Limpiar y agregar las tarifas a la lista observable
+        logger.debug("Actualizando lista observable de tarifas");
         tarifas.clear();
         tarifas.addAll(tarifasEmpleado);
 
         // Asignar la lista observable a la tabla
         tablaTarifas.setItems(tarifas);
+        logger.info("Se han cargado {} tarifas para el entrenador {}", tarifasEmpleado.size(), empleado.getNombre());
     }
 
     /**
      * Maneja el evento de clic en el botón de cerrar sesión
-     * Navega de vuelta a la pantalla de login
+     * Cierra la sesión actual y navega de vuelta a la pantalla de login
      *
      * @param event El evento que desencadenó esta acción
      */
     @FXML
     public void cerrarSesion(ActionEvent event) {
         try {
+            // Cerrar la sesión actual
+            Sesion.getInstance().cerrarSesion();
+
             // Cargar la vista de login
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/login-view.fxml"));
             Parent root = loader.load();
@@ -256,6 +395,7 @@ public class MainViewClienteController {
 
     /**
      * Muestra el formulario para añadir o editar una rutina
+     *
      * @param rutina La rutina a editar, o null para crear una nueva
      */
     public void mostrarFormularioAñadirEditarRutina(ClienteRutina rutina) {
@@ -292,6 +432,7 @@ public class MainViewClienteController {
 
     /**
      * Abre la ventana de registro de rutina pasando el cliente autenticado
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void abrirRegistroRutina(ActionEvent event) {
@@ -300,6 +441,7 @@ public class MainViewClienteController {
 
     /**
      * Abre la ventana de modificación de rutina
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void manejarBotonEditarRutina(ActionEvent event) {
@@ -307,27 +449,28 @@ public class MainViewClienteController {
         if (rutinaSeleccionada != null) {
             // Verificar si la rutina fue creada por un entrenador y no por el cliente actual
             if (rutinaSeleccionada.getRutina().getCreadorEmpleado().getNombre() != null) {
-                mostrarAlerta("Acción no permitida", "No puede modificar una rutina asignada por un entrenador", Alert.AlertType.WARNING);
+                Utilidades.mostrarAlerta("Acción no permitida", "No puede modificar una rutina asignada por un entrenador", Alert.AlertType.WARNING);
                 return;
             }
             mostrarFormularioAñadirEditarRutina(rutinaSeleccionada);
         } else {
-            mostrarAlerta("Selección requerida", "Por favor, seleccione una rutina para editar", Alert.AlertType.WARNING);
+            Utilidades.mostrarAlerta("Selección requerida", "Por favor, seleccione una rutina para editar", Alert.AlertType.WARNING);
         }
     }
 
     /**
      * Maneja el evento de eliminar una rutina
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void manejarBotonEliminarRutina(ActionEvent event) {
         ClienteRutina rutinaSeleccionada = tablaRutinas.getSelectionModel().getSelectedItem();
         if (rutinaSeleccionada != null) {
             // Verificar si la rutina fue creada por un entrenador y no por el cliente actual
-            if (rutinaSeleccionada.getRutina().getCreadorEmpleado() != null && 
-                (rutinaSeleccionada.getRutina().getCreadorCliente() == null || 
-                 rutinaSeleccionada.getRutina().getCreadorCliente().getId() != clienteAutenticado.getId())) {
-                mostrarAlerta("Acción no permitida", "No puede eliminar una rutina asignada por un entrenador", Alert.AlertType.WARNING);
+            if (rutinaSeleccionada.getRutina().getCreadorEmpleado() != null &&
+                    (rutinaSeleccionada.getRutina().getCreadorCliente() == null ||
+                            rutinaSeleccionada.getRutina().getCreadorCliente().getId() != clienteAutenticado.getId())) {
+                Utilidades.mostrarAlerta("Acción no permitida", "No puede eliminar una rutina asignada por un entrenador", Alert.AlertType.WARNING);
                 return;
             }
 
@@ -346,14 +489,14 @@ public class MainViewClienteController {
                     // Recargar las rutinas
                     cargarRutinas();
 
-                    mostrarAlerta("Rutina eliminada", "La rutina ha sido eliminada correctamente", Alert.AlertType.INFORMATION);
+                    Utilidades.mostrarAlerta("Rutina eliminada", "La rutina ha sido eliminada correctamente", Alert.AlertType.INFORMATION);
                 } catch (Exception e) {
                     System.err.println("Error al eliminar la rutina: " + e.getMessage());
-                    mostrarAlerta("Error", "No se pudo eliminar la rutina", Alert.AlertType.ERROR);
+                    Utilidades.mostrarAlerta("Error", "No se pudo eliminar la rutina", Alert.AlertType.ERROR);
                 }
             }
         } else {
-            mostrarAlerta("Selección requerida", "Por favor, seleccione una rutina para eliminar", Alert.AlertType.WARNING);
+            Utilidades.mostrarAlerta("Selección requerida", "Por favor, seleccione una rutina para eliminar", Alert.AlertType.WARNING);
         }
     }
 
@@ -361,7 +504,7 @@ public class MainViewClienteController {
     /**
      * Maneja el evento de contratar una tarifa
      * Verifica si el cliente ya tiene la tarifa contratada y si no, la contrata
-     * 
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void contratarTarifa(ActionEvent event) {
@@ -369,7 +512,7 @@ public class MainViewClienteController {
         Tarifa tarifaSeleccionada = (Tarifa) tablaTarifas.getSelectionModel().getSelectedItem();
 
         if (tarifaSeleccionada == null) {
-            mostrarAlerta("Error", "Por favor, seleccione una tarifa", Alert.AlertType.WARNING);
+            Utilidades.mostrarAlerta("Error", "Por favor, seleccione una tarifa", Alert.AlertType.WARNING);
             return;
         }
 
@@ -387,7 +530,7 @@ public class MainViewClienteController {
             }
 
             if (tarifaYaExiste) {
-                mostrarAlerta("Error", "El cliente ya tiene esta tarifa contratada", Alert.AlertType.ERROR);
+                Utilidades.mostrarAlerta("Error", "El cliente ya tiene esta tarifa contratada", Alert.AlertType.ERROR);
                 return;
             }
 
@@ -399,28 +542,14 @@ public class MainViewClienteController {
             clienteTarifa.setEstado(EstadoTarifa.ACTIVA);
 
             clienteTarifaDAO.insert(clienteTarifa);
-            mostrarAlerta("Tarifa Asignada", "Tarifa asignada correctamente", Alert.AlertType.INFORMATION);
+            Utilidades.mostrarAlerta("Tarifa Asignada", "Tarifa asignada correctamente", Alert.AlertType.INFORMATION);
 
         } catch (RuntimeException e) {
             System.err.println("Error al asignar la tarifa: " + e.getMessage());
-            mostrarAlerta("Error", "No se pudo asignar la tarifa", Alert.AlertType.ERROR);
+            Utilidades.mostrarAlerta("Error", "No se pudo asignar la tarifa", Alert.AlertType.ERROR);
         }
     }
 
-    /**
-     * Muestra una alerta con el título, mensaje y tipo especificados
-     * 
-     * @param titulo Título de la alerta
-     * @param mensaje Mensaje de la alerta
-     * @param tipo Tipo de alerta (INFORMATION, WARNING, ERROR, etc.)
-     */
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Alert alert = new Alert(tipo);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
-    }
 
     /**
      * Inicializa el controlador y configura los eventos
@@ -432,7 +561,7 @@ public class MainViewClienteController {
 
         //Configurar la seleccion de empleado para mostrar sus tarifas
         tablaEntrenadores.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null){
+            if (newValue != null) {
                 UsuarioEmpleado empleado = (UsuarioEmpleado) newValue;
                 cargarTarifasEntrenador(empleado);
             }
@@ -449,6 +578,11 @@ public class MainViewClienteController {
 
         //Configurar el evento de click para contratar tarifa
         btnContratarTarifa.setOnAction(this::contratarTarifa);
+
+        // Obtener el cliente autenticado de la sesión
+        if (Sesion.getInstance().isCliente()) {
+            setClienteAutenticado(Sesion.getInstance().getClienteAutenticado());
+        }
     }
 
 }

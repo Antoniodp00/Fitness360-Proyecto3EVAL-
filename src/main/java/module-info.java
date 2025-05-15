@@ -4,6 +4,8 @@ module com.dam.adp.fitness360proyecto3eval {
     requires java.xml.bind;
     requires java.sql;
     requires jbcrypt;
+    requires org.slf4j;
+    requires ch.qos.logback.classic;
 
     opens com.dam.adp.fitness360proyecto3eval.baseDatos to java.xml.bind;
     opens com.dam.adp.fitness360proyecto3eval.controller to javafx.fxml;

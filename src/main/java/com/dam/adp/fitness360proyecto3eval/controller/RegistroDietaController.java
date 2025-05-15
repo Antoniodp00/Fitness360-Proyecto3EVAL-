@@ -7,12 +7,15 @@ import com.dam.adp.fitness360proyecto3eval.model.ClienteDieta;
 import com.dam.adp.fitness360proyecto3eval.model.Dieta;
 import com.dam.adp.fitness360proyecto3eval.model.UsuarioCliente;
 import com.dam.adp.fitness360proyecto3eval.model.UsuarioEmpleado;
+import com.dam.adp.fitness360proyecto3eval.utilidades.Utilidades;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -32,6 +35,8 @@ public class RegistroDietaController {
     private UsuarioEmpleado empleadoAutenticado;
     private Dieta dieta;
     private ObservableList<Dieta> dietas;
+
+    private static final Logger logger = LoggerFactory.getLogger(RegistroDietaController.class);
 
 
 
@@ -122,9 +127,11 @@ public class RegistroDietaController {
 
                     // Actualizar la dieta en la base de datos
                     dietaDAO.update(dieta);
+                    logger.info("Dieta actualizada correctamente: {}", dieta.getNombre());
                     registroExitoso = true;
                 } catch (Exception e) {
-                    mostrarAlerta("Error", "Error al actualizar la dieta: " + e.getMessage(), Alert.AlertType.ERROR);
+                    Utilidades.mostrarAlerta("Error", "Error al actualizar la dieta: " + e.getMessage(), Alert.AlertType.ERROR);
+                    logger.error("Error al actualizar la dieta" + e.getMessage(), e);
                 }
             } else {
                 // Crear una nueva dieta
@@ -132,7 +139,7 @@ public class RegistroDietaController {
             }
 
             if (registroExitoso) {
-                mostrarAlerta("Operación Exitosa", "La dieta ha sido guardada correctamente.", Alert.AlertType.INFORMATION);
+                Utilidades.mostrarAlerta("Operación Exitosa", "La dieta ha sido guardada correctamente.", Alert.AlertType.INFORMATION);
 
                 // Cerrar la ventana
                 Stage stage = (Stage) nombreDietaField.getScene().getWindow();
@@ -150,30 +157,27 @@ public class RegistroDietaController {
      * @return true si todos los campos son válidos, false en caso contrario
      */
     private boolean validarCampos() {
+        boolean valido = true;
         StringBuilder errores = new StringBuilder();
 
-        //Validar nombre de la dieta
-        if (nombreDietaField.getText().trim().isEmpty()) {
-            errores.append("El nombre de la dieta es obligatorio.\n");
-        }
+        try {
+            // Validar campos de texto
+            Utilidades.validarCampoNoVacio(nombreDietaField.getText(), "nombre de la dieta");
+            Utilidades.validarCampoNoVacio(descripcionDietaField.getText(), "descripción de la dieta");
 
-        if (descripcionDietaField.getText().trim().isEmpty()) {
-            errores.append("La descripcion de la dieta es obligatoria.\n");
-        }
-        if (empleadoAutenticado != null) {
-            // Si hay un empleado autenticado, ya está preseleccionado
-            // Validar que se haya seleccionado un cliente para asignar la rutina
-            if (clienteAsignadoComboBox.getValue() == null) {
-                errores.append("Debe seleccionar un cliente al que asignar la dieta.\n");
+            // Validar selección de cliente si hay un empleado autenticado
+            if (empleadoAutenticado != null) {
+                Utilidades.validarComboBox(clienteAsignadoComboBox, "cliente asignado");
             }
-        }
-
-        if (errores.length() > 0) {
+        } catch (IllegalArgumentException e) {
+            logger.error(e.getMessage(), e);
+            errores.append(e.getMessage()).append("\n");
             errorMessage.setText(errores.toString());
             errorMessage.setVisible(true);
-            return false;
+            valido = false;
         }
-        return true;
+
+        return valido;
     }
 
     /**
@@ -185,68 +189,50 @@ public class RegistroDietaController {
      */
     public boolean registrarDieta() {
         try {
-            //Obtener el cliente al que se le asignara la dieta
+            // Validar campos
+            Utilidades.validarCampoNoVacio(nombreDietaField.getText(), "nombre de la dieta");
+            Utilidades.validarCampoNoVacio(descripcionDietaField.getText(), "descripción de la dieta");
+
+            // Obtener el cliente al que se le asignará la dieta
             UsuarioCliente clienteAsignado = (UsuarioCliente) clienteAsignadoComboBox.getValue();
 
+            // Validar que se haya seleccionado un cliente
             if (clienteAsignado == null) {
-                mostrarAlerta("Error", "Debe seleccionar un cliente al que asignar la dieta.", Alert.AlertType.ERROR);
-                return false;
+                throw new IllegalArgumentException("Debe seleccionar un cliente al que asignar la dieta");
             }
-            //Crear dieta
+
+            // Crear dieta
             Dieta dieta = new Dieta();
             dieta.setNombre(nombreDietaField.getText().trim());
             dieta.setDescripcion(descripcionDietaField.getText().trim());
-
             dieta.setCreador(empleadoAutenticado);
 
-            //Insertar la dieta
-            dietaDAO.insert(dieta);
-            Dieta dietaRegistrada;
-            //Obtener la dieta con el id
-            dietaRegistrada = dietaDAO.getByName(dieta.getNombre());
+            // Insertar la dieta
+            Dieta dietaRegistrada =   dietaDAO.insert(dieta);
 
             if (dietaRegistrada != null) {
-                //Asignar la dieta al cliente
+                // Asignar la dieta al cliente
                 ClienteDieta clienteDieta = new ClienteDieta();
                 clienteDieta.setCliente(clienteAsignado);
                 clienteDieta.setDieta(dietaRegistrada);
                 clienteDieta.setFechaAsignacion(new java.sql.Date(System.currentTimeMillis()));
 
                 clienteDietaDAO.insert(clienteDieta);
+                logger.info("Nueva dieta registrada y asignada: {} para el cliente {}", dietaRegistrada.getNombre(), clienteAsignado.getNombre());
                 return true;
             }
+            logger.warn("No se pudo recuperar la dieta recién creada con nombre: {}", dieta.getNombre());
+            return false;
+        } catch (IllegalArgumentException e) {
+            errorMessage.setText(e.getMessage());
+            errorMessage.setVisible(true);
+            logger.error(e.getMessage(), e);
             return false;
         } catch (Exception e) {
-            mostrarAlerta("Error", "Error al registrar la dieta", Alert.AlertType.ERROR);
+            Utilidades.mostrarAlerta("Error", "Error al registrar la dieta: " + e.getMessage(), Alert.AlertType.ERROR);
+            logger.error("Error al registrar la dieta "+ e.getMessage(), e);
             return false;
         }
-    }
-
-    /**
-     * Muestra una alerta con el título, mensaje y tipo especificados.
-     * 
-     * @param titulo Título de la alerta
-     * @param mensaje Mensaje de la alerta
-     * @param tipo Tipo de alerta (INFORMATION, WARNING, ERROR, etc.)
-     */
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        alerta.showAndWait();
-    }
-
-    /**
-     * Limpia todos los campos del formulario.
-     * Restablece los campos de texto, deselecciona el cliente en el ComboBox,
-     * y oculta los mensajes de error.
-     */
-    private void limpiarCampos() {
-        nombreDietaField.clear();
-        descripcionDietaField.clear();
-        clienteAsignadoComboBox.getSelectionModel().clearSelection();
-        errorMessage.setVisible(false);
     }
 
     /**

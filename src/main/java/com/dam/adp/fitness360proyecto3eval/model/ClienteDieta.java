@@ -168,18 +168,6 @@ public class ClienteDieta {
     }
 
 
-    public String getNombreDieta() {
-        return dieta.getNombre();
-    }
-
-    public String getDescripcionDieta() {
-        return dieta.getDescripcion();
-    }
-
-    public String getCreadorDieta() {
-        return dieta.getNombreEmpleadoCompleto();
-    }
-
     /**
      * Devuelve una representación en cadena de texto de la relación cliente-dieta.
      * 

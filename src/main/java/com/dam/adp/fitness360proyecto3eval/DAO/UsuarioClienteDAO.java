@@ -30,6 +30,11 @@ public class UsuarioClienteDAO implements GenericDAO<UsuarioCliente>{
     private final static String SQL_FIND_BY_NAME_USER = "SELECT * FROM Cliente WHERE nombreUsuario = ?";
 
     /**
+     * Consulta SQL para buscar un cliente por su correo electrónico
+     */
+    private final static String SQL_FIND_BY_EMAIL = "SELECT * FROM Cliente WHERE correo = ?";
+
+    /**
      * Consulta SQL para insertar un nuevo cliente
      */
     private final static String SQL_INSERT = "INSERT INTO Cliente (nombreUsuario, nombre, apellidos, correo, password, telefono, fechaNacimiento, sexo, altura, estado, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -199,36 +204,82 @@ public class UsuarioClienteDAO implements GenericDAO<UsuarioCliente>{
     }
 
     /**
+     * Busca un cliente por su correo electrónico
+     *
+     * @param correo Correo electrónico del cliente a buscar
+     * @return Objeto UsuarioCliente si se encuentra, null en caso contrario
+     * @throws RuntimeException Si ocurre un error al acceder a la base de datos
+     */
+    public UsuarioCliente findByEmail(String correo) {
+        UsuarioCliente cliente = null;
+
+        try (Connection con = ConnectionDB.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(SQL_FIND_BY_EMAIL)) {
+
+            pstmt.setString(1, correo);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                cliente = mapearCliente(rs);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return cliente;
+    }
+
+    /**
      * Inserta un nuevo cliente en la base de datos
      *
      * @param cliente Objeto UsuarioCliente con los datos del cliente a insertar
-     * @return El objeto UsuarioCliente insertado si la operación fue exitosa, null si el cliente ya existe o es nulo
+     * @return El objeto UsuarioCliente insertado si la operación fue exitosa
+     * @throws com.dam.adp.fitness360proyecto3eval.exceptions.UsuarioYaExisteException Si el nombre de usuario o correo ya existe
      * @throws RuntimeException Si ocurre un error al acceder a la base de datos
      */
     public UsuarioCliente insert(UsuarioCliente cliente) {
-        if (cliente != null && findByUserName(cliente.getNombreUsuario()) == null) {
-            try (Connection con = ConnectionDB.getConnection();
-                 PreparedStatement pst = con.prepareStatement(SQL_INSERT)) {
-
-                pst.setString(1, cliente.getNombreUsuario());
-                pst.setString(2, cliente.getNombre());
-                pst.setString(3, cliente.getApellidos());
-                pst.setString(4, cliente.getCorreo());
-                pst.setString(5, cliente.getPassword());
-                pst.setString(6, cliente.getTelefono());
-                pst.setDate(7, cliente.getFechaNacimiento() != null ? new java.sql.Date(cliente.getFechaNacimiento().getTime()) : null);
-                pst.setString(8, cliente.getSexo() != null ? cliente.getSexo().name() : null);
-                pst.setDouble(9, cliente.getAltura());
-                pst.setString(10, Estado.ACTIVO.name());
-                pst.setTimestamp(11, new Timestamp(System.currentTimeMillis()));
-                pst.setTimestamp(12, new Timestamp(System.currentTimeMillis()));
-                pst.executeUpdate();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            cliente = null;
+        if (cliente == null) {
+            return null;
         }
+
+        // Verificar si el nombre de usuario ya existe
+        UsuarioCliente clienteExistente = findByUserName(cliente.getNombreUsuario());
+        if (clienteExistente != null) {
+            throw new com.dam.adp.fitness360proyecto3eval.exceptions.UsuarioYaExisteException("El nombre de usuario ya existe");
+        }
+
+        // Verificar si el correo ya existe
+        clienteExistente = findByEmail(cliente.getCorreo());
+        if (clienteExistente != null) {
+            throw new com.dam.adp.fitness360proyecto3eval.exceptions.UsuarioYaExisteException("El correo electrónico ya existe");
+        }
+
+        try (Connection con = ConnectionDB.getConnection();
+             PreparedStatement pst = con.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
+
+            pst.setString(1, cliente.getNombreUsuario());
+            pst.setString(2, cliente.getNombre());
+            pst.setString(3, cliente.getApellidos());
+            pst.setString(4, cliente.getCorreo());
+            pst.setString(5, cliente.getPassword());
+            pst.setString(6, cliente.getTelefono());
+            pst.setDate(7, cliente.getFechaNacimiento() != null ? new java.sql.Date(cliente.getFechaNacimiento().getTime()) : null);
+            pst.setString(8, cliente.getSexo() != null ? cliente.getSexo().name() : null);
+            pst.setDouble(9, cliente.getAltura());
+            pst.setString(10, Estado.ACTIVO.name());
+            pst.setTimestamp(11, new Timestamp(System.currentTimeMillis()));
+            pst.setTimestamp(12, new Timestamp(System.currentTimeMillis()));
+            pst.executeUpdate();
+
+            // Obtener el ID generado
+            try (ResultSet generatedKeys = pst.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    cliente.setId(generatedKeys.getInt(1));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
         return cliente;
     }
 

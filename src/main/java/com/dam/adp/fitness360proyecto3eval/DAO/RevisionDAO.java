@@ -28,7 +28,7 @@ public class RevisionDAO implements GenericDAO<Revision> {
 
     /** Consulta SQL para buscar revisiones por id empleado */
     private static final String SQL_GET_BY_IDEMPLEADO =
-            "SELECT r.*, c.*, e.* " +
+            "SELECT r.*, c.nombre AS cliente_nombre, c.apellidos AS cliente_apellidos, e.nombre AS empleado_nombre, e.apellidos AS empleado_apellidos " +
                     "FROM Revision r " +
                     "JOIN Cliente c ON r.idCliente = c.idCliente " +
                     "JOIN Empleado e ON r.idEmpleado = e.idEmpleado " +
@@ -37,7 +37,7 @@ public class RevisionDAO implements GenericDAO<Revision> {
 
     /** Consulta SQL para buscar revisiones por cliente */
     private static final String SQL_GET_BY_CLIENTE =
-            "SELECT r.*, c.*, e.* " +
+            "SELECT r.*, c.nombre AS cliente_nombre, c.apellidos AS cliente_apellidos, e.nombre AS empleado_nombre, e.apellidos AS empleado_apellidos " +
                     "FROM Revision r " +
                     "JOIN Cliente c ON r.idCliente = c.idCliente " +
                     "JOIN Empleado e ON r.idEmpleado = e.idEmpleado " +
@@ -119,15 +119,15 @@ public class RevisionDAO implements GenericDAO<Revision> {
         int idCliente = rs.getInt("idCliente");
         UsuarioCliente cliente = new UsuarioCliente();
         cliente.setId(idCliente);
-        cliente.setNombre(rs.getString("nombre"));
-        cliente.setApellidos(rs.getString("apellidos"));
+        cliente.setNombre(rs.getString("cliente_nombre"));
+        cliente.setApellidos(rs.getString("cliente_apellidos"));
         revision.setCliente(cliente);
 
         int idEmpleado = rs.getInt("idEmpleado");
         UsuarioEmpleado empleado = new UsuarioEmpleado();
         empleado.setId(idEmpleado);
-        empleado.setNombre(rs.getString("nombre"));
-        empleado.setApellidos(rs.getString("apellidos"));
+        empleado.setNombre(rs.getString("empleado_nombre"));
+        empleado.setApellidos(rs.getString("empleado_apellidos"));
         revision.setEmpleado(empleado);
 
         revision.setCreatedAt(rs.getObject("createdAt", Date.class));
@@ -286,7 +286,8 @@ public class RevisionDAO implements GenericDAO<Revision> {
     public  Revision insert(Revision revision) {
         if (revision != null) {
 
-            try (PreparedStatement stmt = ConnectionDB.getConnection().prepareStatement(SQL_INSERT)) {
+            try (Connection conn = ConnectionDB.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
 
                 stmt.setObject(1, revision.getFecha());
                 stmt.setDouble(2, revision.getPeso());
@@ -301,6 +302,13 @@ public class RevisionDAO implements GenericDAO<Revision> {
                 stmt.setInt(11, revision.getEmpleado().getId());
 
                 stmt.executeUpdate();
+
+                // Obtener el ID generado
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        revision.setIdRevision(generatedKeys.getInt(1));
+                    }
+                }
 
             } catch (SQLException e) {
                 throw new RuntimeException(e);

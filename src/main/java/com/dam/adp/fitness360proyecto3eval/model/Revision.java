@@ -356,18 +356,6 @@ public class Revision {
         this.updatedAt = updatedAt;
     }
 
-    public String getNombreClienteCompleto() {
-        return cliente.getNombre() + " " + cliente.getApellidos();
-    }
-
-    public String getNombreEmpleadoCompleto() {
-        return empleado.getNombre() + " " + empleado.getApellidos();
-    }
-
-    public String getNombreClienteApellidos() {
-        return cliente.getNombre() + " " + cliente.getApellidos();
-    }
-
     /**
      * Devuelve una representación en cadena de texto de la revisión.
      * 

@@ -195,7 +195,8 @@ public class DietaDAO implements GenericDAO<Dieta> {
     @Override
     public Dieta insert(Dieta entity) {
         if (entity != null) {
-            try (PreparedStatement stmt = ConnectionDB.getConnection().prepareStatement(SQL_INSERT)) {
+            try (Connection conn = ConnectionDB.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
                 stmt.setString(1, entity.getNombre());
                 stmt.setString(2, entity.getDescripcion());
                 stmt.setString(3, entity.getArchivo());
@@ -204,6 +205,13 @@ public class DietaDAO implements GenericDAO<Dieta> {
                 stmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
 
                 stmt.executeUpdate();
+
+                // Obtener el ID generado
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        entity.setIdDieta(generatedKeys.getInt(1));
+                    }
+                }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }

@@ -77,17 +77,26 @@ public class RutinaDAO implements GenericDAO<Rutina> {
     public Rutina insertRutinaByClient(Rutina rutina) {
         if (rutina != null) {
             try (Connection conn = ConnectionDB.getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_By_Client)) {
+                 PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_By_Client, Statement.RETURN_GENERATED_KEYS)) {
 
                 stmt.setString(1, rutina.getNombre());
                 stmt.setString(2, rutina.getDescripcion());
                 stmt.setInt(3, rutina.getCreadorCliente().getId());
 
                 stmt.executeUpdate();
+
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        rutina.setIdRutina(generatedKeys.getInt(1)); // ✅ asigna el ID generado
+                    } else {
+                        throw new SQLException("No se generó ID para la rutina.");
+                    }
+                }
+
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-        }else {
+        } else {
             rutina = null;
         }
         return rutina;
@@ -103,17 +112,26 @@ public class RutinaDAO implements GenericDAO<Rutina> {
     public Rutina insertRutinaByEmployee(Rutina rutina) {
         if (rutina != null) {
             try (Connection conn = ConnectionDB.getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_By_Employee)) {
+                 PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_By_Employee, Statement.RETURN_GENERATED_KEYS)) {
 
                 stmt.setString(1, rutina.getNombre());
                 stmt.setString(2, rutina.getDescripcion());
                 stmt.setInt(3, rutina.getCreadorEmpleado().getId());
 
                 stmt.executeUpdate();
+
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        rutina.setIdRutina(generatedKeys.getInt(1)); // ✅ asignar ID generado
+                    } else {
+                        throw new SQLException("No se generó ID para la rutina.");
+                    }
+                }
+
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-        }else {
+        } else {
             rutina = null;
         }
         return rutina;

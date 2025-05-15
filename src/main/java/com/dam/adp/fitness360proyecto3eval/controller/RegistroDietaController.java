@@ -14,6 +14,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -33,6 +35,8 @@ public class RegistroDietaController {
     private UsuarioEmpleado empleadoAutenticado;
     private Dieta dieta;
     private ObservableList<Dieta> dietas;
+
+    private static final Logger logger = LoggerFactory.getLogger(RegistroDietaController.class);
 
 
 
@@ -123,9 +127,11 @@ public class RegistroDietaController {
 
                     // Actualizar la dieta en la base de datos
                     dietaDAO.update(dieta);
+                    logger.info("Dieta actualizada correctamente: {}", dieta.getNombre());
                     registroExitoso = true;
                 } catch (Exception e) {
                     Utilidades.mostrarAlerta("Error", "Error al actualizar la dieta: " + e.getMessage(), Alert.AlertType.ERROR);
+                    logger.error("Error al actualizar la dieta" + e.getMessage(), e);
                 }
             } else {
                 // Crear una nueva dieta
@@ -164,6 +170,7 @@ public class RegistroDietaController {
                 Utilidades.validarComboBox(clienteAsignadoComboBox, "cliente asignado");
             }
         } catch (IllegalArgumentException e) {
+            logger.error(e.getMessage(), e);
             errores.append(e.getMessage()).append("\n");
             errorMessage.setText(errores.toString());
             errorMessage.setVisible(true);
@@ -214,15 +221,19 @@ public class RegistroDietaController {
                 clienteDieta.setFechaAsignacion(new java.sql.Date(System.currentTimeMillis()));
 
                 clienteDietaDAO.insert(clienteDieta);
+                logger.info("Nueva dieta registrada y asignada: {} para el cliente {}", dietaRegistrada.getNombre(), clienteAsignado.getNombre());
                 return true;
             }
+            logger.warn("No se pudo recuperar la dieta recién creada con nombre: {}", dieta.getNombre());
             return false;
         } catch (IllegalArgumentException e) {
             errorMessage.setText(e.getMessage());
             errorMessage.setVisible(true);
+            logger.error(e.getMessage(), e);
             return false;
         } catch (Exception e) {
             Utilidades.mostrarAlerta("Error", "Error al registrar la dieta: " + e.getMessage(), Alert.AlertType.ERROR);
+            logger.error("Error al registrar la dieta "+ e.getMessage(), e);
             return false;
         }
     }

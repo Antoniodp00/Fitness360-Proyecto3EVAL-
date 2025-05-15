@@ -12,6 +12,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RegistroTarifaController {
     public TextField nombreTarifaField;
@@ -30,6 +32,8 @@ public class RegistroTarifaController {
     private Tarifa tarifa;
     private ObservableList<Tarifa> tarifas;
 
+    private static final Logger logger = LoggerFactory.getLogger(RegistroTarifaController.class);
+
 
     /**
      * Inicializa el controlador. Este método es llamado automáticamente
@@ -38,13 +42,17 @@ public class RegistroTarifaController {
      */
     @FXML
     public void initialize() {
+        logger.debug("Inicializando RegistroTarifaController");
         tarifaDAO = new TarifaDAO();
 
+        logger.debug("Configurando ComboBox de periodos");
         periodoComboBox.setItems(FXCollections.observableArrayList(Periodo.values()) );
 
+        logger.debug("Configurando eventos de botones");
         registrarButton.setOnAction(event -> manejarRegistro());
         cancelarButton.setOnAction(event -> manejarCancelacion());
 
+        logger.debug("RegistroTarifaController inicializado correctamente");
     }
 
     /**
@@ -53,6 +61,7 @@ public class RegistroTarifaController {
      * @param empleadoAutenticado El empleado autenticado en el sistema
      */
     public void setEmpleadoAutenticado(UsuarioEmpleado empleadoAutenticado) {
+        logger.debug("Estableciendo empleado autenticado: {}", empleadoAutenticado != null ? empleadoAutenticado.getNombre() : "null");
         this.empleadoAutenticado = empleadoAutenticado;
     }
 
@@ -65,19 +74,24 @@ public class RegistroTarifaController {
      * @param tarifa La tarifa a editar, o null para crear una nueva
      */
     public void setTarifa(Tarifa tarifa) {
+        logger.debug("Estableciendo tarifa para edición: {}", tarifa != null ? tarifa.getNombre() : "null");
         this.tarifa = tarifa;
         if (tarifa != null) {
+            logger.debug("Rellenando campos con datos de la tarifa existente");
             // Rellenar los campos con los datos de la tarifa
             nombreTarifaField.setText(tarifa.getNombre());
             descripcionTarifaField.setText(tarifa.getDescripcion());
             precioTarifaField.setText(String.valueOf(tarifa.getPrecio()));
             periodoComboBox.setValue(tarifa.getPeriodo());
+            logger.debug("Campos rellenados correctamente");
         } else {
+            logger.debug("Limpiando campos del formulario para nueva tarifa");
             // Limpiar los campos
             nombreTarifaField.clear();
             descripcionTarifaField.clear();
             precioTarifaField.clear();
             periodoComboBox.getSelectionModel().clearSelection();
+            logger.debug("Campos limpiados correctamente");
         }
     }
 
@@ -96,12 +110,14 @@ public class RegistroTarifaController {
      * y muestra mensajes de éxito o error.
      */
     public void manejarRegistro() {
+        logger.debug("Iniciando proceso de registro/actualización de tarifa");
         errorMessage.setVisible(false);
         if (validarCampos()) {
             boolean registroExitoso = false;
 
             // Si estamos editando una tarifa existente
             if (this.tarifa != null) {
+                logger.info("Actualizando tarifa existente: {}", tarifa.getNombre());
                 // Actualizar los datos de la tarifa existente
                 try {
                     tarifa.setNombre(nombreTarifaField.getText().trim());
@@ -111,24 +127,30 @@ public class RegistroTarifaController {
 
                     // Actualizar la tarifa en la base de datos
                     tarifaDAO.update(tarifa);
+                    logger.info("Tarifa actualizada correctamente: {}", tarifa.getNombre());
                     registroExitoso = true;
                 } catch (Exception e) {
+                    logger.error("Error al actualizar la tarifa: {}", e.getMessage(), e);
                     Utilidades.mostrarAlerta("Error", "Error al actualizar la tarifa: " + e.getMessage(), Alert.AlertType.ERROR);
                 }
             } else {
+                logger.info("Creando nueva tarifa");
                 // Crear una nueva tarifa
                 registroExitoso = registrarTarifa();
             }
 
             if (registroExitoso) {
+                logger.info("Operación de tarifa completada con éxito");
                 Utilidades.mostrarAlerta("Operación Exitosa", "La tarifa ha sido guardada correctamente.", Alert.AlertType.INFORMATION);
 
                 // Cerrar la ventana
                 Stage stage = (Stage) nombreTarifaField.getScene().getWindow();
                 stage.close();
-
-
+            } else {
+                logger.warn("La operación de tarifa no fue exitosa");
             }
+        } else {
+            logger.warn("Validación de campos fallida");
         }
     }
 
@@ -139,6 +161,7 @@ public class RegistroTarifaController {
      * @return true si todos los campos son válidos, false en caso contrario
      */
     private boolean validarCampos() {
+        logger.debug("Validando campos del formulario de tarifa");
         boolean valido = true;
         StringBuilder errores = new StringBuilder();
 
@@ -153,7 +176,9 @@ public class RegistroTarifaController {
             // Validar selección de periodo
             Utilidades.validarComboBox(periodoComboBox, "periodo");
 
+            logger.debug("Validación de campos exitosa");
         } catch (IllegalArgumentException e) {
+            logger.warn("Validación fallida: {}", e.getMessage());
             errores.append(e.getMessage()).append("\n");
             errorMessage.setText(errores.toString());
             errorMessage.setVisible(true);
@@ -170,10 +195,13 @@ public class RegistroTarifaController {
      * @return true si el registro fue exitoso, false en caso contrario
      */
     public boolean registrarTarifa(){
+        logger.debug("Iniciando registro de nueva tarifa");
         try {
             // Validar y obtener el precio como número decimal positivo
+            logger.debug("Validando precio como decimal positivo");
             double precio = Utilidades.validarDecimalPositivo(precioTarifaField.getText(), "precio");
 
+            logger.debug("Creando objeto de tarifa con los datos del formulario");
             Tarifa tarifa = new Tarifa();
             tarifa.setNombre(nombreTarifaField.getText().trim());
             tarifa.setDescripcion(descripcionTarifaField.getText().trim());
@@ -181,13 +209,17 @@ public class RegistroTarifaController {
             tarifa.setPeriodo(periodoComboBox.getValue());
             tarifa.setCreador(empleadoAutenticado);
 
+            logger.debug("Insertando tarifa en la base de datos");
             tarifaDAO.insert(tarifa);
+            logger.info("Tarifa '{}' registrada correctamente", tarifa.getNombre());
             return true;
         } catch (IllegalArgumentException e) {
+            logger.warn("Validación fallida: {}", e.getMessage());
             errorMessage.setText(e.getMessage());
             errorMessage.setVisible(true);
             return false;
         } catch (Exception e) {
+            logger.error("Error al registrar la tarifa: {}", e.getMessage(), e);
             e.printStackTrace();
             Utilidades.mostrarAlerta("Error","Error al registrar la tarifa: " + e.getMessage(), Alert.AlertType.ERROR);
             return false;
@@ -198,7 +230,9 @@ public class RegistroTarifaController {
      * Maneja la acción de cancelar el registro.
      */
     private void manejarCancelacion() {
+        logger.debug("Cancelando registro de tarifa");
         Stage stage = (Stage) cancelarButton.getScene().getWindow();
         stage.close();
+        logger.info("Ventana de registro de tarifa cerrada");
     }
 }

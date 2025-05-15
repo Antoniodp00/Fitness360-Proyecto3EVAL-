@@ -22,12 +22,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Controlador para la vista principal del empleado
  * Maneja la visualización de clientes, rutinas, dietas, tarifas y revisiones del empleado
  */
 public class MainViewEmpleadoController {
+    private static final Logger logger = LoggerFactory.getLogger(MainViewEmpleadoController.class);
+
     // Componentes generales
     public TabPane tabPane;
     public Label labelUsuario;
@@ -106,35 +110,41 @@ public class MainViewEmpleadoController {
      *
      * @param empleado El empleado autenticado
      */
-    /**
-     * Establece el empleado autenticado y actualiza la interfaz
-     *
-     * @param empleado El empleado autenticado
-     */
     public void setEmpleadoAutenticado(UsuarioEmpleado empleado) {
+        logger.debug("Estableciendo empleado autenticado");
         this.empleadoAutenticado = empleado;
         if (empleado != null) {
+            logger.info("Empleado autenticado: {}", empleado.getNombre());
             labelUsuario.setText("Usuario: " + empleado.getNombreUsuario());
 
             // Configurar los botones según la especialidad del empleado
             Especialidad especialidad = empleado.getEspecialidad();
+            logger.debug("Configurando botones según especialidad: {}", especialidad);
 
             // Botón Crear Dieta
             boolean puedeCrearDieta = (especialidad == Especialidad.DIETISTA || especialidad == Especialidad.AMBOS);
             btnCrearDieta.setDisable(!puedeCrearDieta);
             if (puedeCrearDieta) {
+                logger.debug("Empleado puede crear dietas, configurando botón");
                 btnCrearDieta.setOnAction(this::abrirRegistroDieta);
+            } else {
+                logger.debug("Empleado no puede crear dietas, botón deshabilitado");
             }
 
             // Botón Crear Rutina
             boolean puedeCrearRutina = (especialidad == Especialidad.ENTRENADOR || especialidad == Especialidad.AMBOS);
             btnCrearRutina.setDisable(!puedeCrearRutina);
             if (puedeCrearRutina) {
+                logger.debug("Empleado puede crear rutinas, configurando botón");
                 btnCrearRutina.setOnAction(this::manejarBotonCrearRutina);
+            } else {
+                logger.debug("Empleado no puede crear rutinas, botón deshabilitado");
             }
 
             // Cargar los datos específicos del empleado
             cargarDatosEmpleado();
+        } else {
+            logger.warn("Se intentó establecer un empleado nulo");
         }
     }
 
@@ -142,6 +152,8 @@ public class MainViewEmpleadoController {
      * Carga los datos específicos del empleado en la interfaz
      */
     private void cargarDatosEmpleado() {
+        logger.debug("Iniciando carga de datos del empleado");
+
         // Cargar clientes asignados al empleado
         cargarClientes();
 
@@ -156,21 +168,27 @@ public class MainViewEmpleadoController {
 
         // Cargar revisiones realizadas por el empleado
         cargarRevisiones();
+
+        logger.info("Datos del empleado cargados correctamente");
     }
 
     /**
      * Carga los clientes asignados al empleado
      */
     private void cargarClientes() {
+        logger.debug("Iniciando carga de clientes");
         UsuarioClienteDAO clienteDAO = new UsuarioClienteDAO();
-        // Implementación para cargar los clientes del empleado
+
+        logger.debug("Buscando clientes para el empleado ID: {}", empleadoAutenticado.getId());
         List<UsuarioCliente> misClientes = clienteDAO.findClientesByEmpleadoTarifa(empleadoAutenticado.getId());
 
+        logger.debug("Configurando columnas de la tabla de clientes");
         // Configurar las columnas de la tabla
         colNombreCliente.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colApellidosCliente.setCellValueFactory(new PropertyValueFactory<>("apellidos"));
         colEmailCliente.setCellValueFactory(new PropertyValueFactory<>("correo"));
         colTelefonoCliente.setCellValueFactory(new PropertyValueFactory<>("telefono"));
+
         // Usar fechaContratacion de ClienteTarifa y formatear en español
         colFechaAltaCliente.setCellValueFactory(cellData -> {
             UsuarioCliente cliente = cellData.getValue();
@@ -183,26 +201,31 @@ public class MainViewEmpleadoController {
                 }
             }
             // Si no hay tarifa activa, usar la fecha de creación del cliente
+            logger.debug("No se encontró tarifa activa para el cliente ID: {}, usando fecha de creación", cliente.getId());
             return new javafx.beans.property.SimpleStringProperty(Utilidades.formatearFechaEspanol(cliente.getCreatedAt()));
         });
 
-
         // Limpiar y agregar los clientes a la lista observable
+        logger.debug("Actualizando lista observable de clientes");
         clientes.clear();
         clientes.addAll(misClientes);
 
         // Asignar la lista observable a la tabla
         tablaClientes.setItems(clientes);
+        logger.info("Se han cargado {} clientes para el empleado", misClientes.size());
     }
 
     /**
      * Carga las rutinas creadas por el empleado
      */
     private void cargarRutinas() {
+        logger.debug("Iniciando carga de rutinas");
         RutinaDAO rutinaDAO = new RutinaDAO();
-        // Implementación para cargar las rutinas creadas por el empleado
+
+        logger.debug("Buscando rutinas para el empleado ID: {}", empleadoAutenticado.getId());
         List<Rutina> misRutinas = rutinaDAO.getByCreator(empleadoAutenticado.getId());
 
+        logger.debug("Configurando columnas de la tabla de rutinas");
         // Configurar las columnas de la tabla
         colNombreRutina.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colDescripcionRutina.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
@@ -222,22 +245,27 @@ public class MainViewEmpleadoController {
         });
 
         // Limpiar y agregar las rutinas a la lista observable
+        logger.debug("Actualizando lista observable de rutinas");
         rutinas.clear();
         rutinas.addAll(misRutinas);
 
         // Asignar la lista observable a la tabla
         tablaRutinas.setItems(rutinas);
+        logger.info("Se han cargado {} rutinas para el empleado", misRutinas.size());
     }
 
     /**
      * Carga las dietas creadas por el empleado
      */
     private void cargarDietas() {
+        logger.debug("Iniciando carga de dietas");
         DietaDAO dietaDAO = new DietaDAO();
         ClienteDietaDAO clienteDietaDAO = new ClienteDietaDAO();
-        // Implementación para cargar las dietas creadas por el empleado
+
+        logger.debug("Buscando dietas para el empleado ID: {}", empleadoAutenticado.getId());
         List<Dieta> misDietas = dietaDAO.getByCreator(empleadoAutenticado.getId());
 
+        logger.debug("Configurando columnas de la tabla de dietas");
         // Configurar las columnas de la tabla
         colNombreDieta.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colDescripcionDieta.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
@@ -258,21 +286,26 @@ public class MainViewEmpleadoController {
         colClientesAsignadosDieta.setCellValueFactory(new PropertyValueFactory<>("clientesAsignados"));
 
         // Limpiar y agregar las dietas a la lista observable
+        logger.debug("Actualizando lista observable de dietas");
         dietas.clear();
         dietas.addAll(misDietas);
 
         // Asignar la lista observable a la tabla
         tablaDietas.setItems(dietas);
+        logger.info("Se han cargado {} dietas para el empleado", misDietas.size());
     }
 
     /**
      * Carga las tarifas del empleado
      */
     private void cargarTarifas() {
+        logger.debug("Iniciando carga de tarifas");
         TarifaDAO tarifaDAO = new TarifaDAO();
-        // Implementación para cargar las tarifas del empleado
+
+        logger.debug("Buscando tarifas para el empleado ID: {}", empleadoAutenticado.getId());
         List<Tarifa> misTarifas = tarifaDAO.getByCreator(empleadoAutenticado.getId());
 
+        logger.debug("Configurando columnas de la tabla de tarifas");
         // Configurar las columnas de la tabla
         colNombreTarifa.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colPrecioTarifa.setCellValueFactory(new PropertyValueFactory<>("precio"));
@@ -280,21 +313,26 @@ public class MainViewEmpleadoController {
         colDescripcionTarifa.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
 
         // Limpiar y agregar las tarifas a la lista observable
+        logger.debug("Actualizando lista observable de tarifas");
         tarifas.clear();
         tarifas.addAll(misTarifas);
 
         // Asignar la lista observable a la tabla
         tablaTarifas.setItems(tarifas);
+        logger.info("Se han cargado {} tarifas para el empleado", misTarifas.size());
     }
 
     /**
      * Carga las revisiones realizadas por el empleado
      */
     private void cargarRevisiones() {
+        logger.debug("Iniciando carga de revisiones");
         RevisionDAO revisionDAO = new RevisionDAO();
-        // Implementación para cargar las revisiones realizadas por el empleado
+
+        logger.debug("Buscando revisiones para el empleado ID: {}", empleadoAutenticado.getId());
         List<Revision> misRevisiones = revisionDAO.getByCreatorEager(empleadoAutenticado.getId());
 
+        logger.debug("Configurando columnas de la tabla de revisiones");
         // Configurar las columnas de la tabla
         colFechaRevision.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         // Formatear la fecha en español
@@ -316,11 +354,13 @@ public class MainViewEmpleadoController {
         colObservacionesRevision.setCellValueFactory(new PropertyValueFactory<>("observaciones"));
 
         // Limpiar y agregar las revisiones a la lista observable
+        logger.debug("Actualizando lista observable de revisiones");
         revisiones.clear();
         revisiones.addAll(misRevisiones);
 
         // Asignar la lista observable a la tabla
         tablaRevisiones.setItems(revisiones);
+        logger.info("Se han cargado {} revisiones para el empleado", misRevisiones.size());
     }
 
     /**
@@ -331,22 +371,27 @@ public class MainViewEmpleadoController {
      */
     @FXML
     public void cerrarSesion(ActionEvent event) {
+        logger.debug("Iniciando proceso de cierre de sesión");
         try {
             // Cerrar la sesión actual
+            logger.debug("Cerrando sesión actual");
             Sesion.getInstance().cerrarSesion();
 
             // Cargar la vista de login
+            logger.debug("Cargando vista de login");
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/login-view.fxml"));
             Parent root = loader.load();
 
             // Configurar la nueva escena
+            logger.debug("Configurando escena para pantalla de login");
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
             stage.setTitle("Fitness360 - Login");
             stage.setScene(scene);
             stage.show();
+            logger.info("Sesión cerrada correctamente, navegación a pantalla de login completada");
         } catch (IOException e) {
-            System.err.println("Error al cargar la pantalla de login: " + e.getMessage());
+            logger.error("Error al cargar la pantalla de login: {}", e.getMessage(), e);
             e.printStackTrace();
         }
     }
@@ -357,21 +402,26 @@ public class MainViewEmpleadoController {
      * @param rutina La rutina a editar, o null para crear una nueva
      */
     public void mostrarFormularioAñadirEditarRutina(Rutina rutina) {
+        logger.debug("Mostrando formulario para {}", rutina != null ? "editar rutina" : "añadir nueva rutina");
         try {
             // Cargar la vista de registro de rutina
+            logger.debug("Cargando vista de registro de rutina");
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/registro-rutina-view.fxml"));
             Scene scene = new Scene(loader.load());
             Stage stage = new Stage();
 
             // Obtener el controlador y establecer el empleado autenticado
+            logger.debug("Configurando controlador con empleado autenticado");
             RegistroRutinaController controller = loader.getController();
             controller.setEmpleadoAutenticado(empleadoAutenticado);
 
             // Configurar la rutina si se está editando
             if (rutina != null) {
+                logger.debug("Configurando rutina existente para edición");
                 controller.setRutina(rutina);
                 stage.setTitle("Fitness360 - Modificar Rutina");
             } else {
+                logger.debug("Configurando para nueva rutina");
                 stage.setTitle("Fitness360 - Añadir Rutina");
             }
 
@@ -381,9 +431,11 @@ public class MainViewEmpleadoController {
             stage.showAndWait();
 
             // Recargar las rutinas después de cerrar el formulario
+            logger.debug("Recargando rutinas después de cerrar el formulario");
             cargarRutinas();
+            logger.info("Formulario de rutina cerrado correctamente");
         } catch (IOException e) {
-            System.err.println("Error al cargar la pantalla de registro de rutina: " + e.getMessage());
+            logger.error("Error al cargar la pantalla de registro de rutina: {}", e.getMessage(), e);
             e.printStackTrace();
         }
     }
@@ -412,35 +464,31 @@ public class MainViewEmpleadoController {
     }
 
     /**
-     * Método obsoleto, reemplazado por manejarBotonEditarRutina
-     *
-     * @param event El evento que desencadenó esta acción
-     */
-    public void abrirModificarRutina(ActionEvent event) {
-        manejarBotonEditarRutina(event);
-    }
-
-    /**
      * Muestra el formulario para añadir o editar una dieta
      *
      * @param dieta La dieta a editar, o null para crear una nueva
      */
     public void mostrarFormularioAñadirEditarDieta(Dieta dieta) {
+        logger.debug("Mostrando formulario para {}", dieta != null ? "editar dieta" : "añadir nueva dieta");
         try {
             // Cargar la vista de registro de dieta
+            logger.debug("Cargando vista de registro de dieta");
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/registro-dieta-view.fxml"));
             Scene scene = new Scene(loader.load());
             Stage stage = new Stage();
 
             // Obtener el controlador y establecer el empleado autenticado
+            logger.debug("Configurando controlador con empleado autenticado");
             RegistroDietaController controller = loader.getController();
             controller.setEmpleadoAutenticado(empleadoAutenticado);
 
             // Configurar la dieta si se está editando
             if (dieta != null) {
+                logger.debug("Configurando dieta existente para edición");
                 controller.setDieta(dieta);
                 stage.setTitle("Fitness360 - Modificar Dieta");
             } else {
+                logger.debug("Configurando para nueva dieta");
                 stage.setTitle("Fitness360 - Añadir Dieta");
             }
 
@@ -450,9 +498,11 @@ public class MainViewEmpleadoController {
             stage.showAndWait();
 
             // Recargar las dietas después de cerrar el formulario
+            logger.debug("Recargando dietas después de cerrar el formulario");
             cargarDietas();
+            logger.info("Formulario de dieta cerrado correctamente");
         } catch (IOException e) {
-            System.err.println("Error al cargar la pantalla de registro de dieta: " + e.getMessage());
+            logger.error("Error al cargar la pantalla de registro de dieta: {}", e.getMessage(), e);
             e.printStackTrace();
         }
     }
@@ -486,21 +536,26 @@ public class MainViewEmpleadoController {
      * @param tarifa La tarifa a editar, o null para crear una nueva
      */
     public void mostrarFormularioAñadirEditarTarifa(Tarifa tarifa) {
+        logger.debug("Mostrando formulario para {}", tarifa != null ? "editar tarifa" : "añadir nueva tarifa");
         try {
             // Cargar la vista de registro de tarifa
+            logger.debug("Cargando vista de registro de tarifa");
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/registro-tarifa-view.fxml"));
             Scene scene = new Scene(loader.load());
             Stage stage = new Stage();
 
             // Obtener el controlador y establecer el empleado autenticado
+            logger.debug("Configurando controlador con empleado autenticado");
             RegistroTarifaController controller = loader.getController();
             controller.setEmpleadoAutenticado(empleadoAutenticado);
 
             // Configurar la tarifa si se está editando
             if (tarifa != null) {
+                logger.debug("Configurando tarifa existente para edición");
                 controller.setTarifa(tarifa);
                 stage.setTitle("Fitness360 - Modificar Tarifa");
             } else {
+                logger.debug("Configurando para nueva tarifa");
                 stage.setTitle("Fitness360 - Añadir Tarifa");
             }
 
@@ -510,9 +565,11 @@ public class MainViewEmpleadoController {
             stage.showAndWait();
 
             // Recargar las tarifas después de cerrar el formulario
+            logger.debug("Recargando tarifas después de cerrar el formulario");
             cargarTarifas();
+            logger.info("Formulario de tarifa cerrado correctamente");
         } catch (IOException e) {
-            System.err.println("Error al cargar la pantalla de registro de tarifa: " + e.getMessage());
+            logger.error("Error al cargar la pantalla de registro de tarifa: {}", e.getMessage(), e);
             e.printStackTrace();
         }
     }
@@ -546,21 +603,26 @@ public class MainViewEmpleadoController {
      * @param revision La revisión a editar, o null para crear una nueva
      */
     public void mostrarFormularioAñadirEditarRevision(Revision revision) {
+        logger.debug("Mostrando formulario para {}", revision != null ? "editar revisión" : "añadir nueva revisión");
         try {
             // Cargar la vista de registro de revisión
+            logger.debug("Cargando vista de registro de revisión");
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/registro-revision-view.fxml"));
             Scene scene = new Scene(loader.load());
             Stage stage = new Stage();
 
             // Obtener el controlador y establecer el empleado autenticado
+            logger.debug("Configurando controlador con empleado autenticado");
             RegistroRevisionController controller = loader.getController();
             controller.setEmpleadoAutenticado(empleadoAutenticado);
 
             // Configurar la revisión si se está editando
             if (revision != null) {
+                logger.debug("Configurando revisión existente para edición");
                 controller.setRevision(revision);
                 stage.setTitle("Fitness360 - Modificar Revisión");
             } else {
+                logger.debug("Configurando para nueva revisión");
                 stage.setTitle("Fitness360 - Nueva Revisión");
             }
 
@@ -570,9 +632,11 @@ public class MainViewEmpleadoController {
             stage.showAndWait();
 
             // Recargar las revisiones después de cerrar el formulario
+            logger.debug("Recargando revisiones después de cerrar el formulario");
             cargarRevisiones();
+            logger.info("Formulario de revisión cerrado correctamente");
         } catch (IOException e) {
-            System.err.println("Error al cargar la pantalla de registro de revisión: " + e.getMessage());
+            logger.error("Error al cargar la pantalla de registro de revisión: {}", e.getMessage(), e);
             e.printStackTrace();
         }
     }
@@ -614,29 +678,41 @@ public class MainViewEmpleadoController {
      */
     @FXML
     public void initialize() {
+        logger.debug("Inicializando MainViewEmpleadoController");
+
         // Configurar el evento de clic para el botón de cerrar sesión
+        logger.debug("Configurando evento para botón de cerrar sesión");
         btnCerrarSesion.setOnAction(this::cerrarSesion);
 
         // Configurar eventos para los botones de crear
+        logger.debug("Configurando eventos para botones de crear");
         btnCrearRutina.setOnAction(this::manejarBotonCrearRutina);
         btnCrearDieta.setOnAction(this::abrirRegistroDieta);
         btnCrearTarifa.setOnAction(this::abrirRegistroTarifa);
         btnNuevaRevision.setOnAction(this::abrirRegistroRevision);
 
         // Configurar eventos para los botones de modificar
+        logger.debug("Configurando eventos para botones de modificar");
         btnModificarRutina.setOnAction(this::manejarBotonEditarRutina);
         btnModificarDieta.setOnAction(this::manejarBotonEditarDieta);
         btnModificarTarifa.setOnAction(this::manejarBotonEditarTarifa);
 
         // Configurar eventos para los botones de eliminar
+        logger.debug("Configurando eventos para botones de eliminar");
         btnEliminarRutina.setOnAction(this::manejarBotonBorrarRutina);
         btnEliminarDieta.setOnAction(this::manejarBotonBorrarDieta);
         btnEliminarTarifa.setOnAction(this::manejarBotonBorrarTarifa);
 
         // Obtener el empleado autenticado de la sesión
+        logger.debug("Verificando si hay un empleado autenticado en la sesión");
         if (Sesion.getInstance().isEmpleado()) {
+            logger.debug("Empleado autenticado encontrado en la sesión, estableciendo en el controlador");
             setEmpleadoAutenticado(Sesion.getInstance().getEmpleadoAutenticado());
+        } else {
+            logger.warn("No se encontró un empleado autenticado en la sesión");
         }
+
+        logger.info("MainViewEmpleadoController inicializado correctamente");
     }
 
     /**
@@ -662,9 +738,10 @@ public class MainViewEmpleadoController {
                     // Eliminar de la lista observable
                     rutinas.remove(rutinaSeleccionada);
 
+                    logger.info("Rutina '{}' eliminada correctamente", rutinaSeleccionada.getNombre());
                     Utilidades.mostrarAlerta("Rutina eliminada", "La rutina ha sido eliminada correctamente", Alert.AlertType.INFORMATION);
                 } catch (Exception e) {
-                    System.err.println("Error al eliminar la rutina: " + e.getMessage());
+                    logger.error("Error al eliminar la rutina: {}", e.getMessage(), e);
                     Utilidades.mostrarAlerta("Error", "No se pudo eliminar la rutina", Alert.AlertType.ERROR);
                 }
             }
@@ -696,9 +773,10 @@ public class MainViewEmpleadoController {
                     // Eliminar de la lista observable
                     dietas.remove(dietaSeleccionada);
 
+                    logger.info("Dieta '{}' eliminada correctamente", dietaSeleccionada.getNombre());
                     Utilidades.mostrarAlerta("Dieta eliminada", "La dieta ha sido eliminada correctamente", Alert.AlertType.INFORMATION);
                 } catch (Exception e) {
-                    System.err.println("Error al eliminar la dieta: " + e.getMessage());
+                    logger.error("Error al eliminar la dieta: {}", e.getMessage(), e);
                     Utilidades.mostrarAlerta("Error", "No se pudo eliminar la dieta", Alert.AlertType.ERROR);
                 }
             }
@@ -730,9 +808,10 @@ public class MainViewEmpleadoController {
                     // Eliminar de la lista observable
                     tarifas.remove(tarifaSeleccionada);
 
+                    logger.info("Tarifa '{}' eliminada correctamente", tarifaSeleccionada.getNombre());
                     Utilidades.mostrarAlerta("Tarifa eliminada", "La tarifa ha sido eliminada correctamente", Alert.AlertType.INFORMATION);
                 } catch (Exception e) {
-                    System.err.println("Error al eliminar la tarifa: " + e.getMessage());
+                    logger.error("Error al eliminar la tarifa: {}", e.getMessage(), e);
                     Utilidades.mostrarAlerta("Error", "No se pudo eliminar la tarifa", Alert.AlertType.ERROR);
                 }
             }

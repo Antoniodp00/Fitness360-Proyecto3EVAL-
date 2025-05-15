@@ -6,6 +6,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.util.Callback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -18,13 +20,15 @@ import java.util.Scanner;
  */
 public class Utilidades {
    // Expresión regular para validar correos electrónicos
-    static final String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
+    private static final String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
     // Expresión regular para validar números enteros
-    static final String integerRegex = "^-?\\d+$";
+    private static final String integerRegex = "^-?\\d+$";
     // Expresión regular para validar números decimales
-    static final String decimalRegex = "^-?\\d+(\\.\\d+)?$";
+    private static final String decimalRegex = "^-?\\d+(\\.\\d+)?$";
     // Expresión regular para validar números de teléfono (9 dígitos)
-    static final String phoneRegex = "^\\d{9}$";
+    private static final String phoneRegex = "^\\d{9}$";
+
+    private static final Logger logger = LoggerFactory.getLogger(Utilidades.class);
 
     /**
      * Valida si un correo electrónico tiene un formato correcto.
@@ -35,11 +39,14 @@ public class Utilidades {
      */
     public static boolean validarEmail(String email) {
         if (email == null || email.trim().isEmpty()) {
+            logger.error("Validación fallida: El correo electrónico no puede estar vacío");
             throw new EmailInvalidoException("El correo electrónico no puede estar vacío");
         }
         if (!email.matches(emailRegex)) {
+            logger.error("Validación fallida: Formato de correo electrónico inválido: {}", email);
             throw new EmailInvalidoException("Formato de correo electrónico inválido");
         }
+        logger.debug("Correo electrónico validado correctamente: {}", email);
         return true;
     }
 
@@ -53,8 +60,10 @@ public class Utilidades {
      */
     public static boolean validarCampoNoVacio(String texto, String nombreCampo) {
         if (texto == null || texto.trim().isEmpty()) {
+            logger.error("Validación fallida: El campo {} no puede estar vacío", nombreCampo);
             throw new CampoVacioException("El campo " + nombreCampo + " no puede estar vacío");
         }
+        logger.debug("Campo {} validado correctamente", nombreCampo);
         return true;
     }
 
@@ -217,6 +226,7 @@ public class Utilidades {
      * @param tipo    Tipo de alerta (INFORMATION, WARNING, ERROR, etc.)
      */
     public static void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
+        logger.info("Mostrando alerta: Tipo={}, Título={}, Mensaje={}", tipo, titulo, mensaje);
         Alert alert = new Alert(tipo);
         alert.setTitle(titulo);
         alert.setHeaderText(null);
@@ -251,19 +261,23 @@ public class Utilidades {
         validarFecha(fechaNacimiento, nombreCampo);
 
         LocalDate hoy = LocalDate.now();
+        logger.debug("Validando fecha de nacimiento: {}, campo: {}", fechaNacimiento, nombreCampo);
 
         // Verificar que la fecha no sea demasiado antigua (más de 120 años)
         LocalDate fechaMinima = hoy.minusYears(120);
         if (fechaNacimiento.isBefore(fechaMinima)) {
+            logger.error("Fecha de nacimiento demasiado antigua: {}", fechaNacimiento);
             throw new FechaNacimientoInvalidaException("El campo " + nombreCampo + " no puede ser una fecha demasiado antigua");
         }
 
         // Verificar que no sea demasiado reciente (por ejemplo, menor de 10 años)
         LocalDate fechaMaxima = hoy.minusYears(10);
         if (fechaNacimiento.isAfter(fechaMaxima)) {
+            logger.error("Fecha de nacimiento indica usuario demasiado joven: {}", fechaNacimiento);
             throw new FechaNacimientoInvalidaException("El campo " + nombreCampo + " indica que el usuario es demasiado joven (debe tener al menos 10 años)");
         }
 
+        logger.debug("Fecha de nacimiento validada correctamente: {}", fechaNacimiento);
         return true;
     }
 }

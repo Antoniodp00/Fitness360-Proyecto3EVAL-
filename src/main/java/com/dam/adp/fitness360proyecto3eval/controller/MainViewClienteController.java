@@ -22,6 +22,8 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Controlador para la vista principal del cliente.
@@ -29,6 +31,7 @@ import java.util.Locale;
  * Permite al cliente ver sus datos y contratar servicios.
  */
 public class MainViewClienteController {
+    private static final Logger logger = LoggerFactory.getLogger(MainViewClienteController.class);
     //Componentes Generales
     public TabPane tabPane;
     public Label labelUsuario;
@@ -101,11 +104,15 @@ public class MainViewClienteController {
      * @param cliente El cliente autenticado
      */
     public void setClienteAutenticado(UsuarioCliente cliente) {
+        logger.debug("Estableciendo cliente autenticado");
         this.clienteAutenticado = cliente;
         if (cliente != null) {
+            logger.info("Cliente autenticado: {}", cliente.getNombre());
             labelUsuario.setText("Usuario: " + cliente.getNombreUsuario());
             // Aquí se cargan los datos específicos del cliente
             cargarDatosCliente();
+        } else {
+            logger.warn("Se intentó establecer un cliente nulo");
         }
     }
 
@@ -114,10 +121,12 @@ public class MainViewClienteController {
      * Incluye rutinas, dietas, revisiones y entrenadores disponibles.
      */
     public void cargarDatosCliente() {
+        logger.debug("Iniciando carga de datos del cliente");
         cargarRutinas();
         cargarDietas();
         cargarRevisiones();
         cargarEntrenadores();
+        logger.info("Datos del cliente cargados correctamente");
     }
 
     /**
@@ -125,10 +134,13 @@ public class MainViewClienteController {
      * Obtiene los datos de la base de datos y configura las columnas de la tabla.
      */
     private void cargarRutinas() {
+        logger.debug("Iniciando carga de rutinas");
         ClienteRutinaDAO clienteRutinaDAO = new ClienteRutinaDAO();
 
+        logger.debug("Buscando rutinas para el cliente ID: {}", clienteAutenticado.getId());
         List<ClienteRutina> misRutinas = clienteRutinaDAO.findByClientEager(clienteAutenticado.getId());
 
+        logger.debug("Configurando columnas de la tabla de rutinas");
         colNombreRutina.setCellValueFactory(new PropertyValueFactory<>("nombreRutina"));
         colDescripcionRutina.setCellValueFactory(new PropertyValueFactory<>("descripcionRutina"));
         colCreadorRutina.setCellValueFactory(new PropertyValueFactory<>("creadorRutina"));
@@ -145,11 +157,13 @@ public class MainViewClienteController {
         });
 
         // Limpiar y agregar las rutinas a la lista observable
+        logger.debug("Actualizando lista observable de rutinas");
         rutinas.clear();
         rutinas.addAll(misRutinas);
 
         // Asignar la lista observable a la tabla
         tablaRutinas.setItems(rutinas);
+        logger.info("Se han cargado {} rutinas para el cliente", misRutinas.size());
     }
 
     /**
@@ -157,9 +171,12 @@ public class MainViewClienteController {
      * Obtiene los datos de la base de datos y configura las columnas de la tabla.
      */
     private void cargarDietas() {
+        logger.debug("Iniciando carga de dietas");
         ClienteDietaDAO clienteDietaDAO = new ClienteDietaDAO();
+        logger.debug("Buscando dietas para el cliente ID: {}", clienteAutenticado.getId());
         List<ClienteDieta> misDietas = clienteDietaDAO.findByClientEager(clienteAutenticado.getId());
 
+        logger.debug("Configurando columnas de la tabla de dietas");
         colNombreDieta.setCellValueFactory(new PropertyValueFactory<>("nombreDieta"));
         colDescripcionDieta.setCellValueFactory(new PropertyValueFactory<>("descripcionDieta"));
         colCreadorDieta.setCellValueFactory(new PropertyValueFactory<>("creadorDieta"));
@@ -176,11 +193,13 @@ public class MainViewClienteController {
         });
 
         // Limpiar y agregar las dietas a la lista observable
+        logger.debug("Actualizando lista observable de dietas");
         dietas.clear();
         dietas.addAll(misDietas);
 
         // Asignar la lista observable a la tabla
         tablaDietas.setItems(dietas);
+        logger.info("Se han cargado {} dietas para el cliente", misDietas.size());
     }
 
     /**
@@ -188,9 +207,12 @@ public class MainViewClienteController {
      * Obtiene los datos de la base de datos y configura las columnas de la tabla.
      */
     private void cargarRevisiones() {
+        logger.debug("Iniciando carga de revisiones");
         RevisionDAO revisionDAO = new RevisionDAO();
+        logger.debug("Buscando revisiones para el cliente ID: {}", clienteAutenticado.getId());
         List<Revision> misRevisiones = revisionDAO.getByClientEager(clienteAutenticado.getId());
 
+        logger.debug("Configurando columnas de la tabla de revisiones");
         // Formatear la fecha en español
         colFechaRevision.setCellValueFactory(cellData -> {
             java.util.Date fecha = cellData.getValue().getFecha();
@@ -203,11 +225,13 @@ public class MainViewClienteController {
         colObservacionesRevision.setCellValueFactory(new PropertyValueFactory<>("observaciones"));
 
         // Limpiar y agregar las revisiones a la lista observable
+        logger.debug("Actualizando lista observable de revisiones");
         revisiones.clear();
         revisiones.addAll(misRevisiones);
 
         // Asignar la lista observable a la tabla
         tablaRevisiones.setItems(revisiones);
+        logger.info("Se han cargado {} revisiones para el cliente", misRevisiones.size());
     }
 
     /**
@@ -215,19 +239,24 @@ public class MainViewClienteController {
      * Obtiene los datos de la base de datos y configura las columnas de la tabla.
      */
     public void cargarEntrenadores() {
+        logger.debug("Iniciando carga de entrenadores");
         UsuarioEmpleadoDAO usuarioEmpleadoDAO = new UsuarioEmpleadoDAO();
+        logger.debug("Buscando todos los empleados");
         List<UsuarioEmpleado> empleados = usuarioEmpleadoDAO.getAll();
 
+        logger.debug("Configurando columnas de la tabla de entrenadores");
         colNombreEntrenador.setCellValueFactory(new PropertyValueFactory<>("nombreCompleto"));
         colEspecialidadEntrenador.setCellValueFactory(new PropertyValueFactory<>("especialidad"));
         colDescripcionEntrenador.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
 
         // Limpiar y agregar los entrenadores a la lista observable
+        logger.debug("Actualizando lista observable de entrenadores");
         entrenadores.clear();
         entrenadores.addAll(empleados);
 
         // Asignar la lista observable a la tabla
         tablaEntrenadores.setItems(entrenadores);
+        logger.info("Se han cargado {} entrenadores disponibles", empleados.size());
     }
 
     /**
@@ -236,20 +265,24 @@ public class MainViewClienteController {
      * @param empleado El entrenador del que se cargarán las tarifas
      */
     public void cargarTarifasEntrenador(UsuarioEmpleado empleado) {
+        logger.debug("Iniciando carga de tarifas para el entrenador ID: {}", empleado.getId());
         TarifaDAO tarifaDAO = new TarifaDAO();
         List<Tarifa> tarifasEmpleado = tarifaDAO.getByCreator(empleado.getId());
 
+        logger.debug("Configurando columnas de la tabla de tarifas");
         colNombreTarifa.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colPrecioTarifa.setCellValueFactory(new PropertyValueFactory<>("precio"));
         colPeriodoTarifa.setCellValueFactory(new PropertyValueFactory<>("periodo"));
         colDescripcionTarifa.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
 
         // Limpiar y agregar las tarifas a la lista observable
+        logger.debug("Actualizando lista observable de tarifas");
         tarifas.clear();
         tarifas.addAll(tarifasEmpleado);
 
         // Asignar la lista observable a la tabla
         tablaTarifas.setItems(tarifas);
+        logger.info("Se han cargado {} tarifas para el entrenador {}", tarifasEmpleado.size(), empleado.getNombre());
     }
 
     /**

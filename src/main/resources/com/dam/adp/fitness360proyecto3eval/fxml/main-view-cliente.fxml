@@ -111,6 +111,9 @@
                                   <TableColumn fx:id="colPesoRevision" prefWidth="80.0" text="Peso" />
                                   <TableColumn fx:id="colGrasaRevision" prefWidth="80.0" text="Grasa %" />
                                   <TableColumn fx:id="colMusculoRevision" prefWidth="80.0" text="Músculo %" />
+                                  <TableColumn fx:id="colPechoRevision" prefWidth="80.0" text="Pecho" />
+                                  <TableColumn fx:id="colCinturaRevision" prefWidth="80.0" text="Cintura" />
+                                  <TableColumn fx:id="colCaderaRevision" prefWidth="80.0" text="Cadera" />
                                   <TableColumn fx:id="colEntrenadorRevision" prefWidth="150.0" text="Entrenador" />
                                   <TableColumn fx:id="colObservacionesRevision" prefWidth="180.0" text="Observaciones" />
                                 </columns>

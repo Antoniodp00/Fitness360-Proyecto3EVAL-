@@ -270,7 +270,7 @@ public class UsuarioEmpleadoDAO implements GenericDAO<UsuarioEmpleado> {
         }
 
         try(Connection con = ConnectionDB.getConnection();
-            PreparedStatement pst = con.prepareStatement(SQL_INSERT)){
+            PreparedStatement pst = con.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)){
 
             pst.setString(1, empleado.getNombreUsuario());
             pst.setString(2, empleado.getNombre());
@@ -287,6 +287,13 @@ public class UsuarioEmpleadoDAO implements GenericDAO<UsuarioEmpleado> {
             pst.setTimestamp(13, new Timestamp(System.currentTimeMillis()));
             pst.setTimestamp(14, new Timestamp(System.currentTimeMillis()));
             pst.executeUpdate();
+
+            // Obtener el ID generado
+            try (ResultSet generatedKeys = pst.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    empleado.setId(generatedKeys.getInt(1));
+                }
+            }
         }catch (SQLException e) {
             throw new RuntimeException(e);
         }

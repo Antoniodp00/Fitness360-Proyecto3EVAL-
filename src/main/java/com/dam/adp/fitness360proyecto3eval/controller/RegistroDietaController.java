@@ -208,10 +208,7 @@ public class RegistroDietaController {
             dieta.setCreador(empleadoAutenticado);
 
             // Insertar la dieta
-            dietaDAO.insert(dieta);
-
-            // Obtener la dieta con el id
-            Dieta dietaRegistrada = dietaDAO.getByName(dieta.getNombre());
+            Dieta dietaRegistrada =   dietaDAO.insert(dieta);
 
             if (dietaRegistrada != null) {
                 // Asignar la dieta al cliente

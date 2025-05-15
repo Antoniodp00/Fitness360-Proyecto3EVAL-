@@ -245,10 +245,6 @@ public class UsuarioEmpleado extends Usuario {
         this.revisiones = revisiones;
     }
 
-    public String getNombreCompleto() {
-        return nombre + " " + apellidos;
-    }
-
     /**
      * Devuelve una representación en cadena de texto del empleado.
      * 

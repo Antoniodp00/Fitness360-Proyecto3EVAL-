@@ -233,10 +233,6 @@ public class Tarifa {
         this.updatedAt = updatedAt;
     }
 
-    public String getNombreEmpleadoCompleto() {
-        return creador.getNombre() + " " + creador.getApellidos();
-    }
-
     /**
      * Devuelve una representación en cadena de texto de la tarifa.
      * 

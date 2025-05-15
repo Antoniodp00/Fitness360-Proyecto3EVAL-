@@ -254,7 +254,7 @@ public class UsuarioClienteDAO implements GenericDAO<UsuarioCliente>{
         }
 
         try (Connection con = ConnectionDB.getConnection();
-             PreparedStatement pst = con.prepareStatement(SQL_INSERT)) {
+             PreparedStatement pst = con.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
 
             pst.setString(1, cliente.getNombreUsuario());
             pst.setString(2, cliente.getNombre());
@@ -269,6 +269,13 @@ public class UsuarioClienteDAO implements GenericDAO<UsuarioCliente>{
             pst.setTimestamp(11, new Timestamp(System.currentTimeMillis()));
             pst.setTimestamp(12, new Timestamp(System.currentTimeMillis()));
             pst.executeUpdate();
+
+            // Obtener el ID generado
+            try (ResultSet generatedKeys = pst.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    cliente.setId(generatedKeys.getInt(1));
+                }
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

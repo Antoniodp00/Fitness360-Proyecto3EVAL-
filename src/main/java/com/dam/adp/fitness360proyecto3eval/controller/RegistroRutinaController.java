@@ -465,10 +465,8 @@ public class RegistroRutinaController {
 
             // Registrar la rutina
             logger.debug("Insertando rutina en la base de datos");
-            rutinaDAO.insertRutinaByEmployee(rutina);
-            Rutina rutinaRegistrada;
-            //Vuelvo a buscar la rutina creada para obtener el id
-            rutinaRegistrada = rutinaDAO.getByName(rutina.getNombre());
+
+            Rutina rutinaRegistrada=rutinaDAO.insertRutinaByEmployee(rutina);
 
             if (rutinaRegistrada != null) {
                 logger.debug("Rutina registrada correctamente, asignando al cliente seleccionado");

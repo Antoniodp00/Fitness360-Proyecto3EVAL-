@@ -8,5 +8,15 @@ public enum Periodo {
     MENSUAL,
     TRIMESTRAL,
     ANUAL,
-    UNICO
+    UNICO;
+
+    @Override
+    public String toString() {
+        return switch (this) {
+            case MENSUAL -> "Mensual";
+            case TRIMESTRAL -> "Trimestral";
+            case ANUAL -> "Anual";
+            case UNICO -> "Unico";
+        };
+    }
 }

@@ -3,19 +3,18 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dam.adp.fitness360proyecto3eval.controller.MainViewEmpleadoController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="980.0" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dam.adp.fitness360proyecto3eval.controller.MainViewEmpleadoController">
    <top>
       <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="800.0" styleClass="top-bar" BorderPane.alignment="CENTER">
          <children>
-            <Label text="Fitness360 - Panel de Empleado" styleClass="main-title">
+            <Label styleClass="main-title" text="Fitness360 - Panel de Empleado">
                <HBox.margin>
                   <Insets left="20.0" />
                </HBox.margin>
             </Label>
             <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-            <Label fx:id="labelUsuario" text="Bienvenido, [Nombre Usuario]" styleClass="user-welcome">
+            <Label fx:id="labelUsuario" styleClass="user-welcome" text="Bienvenido, [Nombre Usuario]">
                <HBox.margin>
                   <Insets right="20.0" />
                </HBox.margin>
@@ -34,7 +33,7 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
                                  <children>
-                                    <Label text="Clientes asignados:" styleClass="section-header" />
+                                    <Label styleClass="section-header" text="Clientes asignados:" />
                                     <ComboBox fx:id="comboFiltroClientes" prefWidth="150.0" promptText="Filtrar por" />
                                     <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
                                  </children>
@@ -65,12 +64,12 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
                                  <children>
-                                    <Label text="Rutinas creadas:" styleClass="section-header" />
+                                    <Label styleClass="section-header" text="Rutinas creadas:" />
                                     <ComboBox fx:id="comboFiltroRutinas" prefWidth="150.0" promptText="Filtrar por" />
                                     <Region prefHeight="31.0" prefWidth="125.0" HBox.hgrow="ALWAYS" />
                                     <Button fx:id="btnCrearRutina" mnemonicParsing="false" text="Crear Rutina" />
                                     <Button fx:id="btnModificarRutina" layoutX="697.0" layoutY="20.0" mnemonicParsing="false" text="Modificar Rutina" />
-                                    <Button fx:id="btnEliminarRutina" layoutX="697.0" layoutY="20.0" styleClass="delete-button" mnemonicParsing="false" text="Eliminar Rutina" />
+                                    <Button fx:id="btnEliminarRutina" layoutX="697.0" layoutY="20.0" mnemonicParsing="false" styleClass="delete-button" text="Eliminar Rutina" />
                                  </children>
                                  <padding>
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -98,12 +97,12 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
                                  <children>
-                                    <Label text="Dietas creadas:" styleClass="section-header" />
+                                    <Label styleClass="section-header" text="Dietas creadas:" />
                                     <ComboBox fx:id="comboFiltroDietas" prefWidth="150.0" promptText="Filtrar por" />
                                     <Region prefHeight="31.0" prefWidth="130.0" HBox.hgrow="ALWAYS" />
                                     <Button fx:id="btnCrearDieta" mnemonicParsing="false" text="Crear Dieta" />
                                     <Button fx:id="btnModificarDieta" layoutX="704.0" layoutY="20.0" mnemonicParsing="false" text="Modificar Dieta" />
-                                    <Button fx:id="btnEliminarDieta" layoutX="704.0" layoutY="20.0" mnemonicParsing="false" text="Eliminar Dieta" styleClass="delete-button" />
+                                    <Button fx:id="btnEliminarDieta" layoutX="704.0" layoutY="20.0" mnemonicParsing="false" styleClass="delete-button" text="Eliminar Dieta" />
                                  </children>
                                  <padding>
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -131,12 +130,12 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
                                  <children>
-                                    <Label text="Tarifas disponibles:" styleClass="section-header" />
+                                    <Label styleClass="section-header" text="Tarifas disponibles:" />
                                     <ComboBox fx:id="comboFiltroPeriodo" prefWidth="150.0" promptText="Periodo" />
                                     <Region prefHeight="31.0" prefWidth="116.0" HBox.hgrow="ALWAYS" />
                                     <Button fx:id="btnCrearTarifa" mnemonicParsing="false" text="Crear Tarifa" />
                                     <Button fx:id="btnModificarTarifa" layoutX="701.0" layoutY="20.0" mnemonicParsing="false" text="Modificar Tarifa" />
-                                    <Button fx:id="btnEliminarTarifa" layoutX="701.0" layoutY="20.0" mnemonicParsing="false" text="Eliminar Tarifa" styleClass="delete-button"/>
+                                    <Button fx:id="btnEliminarTarifa" layoutX="701.0" layoutY="20.0" mnemonicParsing="false" styleClass="delete-button" text="Eliminar Tarifa" />
                                  </children>
                                  <padding>
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -164,7 +163,7 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
                                  <children>
-                                    <Label text="Historial de revisiones realizadas:" styleClass="section-header" />
+                                    <Label styleClass="section-header" text="Historial de revisiones realizadas:" />
                                     <ComboBox fx:id="comboFiltroRevisiones" prefWidth="150.0" promptText="Filtrar por cliente" />
                                     <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
                                     <Button fx:id="btnNuevaRevision" mnemonicParsing="false" text="Nueva Revisión" />
@@ -180,7 +179,10 @@
                                   <TableColumn fx:id="colPesoRevision" prefWidth="80.0" text="Peso" />
                                   <TableColumn fx:id="colGrasaRevision" prefWidth="80.0" text="Grasa %" />
                                   <TableColumn fx:id="colMusculoRevision" prefWidth="80.0" text="Músculo %" />
-                                  <TableColumn fx:id="colObservacionesRevision" prefWidth="180.0" text="Observaciones" />
+                                  <TableColumn fx:id="colPechoRevision" prefWidth="80.0" text="Pecho" />
+                                  <TableColumn fx:id="colCinturaRevision" prefWidth="80.0" text="Cintura" />
+                                  <TableColumn fx:id="colCaderaRevision" prefWidth="80.0" text="Cadera" />
+                                  <TableColumn fx:id="colObservacionesRevision1" prefWidth="180.0" text="Observaciones" />
                                 </columns>
                               </TableView>
                            </children>

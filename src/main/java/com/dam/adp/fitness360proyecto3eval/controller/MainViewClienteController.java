@@ -4,6 +4,7 @@ import com.dam.adp.fitness360proyecto3eval.DAO.*;
 import com.dam.adp.fitness360proyecto3eval.model.*;
 import com.dam.adp.fitness360proyecto3eval.model.Sesion;
 import com.dam.adp.fitness360proyecto3eval.utilidades.Utilidades;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -22,6 +23,7 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,9 +63,12 @@ public class MainViewClienteController {
     public Tab tabRevisiones;
     public TableView<Revision> tablaRevisiones;
     public TableColumn<Revision, String> colFechaRevision;
-    public TableColumn<Revision, Double> colPesoRevision;
-    public TableColumn<Revision, Double> colGrasaRevision;
-    public TableColumn<Revision, Double> colMusculoRevision;
+    public TableColumn<Revision, String> colPesoRevision;
+    public TableColumn<Revision, String> colGrasaRevision;
+    public TableColumn<Revision, String> colMusculoRevision;
+    public TableColumn<Revision, String> colPechoRevision;
+    public TableColumn<Revision, String> colCinturaRevision;
+    public TableColumn<Revision, String> colCaderaRevision;
     public TableColumn<Revision, String> colEntrenadorRevision;
     public TableColumn<Revision, String> colObservacionesRevision;
     public ComboBox comboFiltroEspecialidad;
@@ -73,7 +78,7 @@ public class MainViewClienteController {
     public Tab tabContratarEntrenador;
     public TableView<UsuarioEmpleado> tablaEntrenadores;
     public TableColumn<UsuarioEmpleado, String> colNombreEntrenador;
-    public TableColumn<UsuarioEmpleado, Especialidad> colEspecialidadEntrenador;
+    public TableColumn<UsuarioEmpleado, String> colEspecialidadEntrenador;
     public TableColumn<UsuarioEmpleado, String> colDescripcionEntrenador;
     public TableColumn<UsuarioEmpleado, String> colAccionesEntrenador;
     public ComboBox comboFiltroPeriodo;
@@ -82,8 +87,8 @@ public class MainViewClienteController {
     //Tab Tarifas
     public TableView<Tarifa> tablaTarifas;
     public TableColumn<Tarifa, String> colNombreTarifa;
-    public TableColumn<Tarifa, Double> colPrecioTarifa;
-    public TableColumn<Tarifa, Periodo> colPeriodoTarifa;
+    public TableColumn<Tarifa, String> colPrecioTarifa;
+    public TableColumn<Tarifa, String> colPeriodoTarifa;
     public TableColumn<Tarifa, String> colEntrenadorTarifa;
     public TableColumn<Tarifa, String> colDescripcionTarifa;
     public TableColumn<Tarifa, String> colAccionesTarifa;
@@ -141,27 +146,37 @@ public class MainViewClienteController {
         List<ClienteRutina> misRutinas = clienteRutinaDAO.findByClientEager(clienteAutenticado.getId());
 
         logger.debug("Configurando columnas de la tabla de rutinas");
-        colNombreRutina.setCellValueFactory(new PropertyValueFactory<>("nombreRutina"));
-        colDescripcionRutina.setCellValueFactory(new PropertyValueFactory<>("descripcionRutina"));
-        colCreadorRutina.setCellValueFactory(new PropertyValueFactory<>("creadorRutina"));
-        // Formatear la fecha de inicio en español
+
+        colNombreRutina.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getRutina().getNombre())
+        );
+
+        colDescripcionRutina.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getRutina().getDescripcion())
+        );
+
+        colCreadorRutina.setCellValueFactory(cellData -> {
+            String creador = cellData.getValue().getRutina().getCreadorEmpleado().getNombre();
+            String textoCreador = (creador != null && !creador.isBlank())
+                    ? creador
+                    : clienteAutenticado.getNombre();
+            return new SimpleStringProperty(textoCreador);
+        });
+
         colFechaInicioRutina.setCellValueFactory(cellData -> {
             java.util.Date fecha = cellData.getValue().getFechaAsignacion();
-            return new javafx.beans.property.SimpleStringProperty(Utilidades.formatearFechaEspanol(fecha));
+            return new SimpleStringProperty(Utilidades.formatearFechaEspanol(fecha));
         });
 
-        // Formatear la fecha de fin en español
         colFechaFinRutina.setCellValueFactory(cellData -> {
             java.util.Date fecha = cellData.getValue().getFechaFin();
-            return new javafx.beans.property.SimpleStringProperty(Utilidades.formatearFechaEspanol(fecha));
+            return new SimpleStringProperty(Utilidades.formatearFechaEspanol(fecha));
         });
 
-        // Limpiar y agregar las rutinas a la lista observable
         logger.debug("Actualizando lista observable de rutinas");
         rutinas.clear();
         rutinas.addAll(misRutinas);
 
-        // Asignar la lista observable a la tabla
         tablaRutinas.setItems(rutinas);
         logger.info("Se han cargado {} rutinas para el cliente", misRutinas.size());
     }
@@ -177,9 +192,17 @@ public class MainViewClienteController {
         List<ClienteDieta> misDietas = clienteDietaDAO.findByClientEager(clienteAutenticado.getId());
 
         logger.debug("Configurando columnas de la tabla de dietas");
-        colNombreDieta.setCellValueFactory(new PropertyValueFactory<>("nombreDieta"));
-        colDescripcionDieta.setCellValueFactory(new PropertyValueFactory<>("descripcionDieta"));
-        colCreadorDieta.setCellValueFactory(new PropertyValueFactory<>("creadorDieta"));
+        colNombreDieta.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDieta().getNombre())
+        );
+
+        colDescripcionDieta.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDieta().getDescripcion())
+        );
+
+        colCreadorDieta.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDieta().getCreador().getNombre())
+        );
         // Formatear la fecha de inicio en español
         colFechaInicioDieta.setCellValueFactory(cellData -> {
             java.util.Date fecha = cellData.getValue().getFechaAsignacion();
@@ -213,26 +236,66 @@ public class MainViewClienteController {
         List<Revision> misRevisiones = revisionDAO.getByClientEager(clienteAutenticado.getId());
 
         logger.debug("Configurando columnas de la tabla de revisiones");
-        // Formatear la fecha en español
+
+        // Fecha formateada
         colFechaRevision.setCellValueFactory(cellData -> {
             java.util.Date fecha = cellData.getValue().getFecha();
-            return new javafx.beans.property.SimpleStringProperty(Utilidades.formatearFechaEspanol(fecha));
+            return new SimpleStringProperty(Utilidades.formatearFechaEspanol(fecha));
         });
-        colPesoRevision.setCellValueFactory(new PropertyValueFactory<>("peso"));
-        colGrasaRevision.setCellValueFactory(new PropertyValueFactory<>("grasa"));
-        colMusculoRevision.setCellValueFactory(new PropertyValueFactory<>("musculo"));
-        colEntrenadorRevision.setCellValueFactory(new PropertyValueFactory<>("nombreEmpleadoCompleto"));
-        colObservacionesRevision.setCellValueFactory(new PropertyValueFactory<>("observaciones"));
 
-        // Limpiar y agregar las revisiones a la lista observable
+        colPesoRevision.setCellValueFactory(cellData -> {
+            Double peso = cellData.getValue().getPeso();
+            String textoPeso = (peso != null) ? String.format("%.2f", peso) + " kg" : "N/D";
+            return new SimpleStringProperty(textoPeso);
+        });
+
+        colGrasaRevision.setCellValueFactory(cellData -> {
+            Double grasa = cellData.getValue().getGrasa();
+            String textoGrasa = (grasa != null) ? String.format("%.2f", grasa) + " %" : "N/D";
+            return new SimpleStringProperty(textoGrasa);
+        });
+
+        colMusculoRevision.setCellValueFactory(cellData -> {
+            Double musculo = cellData.getValue().getMusculo();
+            String textoMusculo = (musculo != null) ? String.format("%.2f", musculo) + " %" : "N/D";
+            return new SimpleStringProperty(textoMusculo);
+        });
+
+        colPechoRevision.setCellValueFactory(cellData -> {
+            Double pecho = cellData.getValue().getmPecho();
+            String textoPecho = (pecho != null) ? String.format("%.2f", pecho) + " cm" : "N/D";
+            return new SimpleStringProperty(textoPecho);
+        });
+
+        colCinturaRevision.setCellValueFactory(cellData -> {
+            Double cintura = cellData.getValue().getmCintura();
+            String textoCintura = (cintura != null) ? String.format("%.2f", cintura) + " cm" : "N/D";
+            return new SimpleStringProperty(textoCintura);
+        });
+
+        colCaderaRevision.setCellValueFactory(cellData -> {
+            Double cadera = cellData.getValue().getmCadera();
+            String textoCadera = (cadera != null) ? String.format("%.2f", cadera) + " cm" : "N/D";
+            return new SimpleStringProperty(textoCadera);
+        });
+
+        // Texto del nombre completo del entrenador
+        colEntrenadorRevision.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getEmpleado().getNombre())
+        );
+
+        colObservacionesRevision.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getObservaciones())
+        );
+
         logger.debug("Actualizando lista observable de revisiones");
         revisiones.clear();
         revisiones.addAll(misRevisiones);
 
-        // Asignar la lista observable a la tabla
         tablaRevisiones.setItems(revisiones);
         logger.info("Se han cargado {} revisiones para el cliente", misRevisiones.size());
     }
+
 
     /**
      * Carga la lista de entrenadores disponibles en la tabla correspondiente.
@@ -245,9 +308,16 @@ public class MainViewClienteController {
         List<UsuarioEmpleado> empleados = usuarioEmpleadoDAO.getAll();
 
         logger.debug("Configurando columnas de la tabla de entrenadores");
-        colNombreEntrenador.setCellValueFactory(new PropertyValueFactory<>("nombreCompleto"));
-        colEspecialidadEntrenador.setCellValueFactory(new PropertyValueFactory<>("especialidad"));
-        colDescripcionEntrenador.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+        colNombreEntrenador.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getNombre())
+        );
+        colEspecialidadEntrenador.setCellValueFactory(cellData -> {
+            Especialidad especialidad = cellData.getValue().getEspecialidad();
+            return new SimpleStringProperty(especialidad != null ? especialidad.toString() : "N/D");
+        });
+        colDescripcionEntrenador.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDescripcion())
+        );
 
         // Limpiar y agregar los entrenadores a la lista observable
         logger.debug("Actualizando lista observable de entrenadores");
@@ -270,10 +340,20 @@ public class MainViewClienteController {
         List<Tarifa> tarifasEmpleado = tarifaDAO.getByCreator(empleado.getId());
 
         logger.debug("Configurando columnas de la tabla de tarifas");
-        colNombreTarifa.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-        colPrecioTarifa.setCellValueFactory(new PropertyValueFactory<>("precio"));
-        colPeriodoTarifa.setCellValueFactory(new PropertyValueFactory<>("periodo"));
-        colDescripcionTarifa.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+        colNombreTarifa.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getNombre())
+                );
+        colPrecioTarifa.setCellValueFactory(cellData->
+                new SimpleStringProperty(String.format("%.2f", cellData.getValue().getPrecio())+" €")
+        );
+        colPeriodoTarifa.setCellValueFactory(cellData -> {
+            Periodo periodo = cellData.getValue().getPeriodo();
+            return new SimpleStringProperty(periodo != null ? periodo.toString() : "Sin especificar");
+        });
+
+        colDescripcionTarifa.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDescripcion())
+        );
 
         // Limpiar y agregar las tarifas a la lista observable
         logger.debug("Actualizando lista observable de tarifas");
@@ -315,6 +395,7 @@ public class MainViewClienteController {
 
     /**
      * Muestra el formulario para añadir o editar una rutina
+     *
      * @param rutina La rutina a editar, o null para crear una nueva
      */
     public void mostrarFormularioAñadirEditarRutina(ClienteRutina rutina) {
@@ -351,6 +432,7 @@ public class MainViewClienteController {
 
     /**
      * Abre la ventana de registro de rutina pasando el cliente autenticado
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void abrirRegistroRutina(ActionEvent event) {
@@ -359,6 +441,7 @@ public class MainViewClienteController {
 
     /**
      * Abre la ventana de modificación de rutina
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void manejarBotonEditarRutina(ActionEvent event) {
@@ -377,15 +460,16 @@ public class MainViewClienteController {
 
     /**
      * Maneja el evento de eliminar una rutina
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void manejarBotonEliminarRutina(ActionEvent event) {
         ClienteRutina rutinaSeleccionada = tablaRutinas.getSelectionModel().getSelectedItem();
         if (rutinaSeleccionada != null) {
             // Verificar si la rutina fue creada por un entrenador y no por el cliente actual
-            if (rutinaSeleccionada.getRutina().getCreadorEmpleado() != null && 
-                (rutinaSeleccionada.getRutina().getCreadorCliente() == null || 
-                 rutinaSeleccionada.getRutina().getCreadorCliente().getId() != clienteAutenticado.getId())) {
+            if (rutinaSeleccionada.getRutina().getCreadorEmpleado() != null &&
+                    (rutinaSeleccionada.getRutina().getCreadorCliente() == null ||
+                            rutinaSeleccionada.getRutina().getCreadorCliente().getId() != clienteAutenticado.getId())) {
                 Utilidades.mostrarAlerta("Acción no permitida", "No puede eliminar una rutina asignada por un entrenador", Alert.AlertType.WARNING);
                 return;
             }
@@ -420,7 +504,7 @@ public class MainViewClienteController {
     /**
      * Maneja el evento de contratar una tarifa
      * Verifica si el cliente ya tiene la tarifa contratada y si no, la contrata
-     * 
+     *
      * @param event El evento que desencadenó esta acción
      */
     public void contratarTarifa(ActionEvent event) {
@@ -477,7 +561,7 @@ public class MainViewClienteController {
 
         //Configurar la seleccion de empleado para mostrar sus tarifas
         tablaEntrenadores.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null){
+            if (newValue != null) {
                 UsuarioEmpleado empleado = (UsuarioEmpleado) newValue;
                 cargarTarifasEntrenador(empleado);
             }

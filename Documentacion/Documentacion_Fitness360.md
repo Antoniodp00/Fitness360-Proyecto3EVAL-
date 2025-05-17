@@ -85,28 +85,48 @@ La aplicación cubre una serie de funcionalidades clave que permiten a los difer
 - **Seguimiento físico**: Los clientes pueden registrar sus datos físicos periódicamente, lo que permite a los profesionales monitorizar el progreso y ajustar los planes según la evolución.
 
 ## 6. Interfaces de usuario (GUI)
-La interfaz gráfica está diseñada para ofrecer una experiencia de usuario clara y sencilla, con un diseño consistente en todas las pantallas:
+La interfaz gráfica está diseñada para ofrecer una experiencia de usuario clara y sencilla, con un diseño consistente en todas las pantallas. A continuación se detallan todas las vistas FXML que componen la aplicación:
 
-- **Pantalla de login**: Permite a los usuarios autenticarse en el sistema introduciendo su usuario y contraseña.
+- **login-view.fxml**: Permite a los usuarios autenticarse en el sistema introduciendo su usuario y contraseña. Incluye campos para el nombre de usuario y contraseña, así como botones para iniciar sesión o acceder al registro.
 
-- **Pantalla de registro**: Facilita la creación de nuevas cuentas, con validaciones para asegurar que los datos introducidos sean correctos y completos.
+- **registro-view.fxml**: Facilita la creación de nuevas cuentas, con validaciones para asegurar que los datos introducidos sean correctos y completos. Contiene campos para todos los datos personales necesarios y opciones para seleccionar el tipo de usuario.
 
-- **Panel principal para profesionales**: Desde aquí, los entrenadores y dietistas pueden gestionar sus rutinas, dietas, tarifas y revisiones, con accesos rápidos a las funcionalidades principales.
+- **main-view-empleado.fxml**: Panel principal para profesionales (entrenadores y dietistas). Desde aquí pueden gestionar rutinas, dietas, tarifas y revisiones, con accesos rápidos a las funcionalidades principales. Utiliza un sistema de pestañas (TabPane) para organizar las diferentes secciones.
 
-- **Panel principal para clientes**: Los usuarios pueden visualizar sus planes asignados y su historial de revisiones, permitiendo un seguimiento continuo y motivador.
+- **main-view-cliente.fxml**: Panel principal para clientes donde pueden visualizar sus planes asignados y su historial de revisiones, permitiendo un seguimiento continuo y motivador. También utiliza un sistema de pestañas para organizar la información.
+
+- **registro-rutina-view.fxml**: Interfaz para la creación y edición de rutinas de entrenamiento. Permite definir nombre, descripción y otros detalles de la rutina.
+
+- **registro-dieta-view.fxml**: Interfaz para la creación y edición de planes de alimentación. Incluye campos para nombre, descripción y detalles específicos de la dieta.
+
+- **registro-tarifa-view.fxml**: Permite crear y modificar las tarifas disponibles en el sistema, definiendo precios, periodos y servicios incluidos.
+
+- **registro-revision-view.fxml**: Interfaz para registrar y actualizar las revisiones físicas de los clientes, incluyendo campos para peso, porcentaje de grasa corporal y otros indicadores.
+
+- **asignar-view.fxml**: Vista especializada para asignar rutinas o dietas a uno o varios clientes simultáneamente. Incluye una tabla con selección mediante checkboxes.
+
+- **hello-view.fxml**: Vista inicial o de bienvenida que se muestra al arrancar la aplicación antes de acceder al login.
 
 ## 7. Controladores
-Los controladores JavaFX actúan como puente entre la interfaz gráfica y la lógica de negocio, manejando eventos y actualizando la información mostrada. Entre ellos destacan:
+Los controladores JavaFX actúan como puente entre la interfaz gráfica y la lógica de negocio, manejando eventos y actualizando la información mostrada. A continuación se detallan todos los controladores implementados en la aplicación:
 
-- **LoginController**: Gestiona el proceso de autenticación, validando credenciales y controlando los accesos.
+- **LoginController**: Gestiona el proceso de autenticación, validando credenciales y controlando los accesos. Verifica el tipo de usuario (cliente o empleado) y redirige a la vista correspondiente. Implementa medidas de seguridad como el hash de contraseñas y bloqueo tras intentos fallidos.
 
-- **RegistroController**: Controla la creación de nuevas cuentas y la validación de datos durante el registro.
+- **RegistroController**: Controla la creación de nuevas cuentas y la validación de datos durante el registro. Incluye validaciones para todos los campos del formulario y gestiona el proceso de alta en la base de datos, asegurando la integridad de la información.
 
-- **MainViewClienteController**: Maneja la interfaz principal del cliente, cargando los planes y revisiones correspondientes.
+- **MainViewClienteController**: Maneja la interfaz principal del cliente, cargando los planes y revisiones correspondientes. Gestiona las diferentes pestañas (rutinas, dietas, revisiones, tarifas) y proporciona funcionalidades para visualizar, filtrar y gestionar la información personal del cliente.
 
-- **MainViewEmpleadoController**: Controla la vista principal del profesional, facilitando la gestión integral de planes y clientes.
+- **MainViewEmpleadoController**: Controla la vista principal del profesional, facilitando la gestión integral de planes y clientes. Permite crear, modificar y eliminar rutinas, dietas y tarifas, así como gestionar los clientes asignados y sus revisiones. Incluye funcionalidades de búsqueda y filtrado avanzadas.
 
-- **RegistroRutinaController, RegistroDietaController, RegistroTarifaController, RegistroRevisionController**: Controlan las operaciones de alta, modificación y eliminación de cada uno de estos elementos.
+- **RegistroRutinaController**: Gestiona la creación y edición de rutinas de entrenamiento. Permite definir nombre, descripción y detalles específicos de la rutina, así como asignarla a clientes si se accede desde el perfil de empleado.
+
+- **RegistroDietaController**: Controla la creación y edición de planes de alimentación. Facilita la definición de dietas personalizadas con nombre, descripción y detalles nutricionales, permitiendo también su asignación a clientes.
+
+- **RegistroTarifaController**: Maneja el registro y modificación de tarifas en el sistema. Permite definir precios, periodos (mensual, trimestral, anual) y servicios incluidos, así como gestionar su estado (activa/inactiva).
+
+- **RegistroRevisionController**: Controla el registro y actualización de revisiones físicas de los clientes. Permite introducir y validar datos como peso, porcentaje de grasa corporal, masa muscular y otros indicadores relevantes para el seguimiento.
+
+- **AsignarController**: Controlador especializado para la asignación de rutinas o dietas a múltiples clientes simultáneamente. Implementa una interfaz con selección mediante checkboxes que permite al empleado seleccionar varios clientes y asignarles un plan específico en una sola operación, optimizando el flujo de trabajo.
 
 ## 8. DAO (Data Access Object)
 El patrón DAO se implementa para aislar la lógica de acceso a datos y facilitar la reutilización y el mantenimiento del código. Destacan las siguientes clases:
@@ -401,7 +421,7 @@ TableColumn<Usuario, String> nombreColumn = new TableColumn<>("Nombre");
 nombreColumn.setCellValueFactory(new PropertyValueFactory<>("nombre"));
 ```
 
-### 7. Estructura de interfaces con TabPane
+### Estructura de interfaces con TabPane
 
 La aplicación utiliza TabPane para organizar la interfaz en pestañas temáticas, lo que permite una navegación clara y una separación lógica de las funcionalidades.
 

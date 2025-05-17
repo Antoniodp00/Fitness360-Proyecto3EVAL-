@@ -43,7 +43,11 @@ public class AsignarController {
     @FXML
     private Button btnAsignar;
 
-    private ObservableList<ClienteSeleccionable> clientes = FXCollections.observableArrayList();
+    private final ObservableList<ClienteSeleccionable> clientes = FXCollections.observableArrayList();
+
+    private final UsuarioClienteDAO clienteDAO = new UsuarioClienteDAO();
+    private final ClienteDietaDAO clienteDietaDAO = new ClienteDietaDAO();
+    private final ClienteRutinaDAO clienteRutinaDAO = new ClienteRutinaDAO();
 
     private UsuarioEmpleado empleadoAutenticado;
     private Rutina rutinaSeleccionada;
@@ -121,7 +125,7 @@ public class AsignarController {
      */
     private void cargarClientes() {
         logger.debug("Cargando clientes para asignar");
-        UsuarioClienteDAO clienteDAO = new UsuarioClienteDAO();
+
         List<UsuarioCliente> misClientes = clienteDAO.findClientesByEmpleadoTarifa(empleadoAutenticado.getId());
 
         // Limpiar la lista observable
@@ -130,13 +134,11 @@ public class AsignarController {
         // Obtener los clientes ya asignados
         List<Integer> clientesYaAsignados = new ArrayList<>();
         if (esDieta) {
-            ClienteDietaDAO clienteDietaDAO = new ClienteDietaDAO();
             List<ClienteDieta> asignaciones = clienteDietaDAO.findByDieta(dietaSeleccionada.getIdDieta());
             for (ClienteDieta asignacion : asignaciones) {
                 clientesYaAsignados.add(asignacion.getCliente().getId());
             }
         } else {
-            ClienteRutinaDAO clienteRutinaDAO = new ClienteRutinaDAO();
             List<ClienteRutina> asignaciones = clienteRutinaDAO.findByRutine(rutinaSeleccionada.getIdRutina());
             for (ClienteRutina asignacion : asignaciones) {
                 clientesYaAsignados.add(asignacion.getCliente().getId());
@@ -199,7 +201,6 @@ public class AsignarController {
      */
     private void asignarRutina(List<ClienteSeleccionable> seleccionados, List<ClienteSeleccionable> deseleccionados) {
         logger.debug("Asignando rutina a {} clientes", seleccionados.size());
-        ClienteRutinaDAO clienteRutinaDAO = new ClienteRutinaDAO();
 
         // Eliminar asignaciones de clientes deseleccionados
         for (ClienteSeleccionable cliente : deseleccionados) {

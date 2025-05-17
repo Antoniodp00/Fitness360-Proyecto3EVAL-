@@ -46,7 +46,7 @@ public class MainViewClienteController {
     public TableColumn<ClienteRutina, String> colCreadorRutina;
     public TableColumn<ClienteRutina, String> colFechaInicioRutina;
     public TableColumn<ClienteRutina, String> colFechaFinRutina;
-    private ObservableList<ClienteRutina> rutinas = FXCollections.observableArrayList();
+    private final ObservableList<ClienteRutina> rutinas = FXCollections.observableArrayList();
 
     //Tab Dietas
     public Tab tabDietas;
@@ -56,7 +56,7 @@ public class MainViewClienteController {
     public TableColumn<ClienteDieta, String> colCreadorDieta;
     public TableColumn<ClienteDieta, String> colFechaInicioDieta;
     public TableColumn<ClienteDieta, String> colFechaFinDieta;
-    private ObservableList<ClienteDieta> dietas = FXCollections.observableArrayList();
+    private final ObservableList<ClienteDieta> dietas = FXCollections.observableArrayList();
 
     //Tab Revisiones
     public Tab tabRevisiones;
@@ -71,7 +71,7 @@ public class MainViewClienteController {
     public TableColumn<Revision, String> colEntrenadorRevision;
     public TableColumn<Revision, String> colObservacionesRevision;
     public ComboBox comboFiltroEspecialidad;
-    private ObservableList<Revision> revisiones = FXCollections.observableArrayList();
+    private final ObservableList<Revision> revisiones = FXCollections.observableArrayList();
 
     //Tab Entrenadores
     public Tab tabContratarEntrenador;
@@ -81,7 +81,7 @@ public class MainViewClienteController {
     public TableColumn<UsuarioEmpleado, String> colDescripcionEntrenador;
     public TableColumn<UsuarioEmpleado, String> colAccionesEntrenador;
     public ComboBox comboFiltroPeriodo;
-    private ObservableList<UsuarioEmpleado> entrenadores = FXCollections.observableArrayList();
+    private final ObservableList<UsuarioEmpleado> entrenadores = FXCollections.observableArrayList();
 
     //Tab Tarifas
     public TableView<Tarifa> tablaTarifas;
@@ -91,7 +91,7 @@ public class MainViewClienteController {
     public TableColumn<Tarifa, String> colEntrenadorTarifa;
     public TableColumn<Tarifa, String> colDescripcionTarifa;
     public TableColumn<Tarifa, String> colAccionesTarifa;
-    private ObservableList<Tarifa> tarifas = FXCollections.observableArrayList();
+    private final ObservableList<Tarifa> tarifas = FXCollections.observableArrayList();
 
     //Tab Mis Tarifas
     public Tab tabMisTarifas;
@@ -102,7 +102,7 @@ public class MainViewClienteController {
     public TableColumn<ClienteTarifa, String> colEntrenadorMiTarifa;
     public TableColumn<ClienteTarifa, String> colFechaContratacionMiTarifa;
     public TableColumn<ClienteTarifa, String> colEstadoMiTarifa;
-    private ObservableList<ClienteTarifa> misTarifas = FXCollections.observableArrayList();
+    private final ObservableList<ClienteTarifa> misTarifas = FXCollections.observableArrayList();
 
     //Botones
     public Button btnCerrarSesion;
@@ -128,6 +128,40 @@ public class MainViewClienteController {
             cargarDatosCliente();
         } else {
             logger.warn("Se intentó establecer un cliente nulo");
+        }
+    }
+
+    /**
+     * Inicializa el controlador y configura los eventos
+     */
+    @FXML
+    public void initialize() {
+        // Configurar el evento de clic para el botón de cerrar sesión
+        btnCerrarSesion.setOnAction(this::cerrarSesion);
+
+        //Configurar la seleccion de empleado para mostrar sus tarifas
+        tablaEntrenadores.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                UsuarioEmpleado empleado = (UsuarioEmpleado) newValue;
+                cargarTarifasEntrenador(empleado);
+            }
+        });
+
+        //Configurar el evento de click para abrir el panel de registro de rutina
+        btnCrearRutina.setOnAction(this::abrirRegistroRutina);
+
+        //Configurar el evento de click para modificar rutina
+        btnModificarRutina.setOnAction(this::manejarBotonEditarRutina);
+
+        //Configurar el evento de click para eliminar rutina
+        btnEliminarRutina.setOnAction(this::manejarBotonEliminarRutina);
+
+        //Configurar el evento de click para contratar tarifa
+        btnContratarTarifa.setOnAction(this::contratarTarifa);
+
+        // Obtener el cliente autenticado de la sesión
+        if (Sesion.getInstance().isCliente()) {
+            setClienteAutenticado(Sesion.getInstance().getClienteAutenticado());
         }
     }
 
@@ -614,38 +648,6 @@ public class MainViewClienteController {
     }
 
 
-    /**
-     * Inicializa el controlador y configura los eventos
-     */
-    @FXML
-    public void initialize() {
-        // Configurar el evento de clic para el botón de cerrar sesión
-        btnCerrarSesion.setOnAction(this::cerrarSesion);
 
-        //Configurar la seleccion de empleado para mostrar sus tarifas
-        tablaEntrenadores.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                UsuarioEmpleado empleado = (UsuarioEmpleado) newValue;
-                cargarTarifasEntrenador(empleado);
-            }
-        });
-
-        //Configurar el evento de click para abrir el panel de registro de rutina
-        btnCrearRutina.setOnAction(this::abrirRegistroRutina);
-
-        //Configurar el evento de click para modificar rutina
-        btnModificarRutina.setOnAction(this::manejarBotonEditarRutina);
-
-        //Configurar el evento de click para eliminar rutina
-        btnEliminarRutina.setOnAction(this::manejarBotonEliminarRutina);
-
-        //Configurar el evento de click para contratar tarifa
-        btnContratarTarifa.setOnAction(this::contratarTarifa);
-
-        // Obtener el cliente autenticado de la sesión
-        if (Sesion.getInstance().isCliente()) {
-            setClienteAutenticado(Sesion.getInstance().getClienteAutenticado());
-        }
-    }
 
 }

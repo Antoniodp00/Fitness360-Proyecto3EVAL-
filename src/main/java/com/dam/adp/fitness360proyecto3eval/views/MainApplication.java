@@ -44,7 +44,11 @@ public class MainApplication extends Application {
             // Carga el FXML del login
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/login-view.fxml"));
             Parent root = fxmlLoader.load();
-            logger.debug("Vista de login cargada correctamente");
+
+            // Obtener el controlador y llamar a su método initialize
+            com.dam.adp.fitness360proyecto3eval.controller.LoginController loginController = fxmlLoader.getController();
+            loginController.initialize();
+            logger.debug("Vista de login cargada correctamente y controlador inicializado");
 
             // Creación de la escena
             Scene scene = new Scene(root, 600, 700);

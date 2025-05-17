@@ -155,6 +155,54 @@ public class MainViewEmpleadoController {
     }
 
     /**
+     * Inicializa el controlador y configura los eventos
+     */
+    @FXML
+    public void initialize() {
+        logger.debug("Inicializando MainViewEmpleadoController");
+
+        // Configurar el evento de clic para el botón de cerrar sesión
+        logger.debug("Configurando evento para botón de cerrar sesión");
+        btnCerrarSesion.setOnAction(this::cerrarSesion);
+
+        // Configurar eventos para los botones de crear
+        logger.debug("Configurando eventos para botones de crear");
+        btnCrearRutina.setOnAction(this::manejarBotonCrearRutina);
+        btnCrearDieta.setOnAction(this::abrirRegistroDieta);
+        btnCrearTarifa.setOnAction(this::abrirRegistroTarifa);
+        btnNuevaRevision.setOnAction(this::abrirRegistroRevision);
+
+        // Configurar eventos para los botones de modificar
+        logger.debug("Configurando eventos para botones de modificar");
+        btnModificarRutina.setOnAction(this::manejarBotonEditarRutina);
+        btnModificarDieta.setOnAction(this::manejarBotonEditarDieta);
+        btnModificarTarifa.setOnAction(this::manejarBotonEditarTarifa);
+
+        // Configurar eventos para los botones de asignar
+        logger.debug("Configurando eventos para botones de asignar");
+        btnAsignarRutina.setOnAction(this::manejarBotonAsignarRutina);
+        btnAsignarDieta.setOnAction(this::manejarBotonAsignarDieta);
+
+        // Configurar eventos para los botones de eliminar
+        logger.debug("Configurando eventos para botones de eliminar");
+        btnEliminarRutina.setOnAction(this::manejarBotonBorrarRutina);
+        btnEliminarDieta.setOnAction(this::manejarBotonBorrarDieta);
+        btnEliminarTarifa.setOnAction(this::manejarBotonBorrarTarifa);
+
+        // Obtener el empleado autenticado de la sesión
+        logger.debug("Verificando si hay un empleado autenticado en la sesión");
+        if (Sesion.getInstance().isEmpleado()) {
+            logger.debug("Empleado autenticado encontrado en la sesión, estableciendo en el controlador");
+            setEmpleadoAutenticado(Sesion.getInstance().getEmpleadoAutenticado());
+        } else {
+            logger.warn("No se encontró un empleado autenticado en la sesión");
+        }
+
+        logger.info("MainViewEmpleadoController inicializado correctamente");
+    }
+
+
+    /**
      * Carga los datos específicos del empleado en la interfaz
      */
     private void cargarDatosEmpleado() {
@@ -727,52 +775,6 @@ public class MainViewEmpleadoController {
         abrirRegistroRutina(null);
     }
 
-    /**
-     * Inicializa el controlador y configura los eventos
-     */
-    @FXML
-    public void initialize() {
-        logger.debug("Inicializando MainViewEmpleadoController");
-
-        // Configurar el evento de clic para el botón de cerrar sesión
-        logger.debug("Configurando evento para botón de cerrar sesión");
-        btnCerrarSesion.setOnAction(this::cerrarSesion);
-
-        // Configurar eventos para los botones de crear
-        logger.debug("Configurando eventos para botones de crear");
-        btnCrearRutina.setOnAction(this::manejarBotonCrearRutina);
-        btnCrearDieta.setOnAction(this::abrirRegistroDieta);
-        btnCrearTarifa.setOnAction(this::abrirRegistroTarifa);
-        btnNuevaRevision.setOnAction(this::abrirRegistroRevision);
-
-        // Configurar eventos para los botones de modificar
-        logger.debug("Configurando eventos para botones de modificar");
-        btnModificarRutina.setOnAction(this::manejarBotonEditarRutina);
-        btnModificarDieta.setOnAction(this::manejarBotonEditarDieta);
-        btnModificarTarifa.setOnAction(this::manejarBotonEditarTarifa);
-
-        // Configurar eventos para los botones de asignar
-        logger.debug("Configurando eventos para botones de asignar");
-        btnAsignarRutina.setOnAction(this::manejarBotonAsignarRutina);
-        btnAsignarDieta.setOnAction(this::manejarBotonAsignarDieta);
-
-        // Configurar eventos para los botones de eliminar
-        logger.debug("Configurando eventos para botones de eliminar");
-        btnEliminarRutina.setOnAction(this::manejarBotonBorrarRutina);
-        btnEliminarDieta.setOnAction(this::manejarBotonBorrarDieta);
-        btnEliminarTarifa.setOnAction(this::manejarBotonBorrarTarifa);
-
-        // Obtener el empleado autenticado de la sesión
-        logger.debug("Verificando si hay un empleado autenticado en la sesión");
-        if (Sesion.getInstance().isEmpleado()) {
-            logger.debug("Empleado autenticado encontrado en la sesión, estableciendo en el controlador");
-            setEmpleadoAutenticado(Sesion.getInstance().getEmpleadoAutenticado());
-        } else {
-            logger.warn("No se encontró un empleado autenticado en la sesión");
-        }
-
-        logger.info("MainViewEmpleadoController inicializado correctamente");
-    }
 
     /**
      * Maneja el evento de eliminar una rutina

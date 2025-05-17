@@ -124,6 +124,37 @@
                   </AnchorPane>
             </content>
           </Tab>
+          <Tab fx:id="tabMisTarifas" text="Mis Tarifas">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox prefHeight="511.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
+                                 <children>
+                                    <Label text="Tarifas contratadas:" styleClass="section-header" />
+                                    <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </HBox>
+                              <TableView fx:id="tablaMisTarifas" prefHeight="461.0" prefWidth="800.0" VBox.vgrow="ALWAYS">
+                                <columns>
+                                  <TableColumn fx:id="colNombreMiTarifa" prefWidth="150.0" text="Nombre" />
+                                  <TableColumn fx:id="colPrecioMiTarifa" prefWidth="100.0" text="Precio" />
+                                  <TableColumn fx:id="colPeriodoMiTarifa" prefWidth="100.0" text="Periodo" />
+                                  <TableColumn fx:id="colEntrenadorMiTarifa" prefWidth="150.0" text="Entrenador" />
+                                  <TableColumn fx:id="colFechaContratacionMiTarifa" prefWidth="120.0" text="Fecha Contratación" />
+                                  <TableColumn fx:id="colEstadoMiTarifa" prefWidth="100.0" text="Estado" />
+                                </columns>
+                              </TableView>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
           <Tab fx:id="tabContratarEntrenador" text="Contratar Entrenador">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">

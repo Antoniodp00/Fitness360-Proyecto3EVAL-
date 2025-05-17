@@ -342,6 +342,7 @@ public class RegistroRutinaController {
 
     /**
      * Valida que todos los campos necesarios estén completos.
+     * La asignación de cliente es opcional.
      *
      * @return true si todos los campos son válidos, false en caso contrario
      */
@@ -363,9 +364,8 @@ public class RegistroRutinaController {
                 logger.debug("Cliente autenticado, no se requiere validación adicional de creador");
             } else if (empleadoAutenticado != null) {
                 // Si hay un empleado autenticado, ya está preseleccionado
-                logger.debug("Empleado autenticado, validando selección de cliente asignado");
-                // Validar que se haya seleccionado un cliente para asignar la rutina
-                Utilidades.validarComboBox(clienteAsignadoComboBox, "cliente asignado");
+                logger.debug("Empleado autenticado, la asignación de cliente es opcional");
+                // La asignación de cliente ahora es opcional
             }
         } catch (IllegalArgumentException e) {
             logger.warn("Validación fallida: {}", e.getMessage());
@@ -438,20 +438,15 @@ public class RegistroRutinaController {
     }
 
     /**
-     * Registra una nueva rutina creada por un empleado y la asigna al cliente seleccionado.
+     * Registra una nueva rutina creada por un empleado y opcionalmente la asigna al cliente seleccionado.
      *
      * @return true si el registro fue exitoso, false en caso contrario
      */
     private boolean registrarRutinaPorEmpleado() {
         logger.debug("Iniciando registro de rutina por empleado");
         try {
-            // Obtener el cliente al que se asignará la rutina
+            // Obtener el cliente al que se asignará la rutina (puede ser null)
             UsuarioCliente clienteAsignado = clienteAsignadoComboBox.getValue();
-            if (clienteAsignado == null) {
-                logger.error("Error al registrar rutina: cliente asignado no seleccionado");
-                Utilidades.mostrarAlerta("Error", "Debe seleccionar un cliente al que asignar la rutina.", Alert.AlertType.ERROR);
-                return false;
-            }
 
             // Crear la rutina
             logger.debug("Creando objeto de rutina con los datos del formulario");
@@ -469,15 +464,20 @@ public class RegistroRutinaController {
             Rutina rutinaRegistrada=rutinaDAO.insertRutinaByEmployee(rutina);
 
             if (rutinaRegistrada != null) {
-                logger.debug("Rutina registrada correctamente, asignando al cliente seleccionado");
-                // Asignar la rutina al cliente seleccionado
-                ClienteRutina clienteRutina = new ClienteRutina();
-                clienteRutina.setCliente(clienteAsignado);
-                clienteRutina.setRutina(rutinaRegistrada);
-                clienteRutina.setFechaAsignacion(new java.sql.Date(System.currentTimeMillis()));
-                // Insertar la asignación en la base de datos
-                clienteRutinaDAO.insert(clienteRutina);
-                logger.info("Rutina '{}' registrada y asignada correctamente al cliente {}", rutina.getNombre(), clienteAsignado.getNombre());
+                // Si se ha seleccionado un cliente, asignar la rutina
+                if (clienteAsignado != null) {
+                    logger.debug("Rutina registrada correctamente, asignando al cliente seleccionado");
+                    // Asignar la rutina al cliente seleccionado
+                    ClienteRutina clienteRutina = new ClienteRutina();
+                    clienteRutina.setCliente(clienteAsignado);
+                    clienteRutina.setRutina(rutinaRegistrada);
+                    clienteRutina.setFechaAsignacion(new java.sql.Date(System.currentTimeMillis()));
+                    // Insertar la asignación en la base de datos
+                    clienteRutinaDAO.insert(clienteRutina);
+                    logger.info("Rutina '{}' registrada y asignada correctamente al cliente {}", rutina.getNombre(), clienteAsignado.getNombre());
+                } else {
+                    logger.info("Rutina '{}' registrada sin asignación a cliente", rutina.getNombre());
+                }
                 return true;
             }
             logger.warn("No se pudo recuperar la rutina recién creada con nombre: {}", rutina.getNombre());

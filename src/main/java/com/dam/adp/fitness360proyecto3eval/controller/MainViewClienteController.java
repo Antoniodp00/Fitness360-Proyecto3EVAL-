@@ -14,7 +14,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -94,6 +93,17 @@ public class MainViewClienteController {
     public TableColumn<Tarifa, String> colAccionesTarifa;
     private ObservableList<Tarifa> tarifas = FXCollections.observableArrayList();
 
+    //Tab Mis Tarifas
+    public Tab tabMisTarifas;
+    public TableView<ClienteTarifa> tablaMisTarifas;
+    public TableColumn<ClienteTarifa, String> colNombreMiTarifa;
+    public TableColumn<ClienteTarifa, String> colPrecioMiTarifa;
+    public TableColumn<ClienteTarifa, String> colPeriodoMiTarifa;
+    public TableColumn<ClienteTarifa, String> colEntrenadorMiTarifa;
+    public TableColumn<ClienteTarifa, String> colFechaContratacionMiTarifa;
+    public TableColumn<ClienteTarifa, String> colEstadoMiTarifa;
+    private ObservableList<ClienteTarifa> misTarifas = FXCollections.observableArrayList();
+
     //Botones
     public Button btnCerrarSesion;
     public Button btnCrearRutina;
@@ -123,15 +133,68 @@ public class MainViewClienteController {
 
     /**
      * Carga todos los datos relacionados con el cliente autenticado.
-     * Incluye rutinas, dietas, revisiones y entrenadores disponibles.
+     * Incluye rutinas, dietas, revisiones, tarifas contratadas y entrenadores disponibles.
      */
     public void cargarDatosCliente() {
         logger.debug("Iniciando carga de datos del cliente");
         cargarRutinas();
         cargarDietas();
         cargarRevisiones();
+        cargarMisTarifas();
         cargarEntrenadores();
         logger.info("Datos del cliente cargados correctamente");
+    }
+
+    /**
+     * Carga las tarifas contratadas por el cliente autenticado en la tabla correspondiente.
+     * Obtiene los datos de la base de datos y configura las columnas de la tabla.
+     */
+    private void cargarMisTarifas() {
+        logger.debug("Iniciando carga de tarifas contratadas");
+        ClienteTarifaDAO clienteTarifaDAO = new ClienteTarifaDAO();
+
+        logger.debug("Buscando tarifas contratadas para el cliente ID: {}", clienteAutenticado.getId());
+        List<ClienteTarifa> tarifasContratadas = clienteTarifaDAO.findByCliente(clienteAutenticado.getId());
+
+        logger.debug("Configurando columnas de la tabla de tarifas contratadas");
+
+        colNombreMiTarifa.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getTarifa().getNombre())
+        );
+
+        colPrecioMiTarifa.setCellValueFactory(cellData ->
+                new SimpleStringProperty(String.format("%.2f", cellData.getValue().getTarifa().getPrecio()) + " €")
+        );
+
+        colPeriodoMiTarifa.setCellValueFactory(cellData -> {
+            Periodo periodo = cellData.getValue().getTarifa().getPeriodo();
+            return new SimpleStringProperty(periodo != null ? periodo.toString() : "Sin especificar");
+        });
+
+        colEntrenadorMiTarifa.setCellValueFactory(cellData -> {
+            // Obtener el empleado creador de la tarifa
+            UsuarioEmpleado empleado = cellData.getValue().getTarifa().getCreador();
+            return new SimpleStringProperty(empleado != null ? empleado.getNombre() : "Sin especificar");
+        });
+
+        colFechaContratacionMiTarifa.setCellValueFactory(cellData -> {
+            java.util.Date fecha = cellData.getValue().getFechaContratacion();
+            return new SimpleStringProperty(Utilidades.formatearFechaEspanol(fecha));
+        });
+
+        colEstadoMiTarifa.setCellValueFactory(cellData -> {
+            EstadoTarifa estado = cellData.getValue().getEstado();
+            return new SimpleStringProperty(estado != null ? estado.toString() : "Sin especificar");
+        });
+
+        // Limpiar y agregar las tarifas a la lista observable
+        logger.debug("Actualizando lista observable de tarifas contratadas");
+        misTarifas.clear();
+        misTarifas.addAll(tarifasContratadas);
+
+        // Asignar la lista observable a la tabla
+        tablaMisTarifas.setItems(misTarifas);
+        logger.info("Se han cargado {} tarifas contratadas para el cliente", tarifasContratadas.size());
     }
 
     /**

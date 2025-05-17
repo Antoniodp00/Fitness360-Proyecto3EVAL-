@@ -151,8 +151,8 @@ public class RegistroDietaController {
 
     /**
      * Valida que todos los campos necesarios estén completos.
-     * Verifica que el nombre y descripción de la dieta no estén vacíos,
-     * y que se haya seleccionado un cliente si hay un empleado autenticado.
+     * Verifica que el nombre y descripción de la dieta no estén vacíos.
+     * La asignación de cliente es opcional.
      *
      * @return true si todos los campos son válidos, false en caso contrario
      */
@@ -165,10 +165,7 @@ public class RegistroDietaController {
             Utilidades.validarCampoNoVacio(nombreDietaField.getText(), "nombre de la dieta");
             Utilidades.validarCampoNoVacio(descripcionDietaField.getText(), "descripción de la dieta");
 
-            // Validar selección de cliente si hay un empleado autenticado
-            if (empleadoAutenticado != null) {
-                Utilidades.validarComboBox(clienteAsignadoComboBox, "cliente asignado");
-            }
+            // La asignación de cliente ahora es opcional
         } catch (IllegalArgumentException e) {
             logger.error(e.getMessage(), e);
             errores.append(e.getMessage()).append("\n");
@@ -181,9 +178,9 @@ public class RegistroDietaController {
     }
 
     /**
-     * Registra una nueva dieta en el sistema y la asigna a un cliente.
+     * Registra una nueva dieta en el sistema y opcionalmente la asigna a un cliente.
      * Crea la dieta con los datos del formulario, la guarda en la base de datos,
-     * y luego crea una asignación entre la dieta y el cliente seleccionado.
+     * y si se ha seleccionado un cliente, crea una asignación entre la dieta y el cliente.
      *
      * @return true si el registro fue exitoso, false en caso contrario
      */
@@ -193,13 +190,8 @@ public class RegistroDietaController {
             Utilidades.validarCampoNoVacio(nombreDietaField.getText(), "nombre de la dieta");
             Utilidades.validarCampoNoVacio(descripcionDietaField.getText(), "descripción de la dieta");
 
-            // Obtener el cliente al que se le asignará la dieta
+            // Obtener el cliente al que se le asignará la dieta (puede ser null)
             UsuarioCliente clienteAsignado = (UsuarioCliente) clienteAsignadoComboBox.getValue();
-
-            // Validar que se haya seleccionado un cliente
-            if (clienteAsignado == null) {
-                throw new IllegalArgumentException("Debe seleccionar un cliente al que asignar la dieta");
-            }
 
             // Crear dieta
             Dieta dieta = new Dieta();
@@ -208,17 +200,21 @@ public class RegistroDietaController {
             dieta.setCreador(empleadoAutenticado);
 
             // Insertar la dieta
-            Dieta dietaRegistrada =   dietaDAO.insert(dieta);
+            Dieta dietaRegistrada = dietaDAO.insert(dieta);
 
             if (dietaRegistrada != null) {
-                // Asignar la dieta al cliente
-                ClienteDieta clienteDieta = new ClienteDieta();
-                clienteDieta.setCliente(clienteAsignado);
-                clienteDieta.setDieta(dietaRegistrada);
-                clienteDieta.setFechaAsignacion(new java.sql.Date(System.currentTimeMillis()));
+                // Si se ha seleccionado un cliente, asignar la dieta
+                if (clienteAsignado != null) {
+                    ClienteDieta clienteDieta = new ClienteDieta();
+                    clienteDieta.setCliente(clienteAsignado);
+                    clienteDieta.setDieta(dietaRegistrada);
+                    clienteDieta.setFechaAsignacion(new java.sql.Date(System.currentTimeMillis()));
 
-                clienteDietaDAO.insert(clienteDieta);
-                logger.info("Nueva dieta registrada y asignada: {} para el cliente {}", dietaRegistrada.getNombre(), clienteAsignado.getNombre());
+                    clienteDietaDAO.insert(clienteDieta);
+                    logger.info("Nueva dieta registrada y asignada: {} para el cliente {}", dietaRegistrada.getNombre(), clienteAsignado.getNombre());
+                } else {
+                    logger.info("Nueva dieta registrada sin asignación a cliente: {}", dietaRegistrada.getNombre());
+                }
                 return true;
             }
             logger.warn("No se pudo recuperar la dieta recién creada con nombre: {}", dieta.getNombre());

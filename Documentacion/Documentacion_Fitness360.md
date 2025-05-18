@@ -692,7 +692,101 @@ Fitness360 no solo cubre las funcionalidades básicas de gestión, sino que tamb
 
 Este proyecto sienta las bases para un sistema completo que puede adaptarse a las necesidades cambiantes de profesionales y usuarios del sector fitness, aportando valor a la salud y bienestar de sus usuarios.
 
-## Aportaciones de ChatGPT
+## 15. Futuras mejoras
+A continuación, se presentan diversas mejoras y funcionalidades adicionales que podrían implementarse en futuras versiones de Fitness360 para enriquecer la experiencia de usuario y ampliar las capacidades del sistema:
+
+### 15.1. Gestión avanzada de rutinas y dietas
+- **Asignación de fecha de fin**: Implementar la posibilidad de establecer una fecha de finalización al asignar rutinas y dietas a los clientes, permitiendo una mejor planificación temporal de los programas de entrenamiento y alimentación.
+- **Gestión de estados**: Añadir estados para rutinas y dietas (activa, completada, pausada, cancelada) que permitan un seguimiento más preciso del progreso del cliente.
+- **Agregar ejercicios a las rutinas**: Desarrollar un sistema para añadir ejercicios específicos a las rutinas, incluyendo series, repeticiones, descansos y notas técnicas.
+- **Planificación semanal de dietas**: Permitir la creación de planes alimenticios detallados por días de la semana, incluyendo diferentes comidas y cantidades específicas.
+- **Historial de rutinas y dietas**: Mantener un registro histórico de todas las rutinas y dietas que ha seguido un cliente, facilitando el análisis de su evolución a largo plazo.
+
+### 15.2. Mejoras en la gestión de usuarios
+- **Modificación del perfil de usuario**: Permitir a los usuarios actualizar su información personal, preferencias y configuración desde su panel principal.
+- **Niveles de acceso para empleados**: Implementar diferentes niveles de permisos para los empleados (administrador, entrenador senior, entrenador junior, etc.) con acceso a distintas funcionalidades.
+- **Sistema de notificaciones**: Crear un sistema de alertas y notificaciones para informar a los usuarios sobre cambios en sus rutinas, próximas revisiones o vencimiento de tarifas.
+- **Gestión de ausencias**: Permitir a los clientes notificar ausencias temporales y a los empleados gestionar sus periodos de vacaciones o baja.
+
+### 15.3. Funcionalidades para tarifas y pagos
+- **Limitaciones en la contratación de tarifas**: Implementar restricciones basadas en el perfil del usuario, historial o disponibilidad del centro para la contratación de determinadas tarifas.
+- **Sistema de pagos integrado**: Incorporar pasarelas de pago para facilitar la contratación y renovación de tarifas directamente desde la aplicación.
+- **Descuentos y promociones**: Permitir la creación de ofertas temporales, códigos promocionales o descuentos por fidelidad.
+- **Facturación automática**: Generar y enviar facturas electrónicas a los clientes tras cada pago o renovación de tarifa.
+- **Recordatorios de renovación**: Notificar a los clientes cuando se aproxima la fecha de vencimiento de su tarifa actual.
+
+### 15.4. Seguimiento y análisis
+- **Gráficos de progreso**: Implementar visualizaciones gráficas del progreso físico de los clientes basadas en los datos de las revisiones.
+- **Objetivos personalizados**: Permitir establecer metas específicas para cada cliente y realizar un seguimiento de su cumplimiento.
+- **Análisis comparativo**: Ofrecer comparativas entre el progreso actual y periodos anteriores o entre diferentes clientes con perfiles similares.
+- **Exportación de datos**: Permitir la exportación de informes y datos en diferentes formatos (PDF, Excel, CSV) para su análisis externo.
+
+### 15.5. Integración y expansión
+- **Aplicación móvil complementaria**: Desarrollar una versión para dispositivos móviles que permita a los clientes consultar sus rutinas y dietas, registrar actividades y comunicarse con sus entrenadores desde cualquier lugar.
+- **Integración con wearables**: Conectar la aplicación con dispositivos como pulseras de actividad o relojes inteligentes para recopilar datos de entrenamiento automáticamente.
+- **Calendario de actividades**: Implementar un sistema de reserva para clases grupales o sesiones con entrenadores personales.
+- **Foro o comunidad**: Crear un espacio donde los usuarios puedan compartir experiencias, resolver dudas o participar en retos colectivos.
+- **Contenido multimedia**: Incorporar vídeos demostrativos de ejercicios, tutoriales y consejos nutricionales para enriquecer la experiencia educativa.
+
+### 15.6. Mejoras técnicas
+- **Optimización del rendimiento**: Mejorar la eficiencia de las consultas a la base de datos y la carga de la interfaz gráfica para una experiencia más fluida.
+- **Sincronización en la nube**: Implementar un sistema de respaldo y sincronización que permita acceder a los datos desde diferentes dispositivos.
+- **Internacionalización**: Añadir soporte para múltiples idiomas y formatos regionales.
+- **Accesibilidad**: Mejorar la compatibilidad con tecnologías de asistencia para usuarios con diversidad funcional.
+- **Modo oscuro**: Implementar una alternativa de interfaz con fondo oscuro para reducir la fatiga visual.
+
+Estas mejoras potenciales representan un camino de evolución para Fitness360, permitiendo que la aplicación crezca en funcionalidad y valor para sus usuarios, manteniendo siempre el enfoque en la usabilidad, personalización y eficiencia que caracterizan al proyecto actual.
+
+## 16. Backlog del proyecto
+El backlog del proyecto Fitness360 detalla la planificación y seguimiento de las tareas necesarias para completar el desarrollo de la aplicación. A continuación se presenta el backlog actualizado:
+
+**Entrega Final:** Martes 21 de mayo de 2025  
+**Fecha Límite de Desarrollo:** Lunes 20 de mayo de 2025  
+**Inicio:** Martes 23 de abril de 2025
+
+### Sprint 1: 23 al 27 de abril
+**Objetivo:** Preparar entorno, base de datos y modelo inicial
+
+- Crear estructura del proyecto Java con paquetes: `model`, `dao`, `util`, `controller`, `view`
+- Crear la base de datos con el script SQL completo
+- Implementar todas las clases modelo con sus atributos
+- Configurar conexión JDBC con MySQL
+- Crear clase `DBUtil` para gestionar la conexión a base de datos
+- Crear primeras pruebas de conexión y consultas básicas
+
+### Sprint 2: 28 de abril al 4 de mayo
+**Objetivo:** Crear DAOs e implementar CRUD básico
+
+- DAO para `Usuario`, `Cliente`, `Empleado`
+- DAO para `Dieta`, `Rutina`, `Tarifa`, `Revisión`
+- DAO para tablas intermedias (`Cliente_Dieta`, etc.)
+- CRUD en consola para probar inserción, lectura, modificación y eliminación
+
+### Sprint 3: 5 al 10 de mayo
+**Objetivo:** Integrar JavaFX y crear las primeras interfaces
+
+- Crear estructura de carpetas para `FXML`, `css`, etc.
+- Ventana de Login + validación con hash de contraseña
+- Registro de nuevo usuario con selección de tipo (cliente o profesional)
+- Ventana principal según el tipo de usuario
+- Carga de datos desde la BD con JavaFX (por ejemplo, tabla de rutinas asignadas)
+
+### Sprint 4: 11 al 15 de mayo
+**Objetivo:** Funcionalidades avanzadas
+
+- Asignar rutinas o dietas por parte del profesional
+- Mostrar las revisiones asociadas a un cliente
+- Crear nueva revisión (por parte del profesional)
+
+### Sprint Final: 16 al 20 de mayo
+**Objetivo:** Pulir, probar y preparar la entrega
+
+- Pruebas completas con distintos perfiles
+- Validación de formularios y manejo de errores
+- Documentación del código (comentarios + guía uso)
+- Preparar entrega final: ZIP del proyecto + script BD
+
+## 17. Aportaciones de ChatGPT
 Durante el desarrollo de este proyecto, ChatGPT ha aportado un soporte fundamental en diversas áreas técnicas y conceptuales, lo que ha facilitado un avance más fluido y sólido en la construcción de Fitness360. Entre las principales contribuciones destacan:
 
 ### Explicación y soporte en la implementación del sistema de logging con Logback

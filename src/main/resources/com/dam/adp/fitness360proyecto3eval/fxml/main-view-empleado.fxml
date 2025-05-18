@@ -69,6 +69,7 @@
                                     <Region prefHeight="31.0" prefWidth="125.0" HBox.hgrow="ALWAYS" />
                                     <Button fx:id="btnCrearRutina" mnemonicParsing="false" text="Crear Rutina" />
                                     <Button fx:id="btnModificarRutina" layoutX="697.0" layoutY="20.0" mnemonicParsing="false" text="Modificar Rutina" />
+                                    <Button fx:id="btnAsignarRutina" layoutX="697.0" layoutY="20.0" mnemonicParsing="false" text="Asignar Rutina" />
                                     <Button fx:id="btnEliminarRutina" layoutX="697.0" layoutY="20.0" mnemonicParsing="false" styleClass="delete-button" text="Eliminar Rutina" />
                                  </children>
                                  <padding>
@@ -102,6 +103,7 @@
                                     <Region prefHeight="31.0" prefWidth="130.0" HBox.hgrow="ALWAYS" />
                                     <Button fx:id="btnCrearDieta" mnemonicParsing="false" text="Crear Dieta" />
                                     <Button fx:id="btnModificarDieta" layoutX="704.0" layoutY="20.0" mnemonicParsing="false" text="Modificar Dieta" />
+                                    <Button fx:id="btnAsignarDieta" layoutX="704.0" layoutY="20.0" mnemonicParsing="false" text="Asignar Dieta" />
                                     <Button fx:id="btnEliminarDieta" layoutX="704.0" layoutY="20.0" mnemonicParsing="false" styleClass="delete-button" text="Eliminar Dieta" />
                                  </children>
                                  <padding>

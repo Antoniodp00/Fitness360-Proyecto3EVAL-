@@ -1,7 +1,7 @@
 # Backlog del Proyecto Fitness360
 
-**Entrega Final:** Domingo 19 de mayo de 2025  
-**Fecha Límite de Desarrollo:** Viernes 17 de mayo de 2025  
+**Entrega Final:** Martes 21 de mayo de 2025  
+**Fecha Límite de Desarrollo:** Lunes 20 de mayo de 2025  
 **Inicio:** Martes 23 de abril de 2025
 
 ---
@@ -45,11 +45,10 @@
 - [ ] Asignar rutinas o dietas por parte del profesional
 - [ ] Mostrar las revisiones asociadas a un cliente
 - [ ] Crear nueva revisión (por parte del profesional)
-- [ ] Controlar cambios de tarifa, estado y fechas
 
 ---
 
-## ✅ Sprint Final: 16 y 17 de mayo
+## ✅ Sprint Final: 16 al 20 de mayo
 **Objetivo:** Pulir, probar y preparar la entrega
 
 - [ ] Pruebas completas con distintos perfiles
@@ -59,4 +58,4 @@
 
 ---
 
-## 🗓️ Entrega: Domingo 19 de mayo de 2025
+## 🗓️ Entrega: Martes 21 de mayo de 2025

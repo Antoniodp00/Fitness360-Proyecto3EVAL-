@@ -22,17 +22,18 @@ public class ClienteTarifaDAO {
     private static final String SQL_FIND_BY_CLIENTE =
             "SELECT ct.idCliente, ct.idTarifa, ct.estado AS estadoTarifa, ct.fechaContratacion, ct.fechaRenovacion, ct.fechaFin, ct.createdAt, ct.updatedAt, " +
                     "c.idCliente, c.nombreUsuario, c.nombre, c.apellidos, c.correo, c.password, c.telefono, c.fechaNacimiento, c.sexo, c.altura, c.estado AS estadoCliente, c.createdAt, c.updatedAt, " +
-                    "t.idTarifa, t.nombre, t.descripcion, t.precio, t.createdAt, t.updatedAt " +
+                    "t.idTarifa, t.nombre, t.descripcion, t.precio, t.periodo, t.createdAt, t.updatedAt, e.idEmpleado, e.nombre AS nombreEmpleado, e.apellidos AS apellidosEmpleado " +
                     "FROM ClienteTarifa ct " +
                     "JOIN Cliente c ON ct.idCliente = c.idCliente " +
                     "JOIN Tarifa t ON ct.idTarifa = t.idTarifa " +
+                    "JOIN Empleado e ON t.idEmpleado = e.idEmpleado " +
                     "WHERE ct.idCliente = ?";
 
     /** Consulta SQL para buscar asignaciones de clientes por tarifa */
     private static final String SQL_FIND_BY_TARIFA =
             "SELECT ct.idCliente, ct.idTarifa, ct.estado AS estadoTarifa, ct.fechaContratacion, ct.fechaRenovacion, ct.fechaFin, ct.createdAt, ct.updatedAt, " +
                     "c.idCliente, c.nombreUsuario, c.nombre, c.apellidos, c.correo, c.password, c.telefono, c.fechaNacimiento, c.sexo, c.altura, c.estado AS estadoCliente, c.createdAt, c.updatedAt, " +
-                    "t.idTarifa, t.nombre, t.descripcion, t.precio, t.createdAt, t.updatedAt " +
+                    "t.idTarifa, t.nombre, t.descripcion, t.precio, t.createdAt, t.updatedAt, e.idEmpleado, e.nombre AS nombreEmpleado, e.apellidos AS apellidosEmpleado " +
                     "FROM ClienteTarifa ct " +
                     "JOIN Cliente c ON ct.idCliente = c.idCliente " +
                     "JOIN Tarifa t ON ct.idTarifa = t.idTarifa " +
@@ -163,13 +164,22 @@ public class ClienteTarifaDAO {
         cliente.setCreatedAt(rs.getTimestamp("createdAt"));
         cliente.setUpdatedAt(rs.getTimestamp("updatedAt"));
 
+        UsuarioEmpleado empleado = new UsuarioEmpleado();
+        empleado.setId(rs.getInt("idEmpleado"));
+        empleado.setNombre(rs.getString("nombreEmpleado"));
+        empleado.setApellidos(rs.getString("apellidosEmpleado"));
+
+
         Tarifa tarifa = new Tarifa();
         tarifa.setIdTarifa(rs.getInt("idTarifa"));
         tarifa.setNombre(rs.getString("nombre"));
         tarifa.setDescripcion(rs.getString("descripcion"));
         tarifa.setPrecio(rs.getDouble("precio"));
+        tarifa.setPeriodo(Periodo.valueOf(rs.getString("periodo")));
+        tarifa.setCreador(empleado);
         tarifa.setCreatedAt(rs.getTimestamp("createdAt"));
         tarifa.setUpdatedAt(rs.getTimestamp("updatedAt"));
+
 
         ct.setCliente(cliente);
         ct.setTarifa(tarifa);

@@ -14,7 +14,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -56,6 +55,7 @@ public class MainViewEmpleadoController {
     public ComboBox comboFiltroRutinas;
     public Button btnCrearRutina;
     public Button btnModificarRutina;
+    public Button btnAsignarRutina;
     public Button btnEliminarRutina;
     public TableView<Rutina> tablaRutinas;
     public TableColumn<Rutina, String> colNombreRutina;
@@ -69,6 +69,7 @@ public class MainViewEmpleadoController {
     public ComboBox comboFiltroDietas;
     public Button btnCrearDieta;
     public Button btnModificarDieta;
+    public Button btnAsignarDieta;
     public Button btnEliminarDieta;
     public TableView<Dieta> tablaDietas;
     public TableColumn<Dieta, String> colNombreDieta;
@@ -152,6 +153,54 @@ public class MainViewEmpleadoController {
             logger.warn("Se intentó establecer un empleado nulo");
         }
     }
+
+    /**
+     * Inicializa el controlador y configura los eventos
+     */
+    @FXML
+    public void initialize() {
+        logger.debug("Inicializando MainViewEmpleadoController");
+
+        // Configurar el evento de clic para el botón de cerrar sesión
+        logger.debug("Configurando evento para botón de cerrar sesión");
+        btnCerrarSesion.setOnAction(this::cerrarSesion);
+
+        // Configurar eventos para los botones de crear
+        logger.debug("Configurando eventos para botones de crear");
+        btnCrearRutina.setOnAction(this::manejarBotonCrearRutina);
+        btnCrearDieta.setOnAction(this::abrirRegistroDieta);
+        btnCrearTarifa.setOnAction(this::abrirRegistroTarifa);
+        btnNuevaRevision.setOnAction(this::abrirRegistroRevision);
+
+        // Configurar eventos para los botones de modificar
+        logger.debug("Configurando eventos para botones de modificar");
+        btnModificarRutina.setOnAction(this::manejarBotonEditarRutina);
+        btnModificarDieta.setOnAction(this::manejarBotonEditarDieta);
+        btnModificarTarifa.setOnAction(this::manejarBotonEditarTarifa);
+
+        // Configurar eventos para los botones de asignar
+        logger.debug("Configurando eventos para botones de asignar");
+        btnAsignarRutina.setOnAction(this::manejarBotonAsignarRutina);
+        btnAsignarDieta.setOnAction(this::manejarBotonAsignarDieta);
+
+        // Configurar eventos para los botones de eliminar
+        logger.debug("Configurando eventos para botones de eliminar");
+        btnEliminarRutina.setOnAction(this::manejarBotonBorrarRutina);
+        btnEliminarDieta.setOnAction(this::manejarBotonBorrarDieta);
+        btnEliminarTarifa.setOnAction(this::manejarBotonBorrarTarifa);
+
+        // Obtener el empleado autenticado de la sesión
+        logger.debug("Verificando si hay un empleado autenticado en la sesión");
+        if (Sesion.getInstance().isEmpleado()) {
+            logger.debug("Empleado autenticado encontrado en la sesión, estableciendo en el controlador");
+            setEmpleadoAutenticado(Sesion.getInstance().getEmpleadoAutenticado());
+        } else {
+            logger.warn("No se encontró un empleado autenticado en la sesión");
+        }
+
+        logger.info("MainViewEmpleadoController inicializado correctamente");
+    }
+
 
     /**
      * Carga los datos específicos del empleado en la interfaz
@@ -726,47 +775,6 @@ public class MainViewEmpleadoController {
         abrirRegistroRutina(null);
     }
 
-    /**
-     * Inicializa el controlador y configura los eventos
-     */
-    @FXML
-    public void initialize() {
-        logger.debug("Inicializando MainViewEmpleadoController");
-
-        // Configurar el evento de clic para el botón de cerrar sesión
-        logger.debug("Configurando evento para botón de cerrar sesión");
-        btnCerrarSesion.setOnAction(this::cerrarSesion);
-
-        // Configurar eventos para los botones de crear
-        logger.debug("Configurando eventos para botones de crear");
-        btnCrearRutina.setOnAction(this::manejarBotonCrearRutina);
-        btnCrearDieta.setOnAction(this::abrirRegistroDieta);
-        btnCrearTarifa.setOnAction(this::abrirRegistroTarifa);
-        btnNuevaRevision.setOnAction(this::abrirRegistroRevision);
-
-        // Configurar eventos para los botones de modificar
-        logger.debug("Configurando eventos para botones de modificar");
-        btnModificarRutina.setOnAction(this::manejarBotonEditarRutina);
-        btnModificarDieta.setOnAction(this::manejarBotonEditarDieta);
-        btnModificarTarifa.setOnAction(this::manejarBotonEditarTarifa);
-
-        // Configurar eventos para los botones de eliminar
-        logger.debug("Configurando eventos para botones de eliminar");
-        btnEliminarRutina.setOnAction(this::manejarBotonBorrarRutina);
-        btnEliminarDieta.setOnAction(this::manejarBotonBorrarDieta);
-        btnEliminarTarifa.setOnAction(this::manejarBotonBorrarTarifa);
-
-        // Obtener el empleado autenticado de la sesión
-        logger.debug("Verificando si hay un empleado autenticado en la sesión");
-        if (Sesion.getInstance().isEmpleado()) {
-            logger.debug("Empleado autenticado encontrado en la sesión, estableciendo en el controlador");
-            setEmpleadoAutenticado(Sesion.getInstance().getEmpleadoAutenticado());
-        } else {
-            logger.warn("No se encontró un empleado autenticado en la sesión");
-        }
-
-        logger.info("MainViewEmpleadoController inicializado correctamente");
-    }
 
     /**
      * Maneja el evento de eliminar una rutina
@@ -870,6 +878,90 @@ public class MainViewEmpleadoController {
             }
         } else {
             Utilidades.mostrarAlerta("Selección requerida", "Por favor, seleccione una tarifa para eliminar", Alert.AlertType.WARNING);
+        }
+    }
+
+    /**
+     * Maneja el evento de asignar una rutina a clientes
+     *
+     * @param event El evento que desencadenó esta acción
+     */
+    public void manejarBotonAsignarRutina(ActionEvent event) {
+        logger.debug("Manejando evento de asignar rutina");
+        Rutina rutinaSeleccionada = tablaRutinas.getSelectionModel().getSelectedItem();
+        if (rutinaSeleccionada != null) {
+            try {
+                // Cargar la vista de asignación
+                logger.debug("Cargando vista de asignación para rutina: {}", rutinaSeleccionada.getNombre());
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/asignar-view.fxml"));
+                Scene scene = new Scene(loader.load());
+                Stage stage = new Stage();
+
+                // Obtener el controlador y establecer los datos necesarios
+                logger.debug("Configurando controlador de asignación");
+                AsignarController controller = loader.getController();
+                controller.setEmpleadoAutenticado(empleadoAutenticado);
+                controller.setRutina(rutinaSeleccionada);
+
+                // Configurar la ventana
+                stage.setTitle("Fitness360 - Asignar Rutina");
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.setScene(scene);
+                stage.showAndWait();
+
+                // Recargar las rutinas después de cerrar la ventana
+                logger.debug("Recargando rutinas después de asignación");
+                cargarRutinas();
+                logger.info("Asignación de rutina completada");
+            } catch (IOException e) {
+                logger.error("Error al cargar la pantalla de asignación: {}", e.getMessage(), e);
+                Utilidades.mostrarAlerta("Error", "No se pudo abrir la ventana de asignación", Alert.AlertType.ERROR);
+            }
+        } else {
+            logger.warn("No se seleccionó ninguna rutina para asignar");
+            Utilidades.mostrarAlerta("Selección requerida", "Por favor, seleccione una rutina para asignar", Alert.AlertType.WARNING);
+        }
+    }
+
+    /**
+     * Maneja el evento de asignar una dieta a clientes
+     *
+     * @param event El evento que desencadenó esta acción
+     */
+    public void manejarBotonAsignarDieta(ActionEvent event) {
+        logger.debug("Manejando evento de asignar dieta");
+        Dieta dietaSeleccionada = tablaDietas.getSelectionModel().getSelectedItem();
+        if (dietaSeleccionada != null) {
+            try {
+                // Cargar la vista de asignación
+                logger.debug("Cargando vista de asignación para dieta: {}", dietaSeleccionada.getNombre());
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dam/adp/fitness360proyecto3eval/fxml/asignar-view.fxml"));
+                Scene scene = new Scene(loader.load());
+                Stage stage = new Stage();
+
+                // Obtener el controlador y establecer los datos necesarios
+                logger.debug("Configurando controlador de asignación");
+                AsignarController controller = loader.getController();
+                controller.setEmpleadoAutenticado(empleadoAutenticado);
+                controller.setDieta(dietaSeleccionada);
+
+                // Configurar la ventana
+                stage.setTitle("Fitness360 - Asignar Dieta");
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.setScene(scene);
+                stage.showAndWait();
+
+                // Recargar las dietas después de cerrar la ventana
+                logger.debug("Recargando dietas después de asignación");
+                cargarDietas();
+                logger.info("Asignación de dieta completada");
+            } catch (IOException e) {
+                logger.error("Error al cargar la pantalla de asignación: {}", e.getMessage(), e);
+                Utilidades.mostrarAlerta("Error", "No se pudo abrir la ventana de asignación", Alert.AlertType.ERROR);
+            }
+        } else {
+            logger.warn("No se seleccionó ninguna dieta para asignar");
+            Utilidades.mostrarAlerta("Selección requerida", "Por favor, seleccione una dieta para asignar", Alert.AlertType.WARNING);
         }
     }
 }

@@ -8,6 +8,7 @@ import com.dam.adp.fitness360proyecto3eval.model.UsuarioCliente;
 import com.dam.adp.fitness360proyecto3eval.model.UsuarioEmpleado;
 import com.dam.adp.fitness360proyecto3eval.model.Sesion;
 import com.dam.adp.fitness360proyecto3eval.utilidades.HashUtil;
+import com.dam.adp.fitness360proyecto3eval.utilidades.Utilidades;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -33,7 +34,7 @@ public class LoginController {
      * Campo para ingresar la contraseña del usuario
      */
     @FXML
-    public PasswordField passwordField;
+    private PasswordField passwordField;
 
     /**
      * Etiqueta para mostrar mensajes de error durante el proceso de login
@@ -46,6 +47,18 @@ public class LoginController {
      */
     @FXML
     private TextField usernameField;
+
+    /**
+     * Inicializa el controlador después de que se haya cargado el FXML.
+     * Configura los componentes de la interfaz y establece los valores iniciales.
+     */
+    @FXML
+    public void initialize() {
+        logger.debug("Inicializando LoginController");
+        // Ocultar el mensaje de error inicialmente
+        errorMessage.setVisible(false);
+        logger.debug("LoginController inicializado correctamente");
+    }
 
     /**
      * Maneja el evento de clic en el botón de login
@@ -63,29 +76,29 @@ public class LoginController {
         String mensajeError = null;
         Usuario usuarioAutenticado = null;
 
-        // Validar campos vacíos
-        if (username.isEmpty() || password.isEmpty()) {
-            logger.warn("Intento de login con campos vacíos");
-            mensajeError = "Por favor, complete todos los campos";
-        } else {
-            logger.debug("Buscando usuario con nombre: {}", username);
-            // Buscar y autenticar como cliente
-            UsuarioCliente cliente = clienteDAO.findByUserName(username);
+        // Validar campos usando el método validarCampos
+        if (!validarCampos()) {
+            logger.warn("Validación de campos fallida");
+            return;
+        }
 
-            if (cliente != null && autenticarUsuario(cliente, password)) {
-                logger.info("Usuario cliente autenticado correctamente: {}", cliente.getNombre());
-                usuarioAutenticado = cliente;
+        logger.debug("Buscando usuario con nombre: {}", username);
+        // Buscar y autenticar como cliente
+        UsuarioCliente cliente = clienteDAO.findByUserName(username);
+
+        if (cliente != null && autenticarUsuario(cliente, password)) {
+            logger.info("Usuario cliente autenticado correctamente: {}", cliente.getNombre());
+            usuarioAutenticado = cliente;
+        } else {
+            // Buscar y autenticar como empleado
+            logger.debug("Usuario no encontrado como cliente o autenticación fallida, buscando como empleado");
+            UsuarioEmpleado empleado = empleadoDAO.findByUserName(username);
+            if (empleado != null && autenticarUsuario(empleado, password)) {
+                logger.info("Usuario empleado autenticado correctamente: {}", empleado.getNombre());
+                usuarioAutenticado = empleado;
             } else {
-                // Buscar y autenticar como empleado
-                logger.debug("Usuario no encontrado como cliente o autenticación fallida, buscando como empleado");
-                UsuarioEmpleado empleado = empleadoDAO.findByUserName(username);
-                if (empleado != null && autenticarUsuario(empleado, password)) {
-                    logger.info("Usuario empleado autenticado correctamente: {}", empleado.getNombre());
-                    usuarioAutenticado = empleado;
-                } else {
-                    logger.warn("Autenticación fallida para el usuario: {}", username);
-                    mensajeError = "Nombre de usuario o contraseña incorrectos";
-                }
+                logger.warn("Autenticación fallida para el usuario: {}", username);
+                mensajeError = "Nombre de usuario o contraseña incorrectos";
             }
         }
 
@@ -118,6 +131,34 @@ public class LoginController {
     public void alHacerClicEnRegistrarse(ActionEvent actionEvent) {
         logger.debug("Usuario solicitó ir a pantalla de registro");
         navegarAPantallaRegistro(actionEvent);
+    }
+
+    /**
+     * Valida que los campos del formulario de login no estén vacíos
+     * 
+     * @return true si todos los campos son válidos, false en caso contrario
+     */
+    private boolean validarCampos() {
+        logger.debug("Validando campos del formulario de login");
+        boolean valido = true;
+        StringBuilder errores = new StringBuilder();
+
+        try {
+            // Validar campos de texto
+            logger.debug("Validando campos de texto");
+            Utilidades.validarCampoNoVacio(usernameField.getText(), "nombre de usuario");
+            Utilidades.validarCampoNoVacio(passwordField.getText(), "contraseña");
+
+            logger.debug("Validación de campos exitosa");
+        } catch (RuntimeException e) {
+            logger.warn("Validación fallida: {}", e.getMessage());
+            errores.append("Error: ").append(e.getMessage());
+            errorMessage.setText(errores.toString());
+            errorMessage.setVisible(true);
+            valido = false;
+        }
+
+        return valido;
     }
 
     /**
@@ -170,9 +211,6 @@ public class LoginController {
             logger.debug("Obteniendo controlador de vista principal de cliente");
             MainViewClienteController controller = loader.getController();
 
-            // El usuario autenticado ya está en la sesión, no es necesario pasarlo al controlador
-            // controller.setClienteAutenticado(usuario);
-
             // Configurar la nueva escena
             logger.debug("Configurando escena para pantalla principal de cliente");
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -204,9 +242,6 @@ public class LoginController {
             // Obtener el controlador
             logger.debug("Obteniendo controlador de vista principal de empleado");
             MainViewEmpleadoController controller = loader.getController();
-
-            // El usuario autenticado ya está en la sesión, no es necesario pasarlo al controlador
-            // controller.setEmpleadoAutenticado(usuario);
 
             // Configurar la nueva escena
             logger.debug("Configurando escena para pantalla principal de empleado");

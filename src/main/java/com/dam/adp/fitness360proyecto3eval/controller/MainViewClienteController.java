@@ -553,11 +553,15 @@ public class MainViewClienteController {
         ClienteRutina rutinaSeleccionada = tablaRutinas.getSelectionModel().getSelectedItem();
         if (rutinaSeleccionada != null) {
             // Verificar si la rutina fue creada por un entrenador y no por el cliente actual
+            boolean puedeModificar = true;
             if (rutinaSeleccionada.getRutina().getCreadorEmpleado().getNombre() != null) {
                 Utilidades.mostrarAlerta("Acción no permitida", "No puede modificar una rutina asignada por un entrenador", Alert.AlertType.WARNING);
-                return;
+                puedeModificar = false;
             }
-            mostrarFormularioAñadirEditarRutina(rutinaSeleccionada);
+
+            if (puedeModificar) {
+                mostrarFormularioAñadirEditarRutina(rutinaSeleccionada);
+            }
         } else {
             Utilidades.mostrarAlerta("Selección requerida", "Por favor, seleccione una rutina para editar", Alert.AlertType.WARNING);
         }
@@ -571,36 +575,45 @@ public class MainViewClienteController {
     public void manejarBotonEliminarRutina(ActionEvent event) {
         ClienteRutina rutinaSeleccionada = tablaRutinas.getSelectionModel().getSelectedItem();
         if (rutinaSeleccionada != null) {
-            // Verificar si la rutina fue creada por un entrenador y no por el cliente actual
-            if (rutinaSeleccionada.getRutina().getCreadorEmpleado() != null &&
-                    (rutinaSeleccionada.getRutina().getCreadorCliente() == null ||
-                            rutinaSeleccionada.getRutina().getCreadorCliente().getId() != clienteAutenticado.getId())) {
-                Utilidades.mostrarAlerta("Acción no permitida", "No puede eliminar una rutina asignada por un entrenador", Alert.AlertType.WARNING);
-                return;
+            boolean puedeEliminar = true;
+
+            // Verificar si la rutina fue creada por un entrenador
+            if (rutinaSeleccionada.getRutina().getCreadorEmpleado().getNombre() != null){
+                    Utilidades.mostrarAlerta("Acción no permitida", "No puede eliminar una rutina asignada por un entrenador", Alert.AlertType.WARNING);
+                    puedeEliminar = false;
             }
 
-            // Confirmar eliminación
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirmar eliminación");
-            alert.setHeaderText("Eliminar rutina");
-            alert.setContentText("¿Está seguro que desea eliminar la rutina seleccionada?");
+            if (puedeEliminar) {
+                // Confirmar eliminación
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Confirmar eliminación");
+                alert.setHeaderText("Eliminar rutina");
+                alert.setContentText("¿Está seguro que desea eliminar la rutina seleccionada?");
 
-            if (alert.showAndWait().get() == ButtonType.OK) {
-                try {
-                    // Eliminar la rutina
-                    clienteRutinaDAO.delete(clienteAutenticado.getId(), rutinaSeleccionada.getRutina().getIdRutina());
+                if (alert.showAndWait().get() == ButtonType.OK) {
+                    try {
+                        // Eliminar la rutina
+                        clienteRutinaDAO.delete(clienteAutenticado.getId(), 
+                            rutinaSeleccionada.getRutina().getIdRutina());
 
-                    // Recargar las rutinas
-                    cargarRutinas();
+                        // Recargar las rutinas
+                        cargarRutinas();
 
-                    Utilidades.mostrarAlerta("Rutina eliminada", "La rutina ha sido eliminada correctamente", Alert.AlertType.INFORMATION);
-                } catch (Exception e) {
-                    System.err.println("Error al eliminar la rutina: " + e.getMessage());
-                    Utilidades.mostrarAlerta("Error", "No se pudo eliminar la rutina", Alert.AlertType.ERROR);
+                        Utilidades.mostrarAlerta("Rutina eliminada", 
+                            "La rutina ha sido eliminada correctamente", 
+                            Alert.AlertType.INFORMATION);
+                    } catch (Exception e) {
+                        System.err.println("Error al eliminar la rutina: " + e.getMessage());
+                        Utilidades.mostrarAlerta("Error", 
+                            "No se pudo eliminar la rutina", 
+                            Alert.AlertType.ERROR);
+                    }
                 }
             }
         } else {
-            Utilidades.mostrarAlerta("Selección requerida", "Por favor, seleccione una rutina para eliminar", Alert.AlertType.WARNING);
+            Utilidades.mostrarAlerta("Selección requerida", 
+                "Por favor, seleccione una rutina para eliminar", 
+                Alert.AlertType.WARNING);
         }
     }
 
@@ -612,49 +625,49 @@ public class MainViewClienteController {
      * @param event El evento que desencadenó esta acción
      */
     public void contratarTarifa(ActionEvent event) {
-
         Tarifa tarifaSeleccionada = (Tarifa) tablaTarifas.getSelectionModel().getSelectedItem();
+        boolean puedeContratar = true;
 
         if (tarifaSeleccionada == null) {
             Utilidades.mostrarAlerta("Error", "Por favor, seleccione una tarifa", Alert.AlertType.WARNING);
-            return;
+            puedeContratar = false;
         }
 
-        try {
-            // Verificar si ya existe la asignación
-            List<ClienteTarifa> tarifasCliente = clienteTarifaDAO.findByCliente(clienteAutenticado.getId());
-            boolean tarifaYaExiste = false;
+        if (puedeContratar) {
+            try {
+                // Verificar si ya existe la asignación
+                List<ClienteTarifa> tarifasCliente = clienteTarifaDAO.findByCliente(clienteAutenticado.getId());
+                boolean tarifaYaExiste = false;
 
-            for (ClienteTarifa ct : tarifasCliente) {
-                if (ct.getTarifa().getIdTarifa() == tarifaSeleccionada.getIdTarifa()
-                        && ct.getEstado() == EstadoTarifa.ACTIVA) {
-                    tarifaYaExiste = true;
-                    break;
+                for (ClienteTarifa ct : tarifasCliente) {
+                    if (ct.getTarifa().getIdTarifa() == tarifaSeleccionada.getIdTarifa() && ct.getEstado() == EstadoTarifa.ACTIVA) {
+                        tarifaYaExiste = true;
+                        break;
+                    }
                 }
+
+                if (tarifaYaExiste) {
+                    Utilidades.mostrarAlerta("Error", "El cliente ya tiene esta tarifa contratada", Alert.AlertType.ERROR);
+                    puedeContratar = false;
+                }
+
+                if (puedeContratar) {
+                    // Crear nueva asignación
+                    ClienteTarifa clienteTarifa = new ClienteTarifa();
+                    clienteTarifa.setCliente(clienteAutenticado);
+                    clienteTarifa.setTarifa(tarifaSeleccionada);
+                    clienteTarifa.setFechaContratacion(new Date(System.currentTimeMillis()));
+                    clienteTarifa.setEstado(EstadoTarifa.ACTIVA);
+
+                    clienteTarifaDAO.insert(clienteTarifa);
+                    // Recargar las tarifas contratadas para mostrar la nueva tarifa
+                    cargarMisTarifas();
+                    Utilidades.mostrarAlerta("Tarifa Asignada", "Tarifa asignada correctamente", Alert.AlertType.INFORMATION);
+                }
+            } catch (RuntimeException e) {
+                System.err.println("Error al asignar la tarifa: " + e.getMessage());
+                Utilidades.mostrarAlerta("Error", "No se pudo asignar la tarifa", Alert.AlertType.ERROR);
             }
-
-            if (tarifaYaExiste) {
-                Utilidades.mostrarAlerta("Error", "El cliente ya tiene esta tarifa contratada", Alert.AlertType.ERROR);
-                return;
-            }
-
-            // Crear nueva asignación
-            ClienteTarifa clienteTarifa = new ClienteTarifa();
-            clienteTarifa.setCliente(clienteAutenticado);
-            clienteTarifa.setTarifa(tarifaSeleccionada);
-            clienteTarifa.setFechaContratacion(new Date(System.currentTimeMillis()));
-            clienteTarifa.setEstado(EstadoTarifa.ACTIVA);
-
-            clienteTarifaDAO.insert(clienteTarifa);
-            Utilidades.mostrarAlerta("Tarifa Asignada", "Tarifa asignada correctamente", Alert.AlertType.INFORMATION);
-
-        } catch (RuntimeException e) {
-            System.err.println("Error al asignar la tarifa: " + e.getMessage());
-            Utilidades.mostrarAlerta("Error", "No se pudo asignar la tarifa", Alert.AlertType.ERROR);
         }
     }
-
-
-
-
 }

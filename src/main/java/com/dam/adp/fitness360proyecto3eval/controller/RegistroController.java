@@ -237,38 +237,40 @@ public class RegistroController {
     private boolean registrarCliente() {
         logger.debug("Iniciando registro de nuevo cliente");
         double altura = 0;
+        boolean registroExitoso = true;
 
         try {
             // Validar y obtener la altura como número decimal positivo
             logger.debug("Validando altura como decimal positivo");
             altura = Utilidades.validarDecimalPositivo(alturaField.getText(), "altura");
+
+            // Crear objeto UsuarioCliente
+            logger.debug("Creando objeto de cliente con los datos del formulario");
+            UsuarioCliente cliente = new UsuarioCliente(
+                usernameField.getText(),
+                nombreField.getText(),
+                apellidosField.getText(),
+                correoField.getText(),
+                HashUtil.hashPassword(passwordField.getText()), // Hashear la contraseña
+                telefonoField.getText(),
+                Date.from(fechaNacimientoField.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()),
+                sexoComboBox.getValue(),
+                Estado.ACTIVO, // Por defecto, el usuario se crea activo
+                altura
+            );
+
+            // Guardar en la base de datos
+            logger.debug("Insertando cliente en la base de datos");
+            clienteDAO.insert(cliente);
+            logger.info("Cliente registrado correctamente: {}", cliente.getNombre());
         } catch (DecimalNoPositivoException e) {
             logger.warn("Validación fallida: {}", e.getMessage());
             errorMessage.setText("Error: " + e.getMessage());
             errorMessage.setVisible(true);
-            return false;
+            registroExitoso = false;
         }
 
-        // Crear objeto UsuarioCliente
-        logger.debug("Creando objeto de cliente con los datos del formulario");
-        UsuarioCliente cliente = new UsuarioCliente(
-            usernameField.getText(),
-            nombreField.getText(),
-            apellidosField.getText(),
-            correoField.getText(),
-            HashUtil.hashPassword(passwordField.getText()), // Hashear la contraseña
-            telefonoField.getText(),
-            Date.from(fechaNacimientoField.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()),
-            sexoComboBox.getValue(),
-            Estado.ACTIVO, // Por defecto, el usuario se crea activo
-            altura
-        );
-
-        // Guardar en la base de datos
-        logger.debug("Insertando cliente en la base de datos");
-        clienteDAO.insert(cliente);
-        logger.info("Cliente registrado correctamente: {}", cliente.getNombre());
-        return true;
+        return registroExitoso;
     }
 
     /**
@@ -277,6 +279,7 @@ public class RegistroController {
      */
     private boolean registrarEmpleado(){
         logger.debug("Iniciando registro de nuevo empleado");
+        boolean registroExitoso = true;
 
         // Validar campos específicos de empleado
         logger.debug("Validando campos específicos de empleado");
@@ -286,33 +289,34 @@ public class RegistroController {
             logger.warn("Validación fallida: campos obligatorios vacíos");
             errorMessage.setText("Error: Todos los campos son obligatorios");
             errorMessage.setVisible(true);
-            return false;
+            registroExitoso = false;
+        } else {
+            // Crear objeto UsuarioEmpleado
+            logger.debug("Creando objeto de empleado con los datos del formulario");
+            UsuarioEmpleado empleado = new UsuarioEmpleado(
+                usernameField.getText(),
+                nombreField.getText(),
+                apellidosField.getText(),
+                correoField.getText(),
+                HashUtil.hashPassword(passwordField.getText()), // Hashear la contraseña
+                telefonoField.getText(),
+                Date.from(fechaNacimientoField.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()),
+                sexoComboBox.getValue(),
+                Estado.ACTIVO, // Por defecto, el usuario se crea activo
+                new Date(), // createdAt
+                new Date(), // updatedAt
+                descripcionField.getText(),
+                rolField.getText(),
+                especialidadComboBox.getValue()
+            );
+
+            // Guardar en la base de datos
+            logger.debug("Insertando empleado en la base de datos");
+            empleadoDAO.insert(empleado);
+            logger.info("Empleado registrado correctamente: {}", empleado.getNombre());
         }
 
-        // Crear objeto UsuarioEmpleado
-        logger.debug("Creando objeto de empleado con los datos del formulario");
-        UsuarioEmpleado empleado = new UsuarioEmpleado(
-            usernameField.getText(),
-            nombreField.getText(),
-            apellidosField.getText(),
-            correoField.getText(),
-            HashUtil.hashPassword(passwordField.getText()), // Hashear la contraseña
-            telefonoField.getText(),
-            Date.from(fechaNacimientoField.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()),
-            sexoComboBox.getValue(),
-            Estado.ACTIVO, // Por defecto, el usuario se crea activo
-            new Date(), // createdAt
-            new Date(), // updatedAt
-            descripcionField.getText(),
-            rolField.getText(),
-            especialidadComboBox.getValue()
-        );
-
-        // Guardar en la base de datos
-        logger.debug("Insertando empleado en la base de datos");
-        empleadoDAO.insert(empleado);
-        logger.info("Empleado registrado correctamente: {}", empleado.getNombre());
-        return true;
+        return registroExitoso;
     }
 
     /**

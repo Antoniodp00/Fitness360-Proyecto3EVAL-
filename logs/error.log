@@ -193,3 +193,4 @@ Caused by: java.sql.SQLSyntaxErrorException: You have an error in your SQL synta
 	at com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:972)
 	at com.dam.adp.fitness360proyecto3eval/com.dam.adp.fitness360proyecto3eval.DAO.ClienteTarifaDAO.findByCliente(ClienteTarifaDAO.java:93)
 	... 70 common frames omitted
+2025-05-19 20:08:01 [ERROR] [c.d.a.f.utilidades.Utilidades] - Fecha de nacimiento indica usuario demasiado joven: 2025-01-14

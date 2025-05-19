@@ -397,76 +397,77 @@ public class MainViewEmpleadoController {
      */
     private void cargarRevisiones() {
         logger.debug("Iniciando carga de revisiones");
-
+        boolean continuarCarga = true;
 
         // Verificar si la columna está inicializada
         if (colObservacionesRevision1 == null) {
             logger.error("La columna de observaciones no está inicializada correctamente");
-            return;
+            continuarCarga = false;
         }
 
+        if (continuarCarga) {
+            logger.debug("Buscando revisiones para el empleado ID: {}", empleadoAutenticado.getId());
+            List<Revision> misRevisiones = revisionDAO.getByCreatorEager(empleadoAutenticado.getId());
 
-        logger.debug("Buscando revisiones para el empleado ID: {}", empleadoAutenticado.getId());
-        List<Revision> misRevisiones = revisionDAO.getByCreatorEager(empleadoAutenticado.getId());
+            logger.debug("Configurando columnas de la tabla de revisiones");
+            // Configurar las columnas de la tabla
+            colFechaRevision.setCellValueFactory(cellData->{
+                java.util.Date fecha = cellData.getValue().getFecha();
+                return new SimpleStringProperty(Utilidades.formatearFechaEspanol(fecha));
+            });
 
-        logger.debug("Configurando columnas de la tabla de revisiones");
-        // Configurar las columnas de la tabla
-        colFechaRevision.setCellValueFactory(cellData->{
-            java.util.Date fecha = cellData.getValue().getFecha();
-            return new SimpleStringProperty(Utilidades.formatearFechaEspanol(fecha));
-        });
+            colClienteRevision.setCellValueFactory(cellData->
+                    new SimpleStringProperty(cellData.getValue().getCliente().getNombre() + " " + cellData.getValue().getCliente().getApellidos())
+                    );
+            colPesoRevision.setCellValueFactory(cellData -> {
+                Double peso = cellData.getValue().getPeso();
+                String textoPeso = (peso != null) ? String.format("%.2f", peso) + " kg" : "N/D";
+                return new SimpleStringProperty(textoPeso);
+            });
 
-        colClienteRevision.setCellValueFactory(cellData->
-                new SimpleStringProperty(cellData.getValue().getCliente().getNombre() + " " + cellData.getValue().getCliente().getApellidos())
-                );
-        colPesoRevision.setCellValueFactory(cellData -> {
-            Double peso = cellData.getValue().getPeso();
-            String textoPeso = (peso != null) ? String.format("%.2f", peso) + " kg" : "N/D";
-            return new SimpleStringProperty(textoPeso);
-        });
+            colGrasaRevision.setCellValueFactory(cellData -> {
+                Double grasa = cellData.getValue().getGrasa();
+                String textoGrasa = (grasa != null) ? String.format("%.2f", grasa) + " %" : "N/D";
+                return new SimpleStringProperty(textoGrasa);
+            });
 
-        colGrasaRevision.setCellValueFactory(cellData -> {
-            Double grasa = cellData.getValue().getGrasa();
-            String textoGrasa = (grasa != null) ? String.format("%.2f", grasa) + " %" : "N/D";
-            return new SimpleStringProperty(textoGrasa);
-        });
+            colMusculoRevision.setCellValueFactory(cellData -> {
+                Double musculo = cellData.getValue().getMusculo();
+                String textoMusculo = (musculo != null) ? String.format("%.2f", musculo) + " %" : "N/D";
+                return new SimpleStringProperty(textoMusculo);
+            });
 
-        colMusculoRevision.setCellValueFactory(cellData -> {
-            Double musculo = cellData.getValue().getMusculo();
-            String textoMusculo = (musculo != null) ? String.format("%.2f", musculo) + " %" : "N/D";
-            return new SimpleStringProperty(textoMusculo);
-        });
+            colPechoRevision.setCellValueFactory(cellData -> {
+                Double pecho = cellData.getValue().getmPecho();
+                String textoPecho = (pecho != null) ? String.format("%.2f", pecho) + " cm" : "N/D";
+                return new SimpleStringProperty(textoPecho);
+            });
 
-        colPechoRevision.setCellValueFactory(cellData -> {
-            Double pecho = cellData.getValue().getmPecho();
-            String textoPecho = (pecho != null) ? String.format("%.2f", pecho) + " cm" : "N/D";
-            return new SimpleStringProperty(textoPecho);
-        });
+            colCinturaRevision.setCellValueFactory(cellData -> {
+                Double cintura = cellData.getValue().getmCintura();
+                String textoCintura = (cintura != null) ? String.format("%.2f", cintura) + " cm" : "N/D";
+                return new SimpleStringProperty(textoCintura);
+            });
 
-        colCinturaRevision.setCellValueFactory(cellData -> {
-            Double cintura = cellData.getValue().getmCintura();
-            String textoCintura = (cintura != null) ? String.format("%.2f", cintura) + " cm" : "N/D";
-            return new SimpleStringProperty(textoCintura);
-        });
+            colCaderaRevision.setCellValueFactory(cellData -> {
+                Double cadera = cellData.getValue().getmCadera();
+                String textoCadera = (cadera != null) ? String.format("%.2f", cadera) + " cm" : "N/D";
+                return new SimpleStringProperty(textoCadera);
+            });
 
-        colCaderaRevision.setCellValueFactory(cellData -> {
-            Double cadera = cellData.getValue().getmCadera();
-            String textoCadera = (cadera != null) ? String.format("%.2f", cadera) + " cm" : "N/D";
-            return new SimpleStringProperty(textoCadera);
-        });
+            colObservacionesRevision1.setCellValueFactory(cellData ->
+                    new SimpleStringProperty(cellData.getValue().getObservaciones())
+                    );
 
-        colObservacionesRevision1.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getObservaciones())
-                );
+            // Limpiar y agregar las revisiones a la lista observable
+            logger.debug("Actualizando lista observable de revisiones");
+            revisiones.clear();
+            revisiones.addAll(misRevisiones);
 
-        // Limpiar y agregar las revisiones a la lista observable
-        logger.debug("Actualizando lista observable de revisiones");
-        revisiones.clear();
-        revisiones.addAll(misRevisiones);
-
-        // Asignar la lista observable a la tabla
-        tablaRevisiones.setItems(revisiones);
-        logger.info("Se han cargado {} revisiones para el empleado", misRevisiones.size());
+            // Asignar la lista observable a la tabla
+            tablaRevisiones.setItems(revisiones);
+            logger.info("Se han cargado {} revisiones para el empleado", misRevisiones.size());
+        }
     }
 
     /**

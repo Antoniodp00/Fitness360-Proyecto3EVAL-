@@ -77,49 +77,48 @@ public class LoginController {
 
         String mensajeError = null;
         Usuario usuarioAutenticado = null;
+        boolean camposValidos = validarCampos();
 
-        // Validar campos usando el método validarCampos
-        if (!validarCampos()) {
+        if (camposValidos) {
+            logger.debug("Buscando usuario con nombre: {}", username);
+            // Buscar y autenticar como cliente
+            UsuarioCliente cliente = clienteDAO.findByUserName(username);
+
+            if (cliente != null && autenticarUsuario(cliente, password)) {
+                logger.info("Usuario cliente autenticado correctamente: {}", cliente.getNombre());
+                usuarioAutenticado = cliente;
+            } else {
+                // Buscar y autenticar como empleado
+                logger.debug("Usuario no encontrado como cliente o autenticación fallida, buscando como empleado");
+                UsuarioEmpleado empleado = empleadoDAO.findByUserName(username);
+                if (empleado != null && autenticarUsuario(empleado, password)) {
+                    logger.info("Usuario empleado autenticado correctamente: {}", empleado.getNombre());
+                    usuarioAutenticado = empleado;
+                } else {
+                    logger.warn("Autenticación fallida para el usuario: {}", username);
+                    mensajeError = "Nombre de usuario o contraseña incorrectos";
+                }
+            }
+
+            // Ejecutar navegación o mostrar error según el resultado
+            if (usuarioAutenticado != null) {
+                // Guardar el usuario autenticado en la sesión
+                logger.debug("Guardando usuario autenticado en la sesión");
+                Sesion.getInstance().setUsuarioAutenticado(usuarioAutenticado);
+
+                if (usuarioAutenticado instanceof UsuarioCliente) {
+                    logger.debug("Navegando a pantalla principal de cliente");
+                    navegarAPantallaPrincipalCliente(actionEvent);
+                } else {
+                    logger.debug("Navegando a pantalla principal de empleado");
+                    navegarAPantallaPrincipalEmpleado(actionEvent);
+                }
+            } else {
+                logger.warn("Login fallido: {}", mensajeError);
+                mostrarError(mensajeError);
+            }
+        } else {
             logger.warn("Validación de campos fallida");
-            return;
-        }
-
-        logger.debug("Buscando usuario con nombre: {}", username);
-        // Buscar y autenticar como cliente
-        UsuarioCliente cliente = clienteDAO.findByUserName(username);
-
-        if (cliente != null && autenticarUsuario(cliente, password)) {
-            logger.info("Usuario cliente autenticado correctamente: {}", cliente.getNombre());
-            usuarioAutenticado = cliente;
-        } else {
-            // Buscar y autenticar como empleado
-            logger.debug("Usuario no encontrado como cliente o autenticación fallida, buscando como empleado");
-            UsuarioEmpleado empleado = empleadoDAO.findByUserName(username);
-            if (empleado != null && autenticarUsuario(empleado, password)) {
-                logger.info("Usuario empleado autenticado correctamente: {}", empleado.getNombre());
-                usuarioAutenticado = empleado;
-            } else {
-                logger.warn("Autenticación fallida para el usuario: {}", username);
-                mensajeError = "Nombre de usuario o contraseña incorrectos";
-            }
-        }
-
-        // Ejecutar navegación o mostrar error según el resultado
-        if (usuarioAutenticado != null) {
-            // Guardar el usuario autenticado en la sesión
-            logger.debug("Guardando usuario autenticado en la sesión");
-            Sesion.getInstance().setUsuarioAutenticado(usuarioAutenticado);
-
-            if (usuarioAutenticado instanceof UsuarioCliente) {
-                logger.debug("Navegando a pantalla principal de cliente");
-                navegarAPantallaPrincipalCliente(actionEvent);
-            } else {
-                logger.debug("Navegando a pantalla principal de empleado");
-                navegarAPantallaPrincipalEmpleado(actionEvent);
-            }
-        } else {
-            logger.warn("Login fallido: {}", mensajeError);
-            mostrarError(mensajeError);
         }
     }
 
@@ -172,18 +171,23 @@ public class LoginController {
      */
     private boolean autenticarUsuario(Usuario usuario, String password) {
         logger.debug("Verificando credenciales para usuario");
+        boolean autenticacionExitosa = true;
+
         // Verificar que el usuario esté activo
         if (usuario.getEstado() != Estado.ACTIVO) {
             logger.warn("Intento de login con usuario inactivo: {}", usuario.getNombre());
             mostrarError("Usuario inactivo. Contacte al administrador.");
-            return false;
+            autenticacionExitosa = false;
+        } else {
+            // Verificar la contraseña
+            boolean passwordCorrecta = HashUtil.verificarPassword(password, usuario.getPassword());
+            if (!passwordCorrecta) {
+                logger.debug("Autenticación fallida: contraseña incorrecta");
+                autenticacionExitosa = false;
+            }
         }
-        // Verificar la contraseña
-        boolean passwordCorrecta = HashUtil.verificarPassword(password, usuario.getPassword());
-        if (!passwordCorrecta) {
-            logger.debug("Autenticación fallida: contraseña incorrecta");
-        }
-        return passwordCorrecta;
+
+        return autenticacionExitosa;
     }
 
     /**

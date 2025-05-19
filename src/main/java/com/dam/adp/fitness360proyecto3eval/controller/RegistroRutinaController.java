@@ -381,6 +381,8 @@ public class RegistroRutinaController {
      */
     private boolean registrarRutinaPorCliente() {
         logger.debug("Iniciando registro de rutina por cliente");
+        boolean registroExitoso = false;
+
         try {
             // Crear la rutina
             logger.debug("Creando objeto de rutina con los datos del formulario");
@@ -418,15 +420,16 @@ public class RegistroRutinaController {
                 // Insertar la asignación en la base de datos
                 clienteRutinaDAO.insert(clienteRutina);
                 logger.info("Rutina '{}' registrada y asignada correctamente al cliente {}", rutina.getNombre(), cliente.getNombre());
-                return true;
+                registroExitoso = true;
+            } else {
+                logger.warn("No se pudo recuperar la rutina recién creada con nombre: {}", rutina.getNombre());
             }
-            logger.warn("No se pudo recuperar la rutina recién creada con nombre: {}", rutina.getNombre());
-            return false;
         } catch (Exception e) {
             logger.error("Error al registrar la rutina por cliente: {}", e.getMessage(), e);
             Utilidades.mostrarAlerta("Error", "Error al registrar la rutina: " + e.getMessage(), Alert.AlertType.ERROR);
-            return false;
         }
+
+        return registroExitoso;
     }
 
     /**
@@ -436,6 +439,8 @@ public class RegistroRutinaController {
      */
     private boolean registrarRutinaPorEmpleado() {
         logger.debug("Iniciando registro de rutina por empleado");
+        boolean registroExitoso = false;
+
         try {
             // Obtener el cliente al que se asignará la rutina (puede ser null)
             UsuarioCliente clienteAsignado = clienteAsignadoComboBox.getValue();
@@ -470,15 +475,16 @@ public class RegistroRutinaController {
                 } else {
                     logger.info("Rutina '{}' registrada sin asignación a cliente", rutina.getNombre());
                 }
-                return true;
+                registroExitoso = true;
+            } else {
+                logger.warn("No se pudo recuperar la rutina recién creada con nombre: {}", rutina.getNombre());
             }
-            logger.warn("No se pudo recuperar la rutina recién creada con nombre: {}", rutina.getNombre());
-            return false;
         } catch (Exception e) {
             logger.error("Error al registrar la rutina por empleado: {}", e.getMessage(), e);
             Utilidades.mostrarAlerta("Error", "Error al registrar la rutina: " + e.getMessage(), Alert.AlertType.ERROR);
-            return false;
         }
+
+        return registroExitoso;
     }
 
     /**

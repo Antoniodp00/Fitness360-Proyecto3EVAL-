@@ -181,6 +181,8 @@ public class RegistroDietaController {
      * @return true si el registro fue exitoso, false en caso contrario
      */
     public boolean registrarDieta() {
+        boolean registroExitoso = false;
+
         try {
             // Validar campos
             Utilidades.validarCampoNoVacio(nombreDietaField.getText(), "nombre de la dieta");
@@ -211,20 +213,20 @@ public class RegistroDietaController {
                 } else {
                     logger.info("Nueva dieta registrada sin asignación a cliente: {}", dietaRegistrada.getNombre());
                 }
-                return true;
+                registroExitoso = true;
+            } else {
+                logger.warn("No se pudo recuperar la dieta recién creada con nombre: {}", dieta.getNombre());
             }
-            logger.warn("No se pudo recuperar la dieta recién creada con nombre: {}", dieta.getNombre());
-            return false;
         } catch (IllegalArgumentException e) {
             errorMessage.setText(e.getMessage());
             errorMessage.setVisible(true);
             logger.error(e.getMessage(), e);
-            return false;
         } catch (Exception e) {
             Utilidades.mostrarAlerta("Error", "Error al registrar la dieta: " + e.getMessage(), Alert.AlertType.ERROR);
             logger.error("Error al registrar la dieta "+ e.getMessage(), e);
-            return false;
         }
+
+        return registroExitoso;
     }
 
     /**

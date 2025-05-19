@@ -260,40 +260,42 @@ public class RegistroRevisionController {
      */
     public boolean registrarRevision() {
         logger.debug("Iniciando registro de nueva revisión");
+        boolean registroExitoso = false;
+
         try {
             UsuarioCliente cliente = (UsuarioCliente) clienteComboBox.getValue();
             if (cliente == null) {
                 logger.error("Error al registrar revisión: cliente no seleccionado");
                 Utilidades.mostrarAlerta("Error", "Error al registrar la revision cliente vacio", Alert.AlertType.ERROR);
-                return false;
+            } else {
+                //crear revision
+                logger.debug("Creando objeto de revisión con los datos del formulario");
+                Revision revision = new Revision();
+                revision.setCliente(cliente);
+                revision.setEmpleado(empladoAutenticado);
+                java.sql.Date fecha = java.sql.Date.valueOf(fechaRevisionPicker.getValue());
+                revision.setFecha(fecha);
+                revision.setPeso(Double.parseDouble(pesoField.getText().trim()));
+                revision.setGrasa(Double.parseDouble(grasaField.getText().trim()));
+                revision.setMusculo(Double.parseDouble(musculoField.getText().trim()));
+                revision.setmPecho(Double.parseDouble(pechoField.getText().trim()));
+                revision.setmCintura(Double.parseDouble(cinturaField.getText().trim()));
+                revision.setmCadera(Double.parseDouble(caderaField.getText().trim()));
+                revision.setObservaciones(observacionesField.getText().trim());
+
+                //insertar revision
+                logger.debug("Insertando revisión en la base de datos");
+                revisionDAO.insert(revision);
+                logger.info("Revisión registrada correctamente para el cliente: {}", cliente.getNombre());
+
+                registroExitoso = true;
             }
-
-            //crear revision
-            logger.debug("Creando objeto de revisión con los datos del formulario");
-            Revision revision = new Revision();
-            revision.setCliente(cliente);
-            revision.setEmpleado(empladoAutenticado);
-            java.sql.Date fecha = java.sql.Date.valueOf(fechaRevisionPicker.getValue());
-            revision.setFecha(fecha);
-            revision.setPeso(Double.parseDouble(pesoField.getText().trim()));
-            revision.setGrasa(Double.parseDouble(grasaField.getText().trim()));
-            revision.setMusculo(Double.parseDouble(musculoField.getText().trim()));
-            revision.setmPecho(Double.parseDouble(pechoField.getText().trim()));
-            revision.setmCintura(Double.parseDouble(cinturaField.getText().trim()));
-            revision.setmCadera(Double.parseDouble(caderaField.getText().trim()));
-            revision.setObservaciones(observacionesField.getText().trim());
-
-            //insertar revision
-            logger.debug("Insertando revisión en la base de datos");
-            revisionDAO.insert(revision);
-            logger.info("Revisión registrada correctamente para el cliente: {}", cliente.getNombre());
-
-            return true;
         } catch (Exception e) {
             logger.error("Error al registrar la revisión: {}", e.getMessage(), e);
             e.printStackTrace();
-            return false;
         }
+
+        return registroExitoso;
     }
 
     /**

@@ -195,6 +195,8 @@ public class RegistroTarifaController {
      */
     public boolean registrarTarifa(){
         logger.debug("Iniciando registro de nueva tarifa");
+        boolean registroExitoso = false;
+
         try {
             // Validar y obtener el precio como número decimal positivo
             logger.debug("Validando precio como decimal positivo");
@@ -211,18 +213,18 @@ public class RegistroTarifaController {
             logger.debug("Insertando tarifa en la base de datos");
             tarifaDAO.insert(tarifa);
             logger.info("Tarifa '{}' registrada correctamente", tarifa.getNombre());
-            return true;
+            registroExitoso = true;
         } catch (IllegalArgumentException e) {
             logger.warn("Validación fallida: {}", e.getMessage());
             errorMessage.setText(e.getMessage());
             errorMessage.setVisible(true);
-            return false;
         } catch (Exception e) {
             logger.error("Error al registrar la tarifa: {}", e.getMessage(), e);
             e.printStackTrace();
             Utilidades.mostrarAlerta("Error","Error al registrar la tarifa: " + e.getMessage(), Alert.AlertType.ERROR);
-            return false;
         }
+
+        return registroExitoso;
     }
 
     /**

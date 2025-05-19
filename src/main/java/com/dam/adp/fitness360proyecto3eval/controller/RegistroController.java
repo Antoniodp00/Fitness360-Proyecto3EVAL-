@@ -91,6 +91,9 @@ public class RegistroController {
     @FXML
     private Button cancelarButton;
 
+    private final UsuarioClienteDAO clienteDAO = new UsuarioClienteDAO();
+    private final UsuarioEmpleadoDAO empleadoDAO = new UsuarioEmpleadoDAO();
+
     /**
      * Inicializa el controlador después de que se haya cargado el FXML.
      */
@@ -233,7 +236,6 @@ public class RegistroController {
      */
     private boolean registrarCliente() {
         logger.debug("Iniciando registro de nuevo cliente");
-        UsuarioClienteDAO clienteDAO = new UsuarioClienteDAO();
         double altura = 0;
 
         try {
@@ -275,7 +277,7 @@ public class RegistroController {
      */
     private boolean registrarEmpleado(){
         logger.debug("Iniciando registro de nuevo empleado");
-        UsuarioEmpleadoDAO empleadoDAO = new UsuarioEmpleadoDAO();
+
         // Validar campos específicos de empleado
         logger.debug("Validando campos específicos de empleado");
         if (descripcionField.getText().isEmpty() || 

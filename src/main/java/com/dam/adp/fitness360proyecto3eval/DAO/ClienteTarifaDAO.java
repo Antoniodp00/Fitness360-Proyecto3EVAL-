@@ -21,7 +21,7 @@ public class ClienteTarifaDAO {
     /** Consulta SQL para buscar asignaciones de tarifas por cliente */
     private static final String SQL_FIND_BY_CLIENTE =
             "SELECT ct.idCliente, ct.idTarifa, ct.estado AS estadoTarifa, ct.fechaContratacion, ct.fechaRenovacion, ct.fechaFin, ct.createdAt, ct.updatedAt, " +
-                    "c.idCliente, c.nombreUsuario, c.nombre, c.apellidos, c.correo, c.password, c.telefono, c.fechaNacimiento, c.sexo, c.altura, c.estado AS estadoCliente, c.createdAt, c.updatedAt, " +
+                    "c.idCliente, c.nombreUsuario, c.nombre AS nombreCliente, c.apellidos, c.correo, c.password, c.telefono, c.fechaNacimiento, c.sexo, c.altura, c.estado AS estadoCliente, c.createdAt, c.updatedAt, " +
                     "t.idTarifa, t.nombre, t.descripcion, t.precio, t.periodo, t.createdAt, t.updatedAt, e.idEmpleado, e.nombre AS nombreEmpleado, e.apellidos AS apellidosEmpleado " +
                     "FROM ClienteTarifa ct " +
                     "JOIN Cliente c ON ct.idCliente = c.idCliente " +

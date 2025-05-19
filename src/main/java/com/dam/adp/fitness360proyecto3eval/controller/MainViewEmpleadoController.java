@@ -111,6 +111,13 @@ public class MainViewEmpleadoController {
 
     private UsuarioEmpleado empleadoAutenticado;
 
+    private final UsuarioClienteDAO clienteDAO = new UsuarioClienteDAO();
+    private final ClienteTarifaDAO clienteTarifaDAO = new ClienteTarifaDAO();
+    private final RutinaDAO rutinaDAO = new RutinaDAO();
+    private final DietaDAO dietaDAO = new DietaDAO();
+    private final TarifaDAO tarifaDAO = new TarifaDAO();
+    private final RevisionDAO revisionDAO = new RevisionDAO();
+
     /**
      * Establece el empleado autenticado y actualiza la interfaz
      *
@@ -231,7 +238,7 @@ public class MainViewEmpleadoController {
      */
     private void cargarClientes() {
         logger.debug("Iniciando carga de clientes");
-        UsuarioClienteDAO clienteDAO = new UsuarioClienteDAO();
+
 
         logger.debug("Buscando clientes para el empleado ID: {}", empleadoAutenticado.getId());
         List<UsuarioCliente> misClientes = clienteDAO.findClientesByEmpleadoTarifa(empleadoAutenticado.getId());
@@ -255,7 +262,7 @@ public class MainViewEmpleadoController {
         // Usar fechaContratacion de ClienteTarifa y formatear en español
         colFechaAltaCliente.setCellValueFactory(cellData -> {
             UsuarioCliente cliente = cellData.getValue();
-            ClienteTarifaDAO clienteTarifaDAO = new ClienteTarifaDAO();
+
             List<ClienteTarifa> tarifas = clienteTarifaDAO.findByCliente(cliente.getId());
             // Buscar la tarifa activa
             for (ClienteTarifa tarifa : tarifas) {
@@ -283,7 +290,7 @@ public class MainViewEmpleadoController {
      */
     private void cargarRutinas() {
         logger.debug("Iniciando carga de rutinas");
-        RutinaDAO rutinaDAO = new RutinaDAO();
+
 
         logger.debug("Buscando rutinas para el empleado ID: {}", empleadoAutenticado.getId());
         List<Rutina> misRutinas = rutinaDAO.getByCreator(empleadoAutenticado.getId());
@@ -318,8 +325,6 @@ public class MainViewEmpleadoController {
      */
     private void cargarDietas() {
         logger.debug("Iniciando carga de dietas");
-        DietaDAO dietaDAO = new DietaDAO();
-        ClienteDietaDAO clienteDietaDAO = new ClienteDietaDAO();
 
         logger.debug("Buscando dietas para el empleado ID: {}", empleadoAutenticado.getId());
         List<Dieta> misDietas = dietaDAO.getByCreator(empleadoAutenticado.getId());
@@ -354,7 +359,6 @@ public class MainViewEmpleadoController {
      */
     private void cargarTarifas() {
         logger.debug("Iniciando carga de tarifas");
-        TarifaDAO tarifaDAO = new TarifaDAO();
 
         logger.debug("Buscando tarifas para el empleado ID: {}", empleadoAutenticado.getId());
         List<Tarifa> misTarifas = tarifaDAO.getByCreator(empleadoAutenticado.getId());
@@ -393,7 +397,7 @@ public class MainViewEmpleadoController {
      */
     private void cargarRevisiones() {
         logger.debug("Iniciando carga de revisiones");
-        RevisionDAO revisionDAO = new RevisionDAO();
+
 
         // Verificar si la columna está inicializada
         if (colObservacionesRevision1 == null) {
@@ -793,7 +797,7 @@ public class MainViewEmpleadoController {
             if (alert.showAndWait().get() == ButtonType.OK) {
                 try {
                     // Eliminar la rutina
-                    RutinaDAO rutinaDAO = new RutinaDAO();
+
                     rutinaDAO.delete(rutinaSeleccionada);
 
                     // Eliminar de la lista observable
@@ -828,7 +832,6 @@ public class MainViewEmpleadoController {
             if (alert.showAndWait().get() == ButtonType.OK) {
                 try {
                     // Eliminar la dieta
-                    DietaDAO dietaDAO = new DietaDAO();
                     dietaDAO.delete(dietaSeleccionada);
 
                     // Eliminar de la lista observable
@@ -863,7 +866,6 @@ public class MainViewEmpleadoController {
             if (alert.showAndWait().get() == ButtonType.OK) {
                 try {
                     // Eliminar la tarifa
-                    TarifaDAO tarifaDAO = new TarifaDAO();
                     tarifaDAO.delete(tarifaSeleccionada);
 
                     // Eliminar de la lista observable

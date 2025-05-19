@@ -25,7 +25,7 @@ public class RegistroTarifaController {
     public Button cancelarButton;
 
 
-    private TarifaDAO tarifaDAO;
+    private TarifaDAO tarifaDAO = new TarifaDAO();
 
 
     private UsuarioEmpleado empleadoAutenticado;
@@ -43,7 +43,6 @@ public class RegistroTarifaController {
     @FXML
     public void initialize() {
         logger.debug("Inicializando RegistroTarifaController");
-        tarifaDAO = new TarifaDAO();
 
         logger.debug("Configurando ComboBox de periodos");
         periodoComboBox.setItems(FXCollections.observableArrayList(Periodo.values()) );

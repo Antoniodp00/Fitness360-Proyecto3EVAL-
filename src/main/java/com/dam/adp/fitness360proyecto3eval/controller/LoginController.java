@@ -48,6 +48,9 @@ public class LoginController {
     @FXML
     private TextField usernameField;
 
+    private final UsuarioClienteDAO clienteDAO = new UsuarioClienteDAO();
+    private final UsuarioEmpleadoDAO empleadoDAO = new UsuarioEmpleadoDAO();
+
     /**
      * Inicializa el controlador después de que se haya cargado el FXML.
      * Configura los componentes de la interfaz y establece los valores iniciales.
@@ -68,8 +71,7 @@ public class LoginController {
      */
     public void alHacerClicEnIniciarSesion(ActionEvent actionEvent) {
         logger.debug("Iniciando proceso de login");
-        UsuarioEmpleadoDAO empleadoDAO = new UsuarioEmpleadoDAO();
-        UsuarioClienteDAO clienteDAO = new UsuarioClienteDAO();
+
         String username = usernameField.getText();
         String password = passwordField.getText();
 

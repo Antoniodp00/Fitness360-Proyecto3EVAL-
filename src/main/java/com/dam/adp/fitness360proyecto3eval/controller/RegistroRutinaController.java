@@ -7,12 +7,9 @@ import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioClienteDAO;
 import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioEmpleadoDAO;
 import com.dam.adp.fitness360proyecto3eval.utilidades.Utilidades;
 
-import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -20,7 +17,6 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -71,10 +67,11 @@ public class RegistroRutinaController {
     @FXML
     private HBox creadorSelectionBox;
 
-    private UsuarioClienteDAO usuarioClienteDAO;
-    private UsuarioEmpleadoDAO usuarioEmpleadoDAO;
-    private RutinaDAO rutinaDAO;
-    private ClienteRutinaDAO clienteRutinaDAO;
+    private final UsuarioClienteDAO usuarioClienteDAO = new UsuarioClienteDAO();
+    private final UsuarioEmpleadoDAO usuarioEmpleadoDAO = new UsuarioEmpleadoDAO();
+    private final RutinaDAO rutinaDAO = new RutinaDAO();
+    private final ClienteRutinaDAO clienteRutinaDAO = new ClienteRutinaDAO();
+
 
     private UsuarioCliente clienteAutenticado;
     private UsuarioEmpleado empleadoAutenticado;
@@ -92,11 +89,6 @@ public class RegistroRutinaController {
     @FXML
     private void initialize() {
         logger.debug("Inicializando RegistroRutinaController");
-        // Inicializar DAOs
-        usuarioClienteDAO = new UsuarioClienteDAO();
-        usuarioEmpleadoDAO = new UsuarioEmpleadoDAO();
-        rutinaDAO = new RutinaDAO();
-        clienteRutinaDAO = new ClienteRutinaDAO();
 
         // Cargar clientes y empleados en los ComboBox
         logger.debug("Cargando listas de clientes y empleados");

@@ -113,6 +113,14 @@ public class MainViewClienteController {
 
     private UsuarioCliente clienteAutenticado;
 
+     private final ClienteTarifaDAO clienteTarifaDAO = new ClienteTarifaDAO();
+     private final ClienteRutinaDAO clienteRutinaDAO = new ClienteRutinaDAO();
+     private final ClienteDietaDAO clienteDietaDAO = new ClienteDietaDAO();
+     private final RevisionDAO revisionDAO = new RevisionDAO();
+     private final UsuarioEmpleadoDAO usuarioEmpleadoDAO = new UsuarioEmpleadoDAO();
+     private final TarifaDAO tarifaDAO = new TarifaDAO();
+
+
     /**
      * Establece el cliente autenticado y actualiza la interfaz
      *
@@ -185,7 +193,7 @@ public class MainViewClienteController {
      */
     private void cargarMisTarifas() {
         logger.debug("Iniciando carga de tarifas contratadas");
-        ClienteTarifaDAO clienteTarifaDAO = new ClienteTarifaDAO();
+
 
         logger.debug("Buscando tarifas contratadas para el cliente ID: {}", clienteAutenticado.getId());
         List<ClienteTarifa> tarifasContratadas = clienteTarifaDAO.findByCliente(clienteAutenticado.getId());
@@ -237,7 +245,7 @@ public class MainViewClienteController {
      */
     private void cargarRutinas() {
         logger.debug("Iniciando carga de rutinas");
-        ClienteRutinaDAO clienteRutinaDAO = new ClienteRutinaDAO();
+
 
         logger.debug("Buscando rutinas para el cliente ID: {}", clienteAutenticado.getId());
         List<ClienteRutina> misRutinas = clienteRutinaDAO.findByClientEager(clienteAutenticado.getId());
@@ -284,7 +292,7 @@ public class MainViewClienteController {
      */
     private void cargarDietas() {
         logger.debug("Iniciando carga de dietas");
-        ClienteDietaDAO clienteDietaDAO = new ClienteDietaDAO();
+
         logger.debug("Buscando dietas para el cliente ID: {}", clienteAutenticado.getId());
         List<ClienteDieta> misDietas = clienteDietaDAO.findByClientEager(clienteAutenticado.getId());
 
@@ -328,7 +336,7 @@ public class MainViewClienteController {
      */
     private void cargarRevisiones() {
         logger.debug("Iniciando carga de revisiones");
-        RevisionDAO revisionDAO = new RevisionDAO();
+
         logger.debug("Buscando revisiones para el cliente ID: {}", clienteAutenticado.getId());
         List<Revision> misRevisiones = revisionDAO.getByClientEager(clienteAutenticado.getId());
 
@@ -400,7 +408,7 @@ public class MainViewClienteController {
      */
     public void cargarEntrenadores() {
         logger.debug("Iniciando carga de entrenadores");
-        UsuarioEmpleadoDAO usuarioEmpleadoDAO = new UsuarioEmpleadoDAO();
+
         logger.debug("Buscando todos los empleados");
         List<UsuarioEmpleado> empleados = usuarioEmpleadoDAO.getAll();
 
@@ -433,7 +441,7 @@ public class MainViewClienteController {
      */
     public void cargarTarifasEntrenador(UsuarioEmpleado empleado) {
         logger.debug("Iniciando carga de tarifas para el entrenador ID: {}", empleado.getId());
-        TarifaDAO tarifaDAO = new TarifaDAO();
+
         List<Tarifa> tarifasEmpleado = tarifaDAO.getByCreator(empleado.getId());
 
         logger.debug("Configurando columnas de la tabla de tarifas");
@@ -580,7 +588,6 @@ public class MainViewClienteController {
             if (alert.showAndWait().get() == ButtonType.OK) {
                 try {
                     // Eliminar la rutina
-                    ClienteRutinaDAO clienteRutinaDAO = new ClienteRutinaDAO();
                     clienteRutinaDAO.delete(clienteAutenticado.getId(), rutinaSeleccionada.getRutina().getIdRutina());
 
                     // Recargar las rutinas
@@ -605,7 +612,7 @@ public class MainViewClienteController {
      * @param event El evento que desencadenó esta acción
      */
     public void contratarTarifa(ActionEvent event) {
-        ClienteTarifaDAO clienteTarifaDAO = new ClienteTarifaDAO();
+
         Tarifa tarifaSeleccionada = (Tarifa) tablaTarifas.getSelectionModel().getSelectedItem();
 
         if (tarifaSeleccionada == null) {

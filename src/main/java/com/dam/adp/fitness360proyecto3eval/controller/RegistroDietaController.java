@@ -28,9 +28,9 @@ public class RegistroDietaController {
     public Button registrarButton;
     public Button cancelarButton;
 
-    private UsuarioClienteDAO usuarioClienteDAO;
-    private DietaDAO dietaDAO;
-    private ClienteDietaDAO clienteDietaDAO;
+    private final UsuarioClienteDAO usuarioClienteDAO= new UsuarioClienteDAO();
+    private final DietaDAO dietaDAO= new DietaDAO();
+    private final ClienteDietaDAO clienteDietaDAO = new ClienteDietaDAO();;
 
     private UsuarioEmpleado empleadoAutenticado;
     private Dieta dieta;
@@ -47,10 +47,6 @@ public class RegistroDietaController {
      */
     @FXML
     private void initialize() {
-        usuarioClienteDAO = new UsuarioClienteDAO();
-        dietaDAO = new DietaDAO();
-        clienteDietaDAO = new ClienteDietaDAO();
-
         registrarButton.setOnAction(e -> manejarRegistro());
         cancelarButton.setOnAction(e -> manejarCancelacion());
     }

@@ -35,9 +35,9 @@ public class RegistroRevisionController {
     public Button cancelarButton;
 
 
-    private RevisionDAO revisionDAO;
-    private UsuarioClienteDAO clienteDAO;
-    private UsuarioEmpleadoDAO empleadoDAO;
+    private RevisionDAO revisionDAO = new RevisionDAO();
+    private UsuarioClienteDAO clienteDAO = new UsuarioClienteDAO();
+    private UsuarioEmpleadoDAO empleadoDAO = new UsuarioEmpleadoDAO();
 
     private UsuarioEmpleado empladoAutenticado;
     private Revision revision;
@@ -55,9 +55,6 @@ public class RegistroRevisionController {
     @FXML
     private void initialize() {
         logger.debug("Inicializando RegistroRevisionController");
-        revisionDAO = new RevisionDAO();
-        clienteDAO = new UsuarioClienteDAO();
-        empleadoDAO = new UsuarioEmpleadoDAO();
 
         registrarButton.setOnAction(e -> manejarRegistro());
         cancelarButton.setOnAction(e -> manejarCancelacion());

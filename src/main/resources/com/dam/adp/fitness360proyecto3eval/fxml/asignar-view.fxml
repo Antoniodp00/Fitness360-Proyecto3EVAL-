@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="711.0" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dam.adp.fitness360proyecto3eval.controller.AsignarController">
+   <top>
+      <HBox alignment="CENTER" prefHeight="60.0" prefWidth="600.0" styleClass="top-bar" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="labelTitulo" styleClass="main-title" text="Asignar a Clientes">
+               <HBox.margin>
+                  <Insets left="20.0" />
+               </HBox.margin>
+            </Label>
+         </children>
+      </HBox>
+   </top>
+   <center>
+      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
+               <children>
+                  <Label styleClass="section-header" text="Clientes disponibles:">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="10.0" top="10.0" />
+               </VBox.margin>
+            </HBox>
+            <TableView fx:id="tablaClientes" prefHeight="350.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
+              <columns>
+                <TableColumn fx:id="colSeleccion" prefWidth="50.0" text="Seleccionar" />
+                <TableColumn fx:id="colNombre" prefWidth="150.0" text="Nombre" />
+                <TableColumn fx:id="colApellidos" prefWidth="150.0" text="Apellidos" />
+                <TableColumn fx:id="colEmail" prefWidth="200.0" text="Email" />
+              </columns>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" />
+               </VBox.margin>
+            </TableView>
+         </children>
+      </VBox>
+   </center>
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" prefHeight="60.0" prefWidth="600.0" spacing="10.0" styleClass="bottom-bar" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="btnCancelar" mnemonicParsing="false" text="Cancelar">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="btnAsignar" defaultButton="true" mnemonicParsing="false" text="Asignar">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+         <padding>
+            <Insets bottom="10.0" top="10.0" />
+         </padding>
+      </HBox>
+   </bottom>
+</BorderPane>

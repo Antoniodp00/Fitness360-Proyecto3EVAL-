@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="980.0" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dam.adp.fitness360proyecto3eval.controller.MainViewEmpleadoController">
+   <top>
+      <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="800.0" styleClass="top-bar" BorderPane.alignment="CENTER">
+         <children>
+            <Label styleClass="main-title" text="Fitness360 - Panel de Empleado">
+               <HBox.margin>
+                  <Insets left="20.0" />
+               </HBox.margin>
+            </Label>
+            <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+            <Label fx:id="labelUsuario" styleClass="user-welcome" text="Bienvenido, [Nombre Usuario]">
+               <HBox.margin>
+                  <Insets right="20.0" />
+               </HBox.margin>
+            </Label>
+         </children>
+      </HBox>
+   </top>
+   <center>
+      <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <tabs>
+          <Tab fx:id="tabClientes" text="Mis Clientes">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox prefHeight="511.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
+                                 <children>
+                                    <Label styleClass="section-header" text="Clientes asignados:" />
+                                    <ComboBox fx:id="comboFiltroClientes" prefWidth="150.0" promptText="Filtrar por" />
+                                    <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </HBox>
+                              <TableView fx:id="tablaClientes" prefHeight="461.0" prefWidth="800.0" VBox.vgrow="ALWAYS">
+                                <columns>
+                                  <TableColumn fx:id="colNombreCliente" prefWidth="150.0" text="Nombre" />
+                                  <TableColumn fx:id="colApellidosCliente" prefWidth="150.0" text="Apellidos" />
+                                  <TableColumn fx:id="colEmailCliente" prefWidth="150.0" text="Email" />
+                                  <TableColumn fx:id="colTelefonoCliente" prefWidth="100.0" text="Teléfono" />
+                                  <TableColumn fx:id="colFechaAltaCliente" prefWidth="100.0" text="Fecha Alta" />
+                                </columns>
+                              </TableView>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab fx:id="tabRutinas" text="Mis Rutinas Creadas">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox prefHeight="511.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
+                                 <children>
+                                    <Label styleClass="section-header" text="Rutinas creadas:" />
+                                    <ComboBox fx:id="comboFiltroRutinas" prefWidth="150.0" promptText="Filtrar por" />
+                                    <Region prefHeight="31.0" prefWidth="125.0" HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="btnCrearRutina" mnemonicParsing="false" text="Crear Rutina" />
+                                    <Button fx:id="btnModificarRutina" layoutX="697.0" layoutY="20.0" mnemonicParsing="false" text="Modificar Rutina" />
+                                    <Button fx:id="btnAsignarRutina" layoutX="697.0" layoutY="20.0" mnemonicParsing="false" text="Asignar Rutina" />
+                                    <Button fx:id="btnEliminarRutina" layoutX="697.0" layoutY="20.0" mnemonicParsing="false" styleClass="delete-button" text="Eliminar Rutina" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </HBox>
+                              <TableView fx:id="tablaRutinas" prefHeight="461.0" prefWidth="800.0" VBox.vgrow="ALWAYS">
+                                <columns>
+                                  <TableColumn fx:id="colNombreRutina" prefWidth="150.0" text="Nombre" />
+                                  <TableColumn fx:id="colDescripcionRutina" prefWidth="250.0" text="Descripción" />
+                                  <TableColumn fx:id="colFechaRutina" prefWidth="100.0" text="Fecha" />
+                                  <TableColumn fx:id="colClientesAsignadosRutina" prefWidth="150.0" text="Clientes Asignados" />
+                                </columns>
+                              </TableView>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab fx:id="tabDietas" text="Mis Dietas Creadas">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox prefHeight="511.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
+                                 <children>
+                                    <Label styleClass="section-header" text="Dietas creadas:" />
+                                    <ComboBox fx:id="comboFiltroDietas" prefWidth="150.0" promptText="Filtrar por" />
+                                    <Region prefHeight="31.0" prefWidth="130.0" HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="btnCrearDieta" mnemonicParsing="false" text="Crear Dieta" />
+                                    <Button fx:id="btnModificarDieta" layoutX="704.0" layoutY="20.0" mnemonicParsing="false" text="Modificar Dieta" />
+                                    <Button fx:id="btnAsignarDieta" layoutX="704.0" layoutY="20.0" mnemonicParsing="false" text="Asignar Dieta" />
+                                    <Button fx:id="btnEliminarDieta" layoutX="704.0" layoutY="20.0" mnemonicParsing="false" styleClass="delete-button" text="Eliminar Dieta" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </HBox>
+                              <TableView fx:id="tablaDietas" prefHeight="461.0" prefWidth="800.0" VBox.vgrow="ALWAYS">
+                                <columns>
+                                  <TableColumn fx:id="colNombreDieta" prefWidth="150.0" text="Nombre" />
+                                  <TableColumn fx:id="colDescripcionDieta" prefWidth="250.0" text="Descripción" />
+                                  <TableColumn fx:id="colFechaDieta" prefWidth="100.0" text="Fecha" />
+                                  <TableColumn fx:id="colClientesAsignadosDieta" prefWidth="150.0" text="Clientes Asignados" />
+                                </columns>
+                              </TableView>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab fx:id="tabTarifas" text="Mis Tarifas">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox prefHeight="511.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
+                                 <children>
+                                    <Label styleClass="section-header" text="Tarifas disponibles:" />
+                                    <ComboBox fx:id="comboFiltroPeriodo" prefWidth="150.0" promptText="Periodo" />
+                                    <Region prefHeight="31.0" prefWidth="116.0" HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="btnCrearTarifa" mnemonicParsing="false" text="Crear Tarifa" />
+                                    <Button fx:id="btnModificarTarifa" layoutX="701.0" layoutY="20.0" mnemonicParsing="false" text="Modificar Tarifa" />
+                                    <Button fx:id="btnEliminarTarifa" layoutX="701.0" layoutY="20.0" mnemonicParsing="false" styleClass="delete-button" text="Eliminar Tarifa" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </HBox>
+                              <TableView fx:id="tablaTarifas" prefHeight="461.0" prefWidth="800.0" VBox.vgrow="ALWAYS">
+                                <columns>
+                                  <TableColumn fx:id="colNombreTarifa" prefWidth="150.0" text="Nombre" />
+                                  <TableColumn fx:id="colPrecioTarifa" prefWidth="100.0" text="Precio" />
+                                  <TableColumn fx:id="colPeriodoTarifa" prefWidth="100.0" text="Periodo" />
+                                  <TableColumn fx:id="colDescripcionTarifa" prefWidth="200.0" text="Descripción" />
+                                </columns>
+                              </TableView>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab fx:id="tabRevisiones" text="Revisiones Realizadas">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox prefHeight="511.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
+                                 <children>
+                                    <Label styleClass="section-header" text="Historial de revisiones realizadas:" />
+                                    <ComboBox fx:id="comboFiltroRevisiones" prefWidth="150.0" promptText="Filtrar por cliente" />
+                                    <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="btnNuevaRevision" mnemonicParsing="false" text="Nueva Revisión" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </HBox>
+                              <TableView fx:id="tablaRevisiones" prefHeight="461.0" prefWidth="800.0" VBox.vgrow="ALWAYS">
+                                <columns>
+                                  <TableColumn fx:id="colFechaRevision" prefWidth="100.0" text="Fecha" />
+                                  <TableColumn fx:id="colClienteRevision" prefWidth="150.0" text="Cliente" />
+                                  <TableColumn fx:id="colPesoRevision" prefWidth="80.0" text="Peso" />
+                                  <TableColumn fx:id="colGrasaRevision" prefWidth="80.0" text="Grasa %" />
+                                  <TableColumn fx:id="colMusculoRevision" prefWidth="80.0" text="Músculo %" />
+                                  <TableColumn fx:id="colPechoRevision" prefWidth="80.0" text="Pecho" />
+                                  <TableColumn fx:id="colCinturaRevision" prefWidth="80.0" text="Cintura" />
+                                  <TableColumn fx:id="colCaderaRevision" prefWidth="80.0" text="Cadera" />
+                                  <TableColumn fx:id="colObservacionesRevision1" prefWidth="180.0" text="Observaciones" />
+                                </columns>
+                              </TableView>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+   </center>
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="800.0" spacing="10.0" styleClass="bottom-bar" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="btnCerrarSesion" mnemonicParsing="false" onAction="#cerrarSesion" styleClass="logout-button" text="Cerrar Sesión" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+         </padding>
+      </HBox>
+   </bottom>
+</BorderPane>

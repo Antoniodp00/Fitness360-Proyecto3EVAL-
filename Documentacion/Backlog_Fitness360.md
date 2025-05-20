@@ -12,39 +12,42 @@
 - [x] Crear estructura del proyecto Java con paquetes: `model`, `dao`, `util`, `controller`, `view`
 - [x] Crear la base de datos con el script SQL completo
 - [x] Implementar todas las clases modelo con sus atributos (ya hecho)
-- [ ] Configurar conexión JDBC con MySQL
-- [ ] Crear clase `DBUtil` para gestionar la conexión a base de datos
-- [ ] Crear primeras pruebas de conexión y consultas básicas
+- [x] Configurar conexión JDBC con MySQL
+- [x] Crear clase `DBUtil` para gestionar la conexión a base de datos
+- [x] Crear primeras pruebas de conexión y consultas básicas
 
 ---
 
 ## 🧱 Sprint 2: 28 de abril al 4 de mayo
 **Objetivo:** Crear DAOs e implementar CRUD básico
 
-- [ ] DAO para `Usuario`, `Cliente`, `Empleado`
-- [ ] DAO para `Dieta`, `Rutina`, `Tarifa`, `Revisión`
-- [ ] DAO para tablas intermedias (`Cliente_Dieta`, etc.)
-- [ ] CRUD en consola para probar inserción, lectura, modificación y eliminación
+- [x]  DAO para `Cliente`, `Empleado`
+- [x]  DAO para `Dieta`, `Rutina`, `Tarifa`, `Revisión`
+- [x]  DAO para tablas intermedias (`Cliente_Dieta`, etc.)
+- [x]  CRUD en consola para probar inserción, lectura, modificación y eliminación
 
 ---
 
 ## 🎨 Sprint 3: 5 al 10 de mayo
 **Objetivo:** Integrar JavaFX y crear las primeras interfaces
 
-- [ ] Crear estructura de carpetas para `FXML`, `css`, etc.
-- [ ] Ventana de Login + validación con hash de contraseña
-- [ ] Registro de nuevo usuario con selección de tipo (cliente o profesional)
-- [ ] Ventana principal según el tipo de usuario
-- [ ] Carga de datos desde la BD con JavaFX (por ejemplo, tabla de rutinas asignadas)
+- [x]  Crear estructura de carpetas para `FXML`, `css`, etc.
+- [x]  Ventana de Login + validación con hash de contraseña
+- [x] Registro de nuevo usuario con selección de tipo (cliente o profesional)
+- [x] Ventana principal según el tipo de usuario
+- [x] Carga de datos desde la BD con JavaFX (por ejemplo, tabla de rutinas asignadas)
 
 ---
 
 ## 🧠 Sprint 4: 11 al 15 de mayo
 **Objetivo:** Funcionalidades avanzadas
 
-- [ ] Asignar rutinas o dietas por parte del profesional
-- [ ] Mostrar las revisiones asociadas a un cliente
-- [ ] Crear nueva revisión (por parte del profesional)
+
+- [x] Asignar rutinas o dietas por parte del profesional
+- [x] Mostrar las revisiones asociadas a un cliente
+- [x] Crear nueva revisión (por parte del profesional)
+- [x] Controlar cambios de tarifa, estado y fechas
+
 
 ---
 

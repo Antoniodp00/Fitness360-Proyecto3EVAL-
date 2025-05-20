@@ -1,17 +1,17 @@
-/* Main application styles */
+
 
 .root {
     -fx-font-family: "Segoe UI", Arial, sans-serif;
     -fx-background-color: #f5f5f5;
 }
 
-/* Label styles */
+
 .label {
     -fx-font-size: 14px;
     -fx-text-fill: #333333;
 }
 
-/* Button styles */
+
 .button {
     -fx-background-color: #4CAF50;
     -fx-text-fill: white;
@@ -25,52 +25,52 @@
     -fx-cursor: hand;
 }
 
-/* Delete/Cancel button styles */
+
 #cancelarButton, .delete-button {
     -fx-background-color: #f44336;
 }
 
-/* Error message style */
+
 #errorMessage {
     -fx-text-fill: red;
 }
 
-/* Header styles */
+
 .header-label {
     -fx-font-weight: bold;
     -fx-font-size: 24px;
 }
 
-/* Section header styles */
+
 .section-header {
     -fx-font-weight: bold;
     -fx-font-size: 14px;
 }
 
-/* Top navigation bar */
+
 .top-bar {
     -fx-background-color: #4CAF50;
 }
 
-/* User welcome text in top bar */
+
 .user-welcome {
     -fx-text-fill: white;
     -fx-font-size: 14px;
 }
 
-/* Main title in top bar */
+
 .main-title {
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-font-size: 24px;
 }
 
-/* Bottom bar */
+
 .bottom-bar {
     -fx-background-color: #f5f5f5;
 }
 
-/* Logout button */
+
 .logout-button {
     -fx-background-color: #f44336;
     -fx-text-fill: white;

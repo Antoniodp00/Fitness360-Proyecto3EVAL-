@@ -194,3 +194,6 @@ Caused by: java.sql.SQLSyntaxErrorException: You have an error in your SQL synta
 	at com.dam.adp.fitness360proyecto3eval/com.dam.adp.fitness360proyecto3eval.DAO.ClienteTarifaDAO.findByCliente(ClienteTarifaDAO.java:93)
 	... 70 common frames omitted
 2025-05-19 20:08:01 [ERROR] [c.d.a.f.utilidades.Utilidades] - Fecha de nacimiento indica usuario demasiado joven: 2025-01-14
+2025-05-20 10:50:17 [ERROR] [c.d.a.f.utilidades.Utilidades] - Validación fallida: El campo medida de cintura no puede estar vacío
+2025-05-20 10:52:16 [ERROR] [c.d.a.f.utilidades.Utilidades] - Validación fallida: El campo peso no puede estar vacío
+2025-05-20 11:06:05 [ERROR] [c.d.a.f.utilidades.Utilidades] - Validación fallida: El campo contraseña no puede estar vacío

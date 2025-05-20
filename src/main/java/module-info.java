@@ -11,8 +11,8 @@ module com.dam.adp.fitness360proyecto3eval {
     opens com.dam.adp.fitness360proyecto3eval.controller to javafx.fxml;
 
     exports com.dam.adp.fitness360proyecto3eval.controller;
-    exports com.dam.adp.fitness360proyecto3eval.views;
     exports com.dam.adp.fitness360proyecto3eval.model;
     exports com.dam.adp.fitness360proyecto3eval.DAO;
     exports com.dam.adp.fitness360proyecto3eval.utilidades;
+    exports com.dam.adp.fitness360proyecto3eval;
 }

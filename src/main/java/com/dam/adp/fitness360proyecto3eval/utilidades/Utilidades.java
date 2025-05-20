@@ -38,6 +38,7 @@ public class Utilidades {
      * @throws EmailInvalidoException si el formato del correo es inválido.
      */
     public static boolean validarEmail(String email) {
+        boolean esValido = true;
         if (email == null || email.trim().isEmpty()) {
             logger.error("Validación fallida: El correo electrónico no puede estar vacío");
             throw new EmailInvalidoException("El correo electrónico no puede estar vacío");
@@ -47,7 +48,7 @@ public class Utilidades {
             throw new EmailInvalidoException("Formato de correo electrónico inválido");
         }
         logger.debug("Correo electrónico validado correctamente: {}", email);
-        return true;
+        return esValido;
     }
 
     /**
@@ -59,12 +60,13 @@ public class Utilidades {
      * @throws CampoVacioException si el texto está vacío.
      */
     public static boolean validarCampoNoVacio(String texto, String nombreCampo) {
+        boolean esValido = true;
         if (texto == null || texto.trim().isEmpty()) {
             logger.error("Validación fallida: El campo {} no puede estar vacío", nombreCampo);
             throw new CampoVacioException("El campo " + nombreCampo + " no puede estar vacío");
         }
         logger.debug("Campo {} validado correctamente", nombreCampo);
-        return true;
+        return esValido;
     }
 
     /**
@@ -80,11 +82,13 @@ public class Utilidades {
         if (!valor.matches(integerRegex)) {
             throw new EnteroInvalidoException("El campo " + nombreCampo + " debe ser un número entero");
         }
+        int resultado;
         try {
-            return Integer.parseInt(valor);
+            resultado = Integer.parseInt(valor);
         } catch (NumberFormatException e) {
             throw new EnteroInvalidoException("El campo " + nombreCampo + " debe ser un número entero válido");
         }
+        return resultado;
     }
 
     /**
@@ -116,11 +120,13 @@ public class Utilidades {
         if (!valor.matches(decimalRegex)) {
             throw new DecimalInvalidoException("El campo " + nombreCampo + " debe ser un número decimal");
         }
+        double resultado;
         try {
-            return Double.parseDouble(valor);
+            resultado = Double.parseDouble(valor);
         } catch (NumberFormatException e) {
             throw new DecimalInvalidoException("El campo " + nombreCampo + " debe ser un número decimal válido");
         }
+        return resultado;
     }
 
     /**
@@ -148,11 +154,12 @@ public class Utilidades {
      * @throws TelefonoInvalidoException si el formato del teléfono es inválido.
      */
     public static boolean validarTelefono(String telefono, String nombreCampo) {
+        boolean esValido = true;
         validarCampoNoVacio(telefono, nombreCampo);
         if (!telefono.matches(phoneRegex)) {
             throw new TelefonoInvalidoException("El campo " + nombreCampo + " debe ser un número de teléfono válido (9 dígitos)");
         }
-        return true;
+        return esValido;
     }
 
     /**
@@ -164,10 +171,11 @@ public class Utilidades {
      * @throws FechaInvalidaException si la fecha es nula.
      */
     public static boolean validarFecha(LocalDate fecha, String nombreCampo) {
+        boolean esValido = true;
         if (fecha == null) {
             throw new FechaInvalidaException("El campo " + nombreCampo + " debe tener una fecha seleccionada");
         }
-        return true;
+        return esValido;
     }
 
     /**
@@ -179,11 +187,12 @@ public class Utilidades {
      * @throws FechaNoFuturaException si la fecha es anterior a la fecha actual.
      */
     public static boolean validarFechaFutura(LocalDate fecha, String nombreCampo) {
+        boolean esValido = true;
         validarFecha(fecha, nombreCampo);
         if (fecha.isBefore(LocalDate.now())) {
             throw new FechaNoFuturaException("El campo " + nombreCampo + " debe ser una fecha futura o actual");
         }
-        return true;
+        return esValido;
     }
 
     /**
@@ -195,10 +204,11 @@ public class Utilidades {
      * @throws ComboBoxVacioException si el ComboBox no tiene un valor seleccionado.
      */
     public static boolean validarComboBox(ComboBox<?> comboBox, String nombreCampo) {
+        boolean esValido = true;
         if (comboBox.getValue() == null) {
             throw new ComboBoxVacioException("Debe seleccionar un valor para " + nombreCampo);
         }
-        return true;
+        return esValido;
     }
 
     /**
@@ -210,12 +220,13 @@ public class Utilidades {
      * @throws PasswordsNoCoincidentesException si las contraseñas no coinciden.
      */
     public static boolean validarPasswordsCoinciden(String password, String confirmPassword) {
+        boolean esValido = true;
         validarCampoNoVacio(password, "contraseña");
         validarCampoNoVacio(confirmPassword, "confirmación de contraseña");
         if (!password.equals(confirmPassword)) {
             throw new PasswordsNoCoincidentesException("Las contraseñas no coinciden");
         }
-        return true;
+        return esValido;
     }
 
     /**
@@ -241,11 +252,14 @@ public class Utilidades {
      * @return La fecha formateada como String
      */
     public static String formatearFechaEspanol(Date fecha) {
+        String fechaFormateada;
         if (fecha == null) {
-            return "";
+            fechaFormateada = "";
+        } else {
+            SimpleDateFormat format = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
+            fechaFormateada = format.format(fecha);
         }
-        SimpleDateFormat format = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
-        return format.format(fecha);
+        return fechaFormateada;
     }
 
     /**
@@ -258,11 +272,11 @@ public class Utilidades {
      * @throws FechaNacimientoInvalidaException si la fecha no cumple con los criterios.
      */
     public static boolean validarFechaNacimiento(LocalDate fechaNacimiento, String nombreCampo) {
+        boolean esValido = true;
         validarFecha(fechaNacimiento, nombreCampo);
 
         LocalDate hoy = LocalDate.now();
         logger.debug("Validando fecha de nacimiento: {}, campo: {}", fechaNacimiento, nombreCampo);
-
         // Verificar que la fecha no sea demasiado antigua (más de 120 años)
         LocalDate fechaMinima = hoy.minusYears(120);
         if (fechaNacimiento.isBefore(fechaMinima)) {
@@ -278,6 +292,6 @@ public class Utilidades {
         }
 
         logger.debug("Fecha de nacimiento validada correctamente: {}", fechaNacimiento);
-        return true;
+        return esValido;
     }
 }

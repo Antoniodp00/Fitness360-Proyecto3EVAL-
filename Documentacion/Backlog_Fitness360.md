@@ -54,10 +54,10 @@
 ## ✅ Sprint Final: 16 al 20 de mayo
 **Objetivo:** Pulir, probar y preparar la entrega
 
-- [ ] Pruebas completas con distintos perfiles
-- [ ] Validación de formularios y manejo de errores
-- [ ] Documentación del código (comentarios + guía uso)
-- [ ] Preparar entrega final: ZIP del proyecto + script BD
+- [x] Pruebas completas con distintos perfiles
+- [x] Validación de formularios y manejo de errores
+- [x] Documentación del código (comentarios + guía uso)
+- [x] Preparar entrega final: ZIP del proyecto + script BD
 
 ---
 

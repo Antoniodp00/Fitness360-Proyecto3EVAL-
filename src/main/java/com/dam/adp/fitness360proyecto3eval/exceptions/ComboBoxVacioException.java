@@ -6,7 +6,7 @@ package com.dam.adp.fitness360proyecto3eval.exceptions;
  * Esta excepción se lanza cuando un ComboBox que debería tener un valor seleccionado
  * no tiene ninguna selección.
  */
-public class ComboBoxVacioException extends RuntimeException {
+public class ComboBoxVacioException extends ValidacionException {
     /**
      * Constructor de la excepción que permite especificar un mensaje de error.
      *

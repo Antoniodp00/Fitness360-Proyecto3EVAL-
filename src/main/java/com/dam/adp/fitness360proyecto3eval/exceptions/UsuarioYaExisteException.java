@@ -5,7 +5,7 @@ package com.dam.adp.fitness360proyecto3eval.exceptions;
  * Esta excepción se lanza cuando un usuario intenta realizar un registro de un usuario existente.
  */
 
-public class UsuarioYaExisteException extends RuntimeException {
+public class UsuarioYaExisteException extends ValidacionException {
     /**
      * Constructor de la excepción que permite especificar un mensaje de error.
      *

@@ -1,6 +1,7 @@
 package com.dam.adp.fitness360proyecto3eval.controller;
 
 import com.dam.adp.fitness360proyecto3eval.DAO.*;
+import com.dam.adp.fitness360proyecto3eval.exceptions.ValidacionException;
 import com.dam.adp.fitness360proyecto3eval.model.*;
 import com.dam.adp.fitness360proyecto3eval.model.Sesion;
 import com.dam.adp.fitness360proyecto3eval.utilidades.Utilidades;
@@ -350,37 +351,37 @@ public class MainViewClienteController {
 
         colPesoRevision.setCellValueFactory(cellData -> {
             Double peso = cellData.getValue().getPeso();
-            String textoPeso = (peso != null) ? String.format("%.2f", peso) + " kg" : "N/D";
+            String textoPeso = String.format("%.2f", peso) + " kg";
             return new SimpleStringProperty(textoPeso);
         });
 
         colGrasaRevision.setCellValueFactory(cellData -> {
             Double grasa = cellData.getValue().getGrasa();
-            String textoGrasa = (grasa != null) ? String.format("%.2f", grasa) + " %" : "N/D";
+            String textoGrasa = String.format("%.2f", grasa) + " %";
             return new SimpleStringProperty(textoGrasa);
         });
 
         colMusculoRevision.setCellValueFactory(cellData -> {
             Double musculo = cellData.getValue().getMusculo();
-            String textoMusculo = (musculo != null) ? String.format("%.2f", musculo) + " %" : "N/D";
+            String textoMusculo = String.format("%.2f", musculo) + " %";
             return new SimpleStringProperty(textoMusculo);
         });
 
         colPechoRevision.setCellValueFactory(cellData -> {
             Double pecho = cellData.getValue().getmPecho();
-            String textoPecho = (pecho != null) ? String.format("%.2f", pecho) + " cm" : "N/D";
+            String textoPecho = String.format("%.2f", pecho) + " cm";
             return new SimpleStringProperty(textoPecho);
         });
 
         colCinturaRevision.setCellValueFactory(cellData -> {
             Double cintura = cellData.getValue().getmCintura();
-            String textoCintura = (cintura != null) ? String.format("%.2f", cintura) + " cm" : "N/D";
+            String textoCintura = String.format("%.2f", cintura) + " cm";
             return new SimpleStringProperty(textoCintura);
         });
 
         colCaderaRevision.setCellValueFactory(cellData -> {
             Double cadera = cellData.getValue().getmCadera();
-            String textoCadera = (cadera != null) ? String.format("%.2f", cadera) + " cm" : "N/D";
+            String textoCadera = String.format("%.2f", cadera) + " cm";
             return new SimpleStringProperty(textoCadera);
         });
 
@@ -664,7 +665,7 @@ public class MainViewClienteController {
                     cargarMisTarifas();
                     Utilidades.mostrarAlerta("Tarifa Asignada", "Tarifa asignada correctamente", Alert.AlertType.INFORMATION);
                 }
-            } catch (RuntimeException e) {
+            } catch (ValidacionException e) {
                 System.err.println("Error al asignar la tarifa: " + e.getMessage());
                 Utilidades.mostrarAlerta("Error", "No se pudo asignar la tarifa", Alert.AlertType.ERROR);
             }

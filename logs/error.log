@@ -197,3 +197,10 @@ Caused by: java.sql.SQLSyntaxErrorException: You have an error in your SQL synta
 2025-05-20 10:50:17 [ERROR] [c.d.a.f.utilidades.Utilidades] - Validación fallida: El campo medida de cintura no puede estar vacío
 2025-05-20 10:52:16 [ERROR] [c.d.a.f.utilidades.Utilidades] - Validación fallida: El campo peso no puede estar vacío
 2025-05-20 11:06:05 [ERROR] [c.d.a.f.utilidades.Utilidades] - Validación fallida: El campo contraseña no puede estar vacío
+2025-05-21 13:00:53 [ERROR] [c.d.a.f.utilidades.Utilidades] - Validación fallida: El campo nombre de usuario no puede estar vacío
+2025-05-21 13:01:00 [ERROR] [c.d.a.f.utilidades.Utilidades] - Validación fallida: El campo nombre de usuario no puede estar vacío
+2025-05-21 13:01:08 [ERROR] [c.d.a.f.utilidades.Utilidades] - Validación fallida: El campo nombre no puede estar vacío
+2025-05-21 13:01:14 [ERROR] [c.d.a.f.utilidades.Utilidades] - Validación fallida: El campo apellidos no puede estar vacío
+2025-05-21 13:01:17 [ERROR] [c.d.a.f.utilidades.Utilidades] - Validación fallida: El correo electrónico no puede estar vacío
+2025-05-21 13:01:20 [ERROR] [c.d.a.f.utilidades.Utilidades] - Validación fallida: Formato de correo electrónico inválido: a
+2025-05-21 13:01:28 [ERROR] [c.d.a.f.utilidades.Utilidades] - Validación fallida: Formato de correo electrónico inválido: a@.cpom

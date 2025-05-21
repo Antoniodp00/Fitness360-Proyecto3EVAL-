@@ -6,7 +6,7 @@ package com.dam.adp.fitness360proyecto3eval.exceptions;
  * Esta excepción se lanza cuando un campo que debería contener un número decimal positivo
  * contiene un valor que es cero o negativo.
  */
-public class DecimalNoPositivoException extends RuntimeException {
+public class DecimalNoPositivoException extends ValidacionException {
     /**
      * Constructor de la excepción que permite especificar un mensaje de error.
      *

@@ -3,6 +3,7 @@ package com.dam.adp.fitness360proyecto3eval.controller;
 import com.dam.adp.fitness360proyecto3eval.DAO.RevisionDAO;
 import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioClienteDAO;
 import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioEmpleadoDAO;
+import com.dam.adp.fitness360proyecto3eval.exceptions.ValidacionException;
 import com.dam.adp.fitness360proyecto3eval.model.Revision;
 import com.dam.adp.fitness360proyecto3eval.model.UsuarioCliente;
 import com.dam.adp.fitness360proyecto3eval.model.UsuarioEmpleado;
@@ -37,11 +38,11 @@ public class RegistroRevisionController {
 
     private RevisionDAO revisionDAO = new RevisionDAO();
     private UsuarioClienteDAO clienteDAO = new UsuarioClienteDAO();
-    private UsuarioEmpleadoDAO empleadoDAO = new UsuarioEmpleadoDAO();
+
 
     private UsuarioEmpleado empladoAutenticado;
     private Revision revision;
-    private ObservableList<Revision> revisiones;
+
 
     private static final Logger logger = LoggerFactory.getLogger(RegistroRevisionController.class);
 
@@ -119,14 +120,6 @@ public class RegistroRevisionController {
         }
     }
 
-    /**
-     * Establece la lista de revisiones que se actualizará al guardar.
-     *
-     * @param revisiones La lista observable de revisiones
-     */
-    public void setRevisiones(ObservableList<Revision> revisiones) {
-        this.revisiones = revisiones;
-    }
 
     /**
      * Carga la lista de clientes con tarifas activas para un empleado específico.
@@ -237,7 +230,7 @@ public class RegistroRevisionController {
             Utilidades.validarDecimalPositivo(cinturaField.getText(), "medida de cintura");
             Utilidades.validarDecimalPositivo(caderaField.getText(), "medida de cadera");
 
-        } catch (IllegalArgumentException e) {
+        } catch (ValidacionException e) {
             logger.warn("Validación fallida: {}", e.getMessage());
             errores.append(e.getMessage()).append("\n");
             errorMessage.setText(errores.toString());
@@ -263,7 +256,7 @@ public class RegistroRevisionController {
         boolean registroExitoso = false;
 
         try {
-            UsuarioCliente cliente = (UsuarioCliente) clienteComboBox.getValue();
+            UsuarioCliente cliente = clienteComboBox.getValue();
             if (cliente == null) {
                 logger.error("Error al registrar revisión: cliente no seleccionado");
                 Utilidades.mostrarAlerta("Error", "Error al registrar la revision cliente vacio", Alert.AlertType.ERROR);

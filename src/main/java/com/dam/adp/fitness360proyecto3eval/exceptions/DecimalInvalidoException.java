@@ -6,7 +6,7 @@ package com.dam.adp.fitness360proyecto3eval.exceptions;
  * Esta excepción se lanza cuando un campo que debería contener un número decimal
  * contiene un valor que no puede ser convertido a decimal.
  */
-public class DecimalInvalidoException extends RuntimeException {
+public class DecimalInvalidoException extends ValidacionException {
     /**
      * Constructor de la excepción que permite especificar un mensaje de error.
      *

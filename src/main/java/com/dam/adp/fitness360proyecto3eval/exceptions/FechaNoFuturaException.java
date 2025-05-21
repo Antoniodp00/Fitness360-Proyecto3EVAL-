@@ -6,7 +6,7 @@ package com.dam.adp.fitness360proyecto3eval.exceptions;
  * Esta excepción se lanza cuando un campo que debería contener una fecha futura
  * contiene una fecha que es anterior a la fecha actual.
  */
-public class FechaNoFuturaException extends RuntimeException {
+public class FechaNoFuturaException extends ValidacionException {
     /**
      * Constructor de la excepción que permite especificar un mensaje de error.
      *

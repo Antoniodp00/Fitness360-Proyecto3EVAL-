@@ -34,7 +34,7 @@ public class RegistroDietaController {
 
     private UsuarioEmpleado empleadoAutenticado;
     private Dieta dieta;
-    private ObservableList<Dieta> dietas;
+
 
     private static final Logger logger = LoggerFactory.getLogger(RegistroDietaController.class);
 
@@ -84,14 +84,6 @@ public class RegistroDietaController {
         }
     }
 
-    /**
-     * Establece la lista de dietas que se actualizará al guardar.
-     *
-     * @param dietas La lista observable de dietas
-     */
-    public void setDietas(ObservableList<Dieta> dietas) {
-        this.dietas = dietas;
-    }
 
     /**
      * Carga la lista de clientes con tarifas activas para un empleado específico.

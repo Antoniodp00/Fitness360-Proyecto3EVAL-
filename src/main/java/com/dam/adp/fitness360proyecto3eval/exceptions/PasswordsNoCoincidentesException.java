@@ -6,7 +6,7 @@ package com.dam.adp.fitness360proyecto3eval.exceptions;
  * Esta excepción se lanza cuando las contraseñas ingresadas en los campos de contraseña
  * y confirmación de contraseña no son iguales.
  */
-public class PasswordsNoCoincidentesException extends RuntimeException {
+public class PasswordsNoCoincidentesException extends ValidacionException {
     /**
      * Constructor de la excepción que permite especificar un mensaje de error.
      *

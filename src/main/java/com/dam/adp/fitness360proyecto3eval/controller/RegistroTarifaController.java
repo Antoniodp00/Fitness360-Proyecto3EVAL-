@@ -30,7 +30,7 @@ public class RegistroTarifaController {
 
     private UsuarioEmpleado empleadoAutenticado;
     private Tarifa tarifa;
-    private ObservableList<Tarifa> tarifas;
+
 
     private static final Logger logger = LoggerFactory.getLogger(RegistroTarifaController.class);
 
@@ -56,7 +56,7 @@ public class RegistroTarifaController {
 
     /**
      * Establece el empleado autenticado que creará la tarifa.
-     * 
+     *
      * @param empleadoAutenticado El empleado autenticado en el sistema
      */
     public void setEmpleadoAutenticado(UsuarioEmpleado empleadoAutenticado) {
@@ -92,15 +92,6 @@ public class RegistroTarifaController {
             periodoComboBox.getSelectionModel().clearSelection();
             logger.debug("Campos limpiados correctamente");
         }
-    }
-
-    /**
-     * Establece la lista de tarifas que se actualizará al guardar.
-     *
-     * @param tarifas La lista observable de tarifas
-     */
-    public void setTarifas(ObservableList<Tarifa> tarifas) {
-        this.tarifas = tarifas;
     }
 
     /**
@@ -176,7 +167,7 @@ public class RegistroTarifaController {
             Utilidades.validarComboBox(periodoComboBox, "periodo");
 
             logger.debug("Validación de campos exitosa");
-        } catch (IllegalArgumentException e) {
+        } catch (ValidacionException e) {
             logger.warn("Validación fallida: {}", e.getMessage());
             errores.append(e.getMessage()).append("\n");
             errorMessage.setText(errores.toString());
@@ -198,15 +189,12 @@ public class RegistroTarifaController {
         boolean registroExitoso = false;
 
         try {
-            // Validar y obtener el precio como número decimal positivo
-            logger.debug("Validando precio como decimal positivo");
-            double precio = Utilidades.validarDecimalPositivo(precioTarifaField.getText(), "precio");
 
             logger.debug("Creando objeto de tarifa con los datos del formulario");
             Tarifa tarifa = new Tarifa();
             tarifa.setNombre(nombreTarifaField.getText().trim());
             tarifa.setDescripcion(descripcionTarifaField.getText().trim());
-            tarifa.setPrecio(precio);
+            tarifa.setPrecio(Double.parseDouble(precioTarifaField.getText().trim()));
             tarifa.setPeriodo(periodoComboBox.getValue());
             tarifa.setCreador(empleadoAutenticado);
 
@@ -214,11 +202,7 @@ public class RegistroTarifaController {
             tarifaDAO.insert(tarifa);
             logger.info("Tarifa '{}' registrada correctamente", tarifa.getNombre());
             registroExitoso = true;
-        } catch (IllegalArgumentException e) {
-            logger.warn("Validación fallida: {}", e.getMessage());
-            errorMessage.setText(e.getMessage());
-            errorMessage.setVisible(true);
-        } catch (Exception e) {
+        }   catch (Exception e) {
             logger.error("Error al registrar la tarifa: {}", e.getMessage(), e);
             e.printStackTrace();
             Utilidades.mostrarAlerta("Error","Error al registrar la tarifa: " + e.getMessage(), Alert.AlertType.ERROR);

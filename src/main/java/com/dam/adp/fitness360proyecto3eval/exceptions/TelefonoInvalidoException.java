@@ -6,7 +6,7 @@ package com.dam.adp.fitness360proyecto3eval.exceptions;
  * Esta excepción se lanza cuando un campo que debería contener un número de teléfono
  * no cumple con el formato esperado (por ejemplo, no tiene 9 dígitos).
  */
-public class TelefonoInvalidoException extends RuntimeException {
+public class TelefonoInvalidoException extends ValidacionException {
     /**
      * Constructor de la excepción que permite especificar un mensaje de error.
      *

@@ -5,7 +5,7 @@ package com.dam.adp.fitness360proyecto3eval.exceptions;
  *
  * Esta excepción se lanza cuando un campo requerido está vacío o solo contiene espacios en blanco.
  */
-public class CampoVacioException extends RuntimeException {
+public class CampoVacioException extends ValidacionException {
     /**
      * Constructor de la excepción que permite especificar un mensaje de error.
      *

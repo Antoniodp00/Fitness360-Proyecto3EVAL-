@@ -149,36 +149,36 @@ public class RegistroController {
         errorMessage.setVisible(false);
 
         // Validar campos comunes
-        if (!validarCamposComunes()) {
+        if (validarCamposComunes()) {
+            logger.warn("Validación de campos comunes correcta");
+            try {
+                boolean registroExitoso = false;
+
+                // Registrar según el tipo de usuario
+                if (clienteRadio.isSelected()) {
+                    logger.info("Registrando nuevo cliente");
+                    registroExitoso = registrarCliente();
+                } else {
+                    logger.info("Registrando nuevo profesional");
+                    registroExitoso = registrarEmpleado();
+                }
+
+                // Solo mostrar mensaje de éxito y redirigir si el registro fue exitoso
+                if (registroExitoso) {
+                    logger.info("Registro de usuario completado con éxito");
+                    Utilidades.mostrarAlerta("Registro exitoso", "Usuario registrado correctamente", Alert.AlertType.INFORMATION);
+                    irALogin();
+                } else {
+                    logger.warn("El registro de usuario no fue exitoso");
+                }
+            } catch (ValidacionException e) {
+                // Mostrar mensaje específico para usuario ya existente
+                logger.error("Error al registrar usuario: {}", e.getMessage(), e);
+                errorMessage.setText("Error: " + e.getMessage());
+                errorMessage.setVisible(true);
+            }
+        }else {
             logger.warn("Validación de campos comunes fallida");
-            return;
-        }
-
-        try {
-            boolean registroExitoso = false;
-
-            // Registrar según el tipo de usuario
-            if (clienteRadio.isSelected()) {
-                logger.info("Registrando nuevo cliente");
-                registroExitoso = registrarCliente();
-            } else {
-                logger.info("Registrando nuevo profesional");
-                registroExitoso = registrarEmpleado();
-            }
-
-            // Solo mostrar mensaje de éxito y redirigir si el registro fue exitoso
-            if (registroExitoso) {
-                logger.info("Registro de usuario completado con éxito");
-                Utilidades.mostrarAlerta("Registro exitoso", "Usuario registrado correctamente", Alert.AlertType.INFORMATION);
-                irALogin();
-            } else {
-                logger.warn("El registro de usuario no fue exitoso");
-            }
-        } catch (UsuarioYaExisteException e) {
-            // Mostrar mensaje específico para usuario ya existente
-            logger.error("Error al registrar usuario: {}", e.getMessage(), e);
-            errorMessage.setText("Error: " + e.getMessage());
-            errorMessage.setVisible(true);
         }
     }
 
@@ -219,7 +219,7 @@ public class RegistroController {
             Utilidades.validarComboBox(sexoComboBox, "sexo");
 
             logger.debug("Validación de campos comunes exitosa");
-        } catch (RuntimeException e) {
+        } catch (ValidacionException e) {
             logger.warn("Validación fallida: {}", e.getMessage());
             errores.append("Error: ").append(e.getMessage());
             errorMessage.setText(errores.toString());

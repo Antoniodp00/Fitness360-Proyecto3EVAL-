@@ -2,6 +2,7 @@ package com.dam.adp.fitness360proyecto3eval.controller;
 
 import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioClienteDAO;
 import com.dam.adp.fitness360proyecto3eval.DAO.UsuarioEmpleadoDAO;
+import com.dam.adp.fitness360proyecto3eval.exceptions.ValidacionException;
 import com.dam.adp.fitness360proyecto3eval.model.Estado;
 import com.dam.adp.fitness360proyecto3eval.model.Usuario;
 import com.dam.adp.fitness360proyecto3eval.model.UsuarioCliente;
@@ -151,7 +152,7 @@ public class LoginController {
             Utilidades.validarCampoNoVacio(passwordField.getText(), "contraseña");
 
             logger.debug("Validación de campos exitosa");
-        } catch (RuntimeException e) {
+        } catch (ValidacionException e) {
             logger.warn("Validación fallida: {}", e.getMessage());
             errores.append("Error: ").append(e.getMessage());
             errorMessage.setText(errores.toString());

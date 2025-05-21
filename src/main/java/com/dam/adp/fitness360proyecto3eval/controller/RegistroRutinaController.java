@@ -1,5 +1,6 @@
 package com.dam.adp.fitness360proyecto3eval.controller;
 
+import com.dam.adp.fitness360proyecto3eval.exceptions.ValidacionException;
 import com.dam.adp.fitness360proyecto3eval.model.*;
 import com.dam.adp.fitness360proyecto3eval.DAO.ClienteRutinaDAO;
 import com.dam.adp.fitness360proyecto3eval.DAO.RutinaDAO;
@@ -76,7 +77,6 @@ public class RegistroRutinaController {
     private UsuarioCliente clienteAutenticado;
     private UsuarioEmpleado empleadoAutenticado;
     private Rutina rutina;
-    private ObservableList<Rutina> rutinas;
 
     private static final Logger logger = LoggerFactory.getLogger(RegistroRutinaController.class);
 
@@ -209,16 +209,6 @@ public class RegistroRutinaController {
         }
     }
 
-
-    /**
-     * Establece la lista de rutinas que se actualizará al guardar.
-     *
-     * @param rutinas La lista observable de rutinas
-     */
-    public void setRutinas(ObservableList<Rutina> rutinas) {
-        this.rutinas = rutinas;
-    }
-
     /**
      * Carga la lista de clientes con tarifas activas para un empleado específico.
      *
@@ -296,15 +286,6 @@ public class RegistroRutinaController {
                     Utilidades.mostrarAlerta("Error", "Error al actualizar la rutina: " + e.getMessage(), Alert.AlertType.ERROR);
                 }
             } else {
-                // Verificar si el empleado es dietista (comprobación adicional de seguridad)
-                if (empleadoAutenticado != null && empleadoAutenticado.getEspecialidad() == Especialidad.DIETISTA) {
-                    logger.warn("Intento de crear rutina por un dietista, acceso denegado");
-                    Utilidades.mostrarAlerta("Acceso denegado", "Los dietistas no pueden crear rutinas.", Alert.AlertType.ERROR);
-                    Stage stage = (Stage) nombreRutinaField.getScene().getWindow();
-                    stage.close();
-                    return;
-                }
-
                 // Determinar el tipo de creador basado en el usuario autenticado
                 if (clienteAutenticado != null || clienteRadio.isSelected()) {
                     logger.info("Creando nueva rutina por cliente");
@@ -359,7 +340,7 @@ public class RegistroRutinaController {
                 logger.debug("Empleado autenticado, la asignación de cliente es opcional");
                 // La asignación de cliente ahora es opcional
             }
-        } catch (IllegalArgumentException e) {
+        } catch (ValidacionException e) {
             logger.warn("Validación fallida: {}", e.getMessage());
             errores.append(e.getMessage()).append("\n");
             errorMessage.setText(errores.toString());

@@ -41,18 +41,18 @@ public class MainViewEmpleadoController {
 
     // Tab Clientes
     public Tab tabClientes;
-    public ComboBox comboFiltroClientes;
+    //public ComboBox comboFiltroClientes; se usara en un futuro
     public TableView<UsuarioCliente> tablaClientes;
     public TableColumn<UsuarioCliente, String> colNombreCliente;
     public TableColumn<UsuarioCliente, String> colApellidosCliente;
     public TableColumn<UsuarioCliente, String> colEmailCliente;
     public TableColumn<UsuarioCliente, String> colTelefonoCliente;
     public TableColumn<UsuarioCliente, String> colFechaAltaCliente;
-    private ObservableList<UsuarioCliente> clientes = FXCollections.observableArrayList();
+    private final ObservableList<UsuarioCliente> clientes = FXCollections.observableArrayList();
 
     // Tab Rutinas
     public Tab tabRutinas;
-    public ComboBox comboFiltroRutinas;
+    //public ComboBox comboFiltroRutinas; se usara en un futuro
     public Button btnCrearRutina;
     public Button btnModificarRutina;
     public Button btnAsignarRutina;
@@ -62,11 +62,11 @@ public class MainViewEmpleadoController {
     public TableColumn<Rutina, String> colDescripcionRutina;
     public TableColumn<Rutina, String> colFechaRutina;
     public TableColumn<Rutina, String> colClientesAsignadosRutina;
-    private ObservableList<Rutina> rutinas = FXCollections.observableArrayList();
+    private final ObservableList<Rutina> rutinas = FXCollections.observableArrayList();
 
     // Tab Dietas
     public Tab tabDietas;
-    public ComboBox comboFiltroDietas;
+    //public ComboBox comboFiltroDietas; se usara en un futuro
     public Button btnCrearDieta;
     public Button btnModificarDieta;
     public Button btnAsignarDieta;
@@ -76,11 +76,11 @@ public class MainViewEmpleadoController {
     public TableColumn<Dieta, String> colDescripcionDieta;
     public TableColumn<Dieta, String> colFechaDieta;
     public TableColumn<Dieta, String> colClientesAsignadosDieta;
-    private ObservableList<Dieta> dietas = FXCollections.observableArrayList();
+    private final ObservableList<Dieta> dietas = FXCollections.observableArrayList();
 
     // Tab Tarifas
     public Tab tabTarifas;
-    public ComboBox comboFiltroPeriodo;
+    //public ComboBox comboFiltroPeriodo; se usara en un futuro
     public Button btnCrearTarifa;
     public Button btnModificarTarifa;
     public Button btnEliminarTarifa;
@@ -90,11 +90,11 @@ public class MainViewEmpleadoController {
     public TableColumn<Tarifa, String> colPeriodoTarifa;
     public TableColumn<Tarifa, String> colDescripcionTarifa;
     public TableColumn<Tarifa, String> colClientesAsignadosTarifa;
-    private ObservableList<Tarifa> tarifas = FXCollections.observableArrayList();
+    private final ObservableList<Tarifa> tarifas = FXCollections.observableArrayList();
 
     // Tab Revisiones
     public Tab tabRevisiones;
-    public ComboBox comboFiltroRevisiones;
+    //public ComboBox comboFiltroRevisiones; se usara en un futuro
     public Button btnNuevaRevision;
     public TableView<Revision> tablaRevisiones;
     public TableColumn<Revision, String> colFechaRevision;
@@ -107,7 +107,7 @@ public class MainViewEmpleadoController {
     public TableColumn<Revision, String> colCaderaRevision;
     public TableColumn<Revision, String> colObservacionesRevision1;
     public TableColumn<Revision, String> colAccionesRevision;
-    private ObservableList<Revision> revisiones = FXCollections.observableArrayList();
+    private final ObservableList<Revision> revisiones = FXCollections.observableArrayList();
 
     private UsuarioEmpleado empleadoAutenticado;
 
@@ -421,37 +421,37 @@ public class MainViewEmpleadoController {
                     );
             colPesoRevision.setCellValueFactory(cellData -> {
                 Double peso = cellData.getValue().getPeso();
-                String textoPeso = (peso != null) ? String.format("%.2f", peso) + " kg" : "N/D";
+                String textoPeso = String.format("%.2f", peso) + " kg";
                 return new SimpleStringProperty(textoPeso);
             });
 
             colGrasaRevision.setCellValueFactory(cellData -> {
                 Double grasa = cellData.getValue().getGrasa();
-                String textoGrasa = (grasa != null) ? String.format("%.2f", grasa) + " %" : "N/D";
+                String textoGrasa = String.format("%.2f", grasa) + " %";
                 return new SimpleStringProperty(textoGrasa);
             });
 
             colMusculoRevision.setCellValueFactory(cellData -> {
                 Double musculo = cellData.getValue().getMusculo();
-                String textoMusculo = (musculo != null) ? String.format("%.2f", musculo) + " %" : "N/D";
+                String textoMusculo = String.format("%.2f", musculo) + " %";
                 return new SimpleStringProperty(textoMusculo);
             });
 
             colPechoRevision.setCellValueFactory(cellData -> {
                 Double pecho = cellData.getValue().getmPecho();
-                String textoPecho = (pecho != null) ? String.format("%.2f", pecho) + " cm" : "N/D";
+                String textoPecho = String.format("%.2f", pecho) + " cm";
                 return new SimpleStringProperty(textoPecho);
             });
 
             colCinturaRevision.setCellValueFactory(cellData -> {
                 Double cintura = cellData.getValue().getmCintura();
-                String textoCintura = (cintura != null) ? String.format("%.2f", cintura) + " cm" : "N/D";
+                String textoCintura = String.format("%.2f", cintura) + " cm";
                 return new SimpleStringProperty(textoCintura);
             });
 
             colCaderaRevision.setCellValueFactory(cellData -> {
                 Double cadera = cellData.getValue().getmCadera();
-                String textoCadera = (cadera != null) ? String.format("%.2f", cadera) + " cm" : "N/D";
+                String textoCadera = String.format("%.2f", cadera) + " cm";
                 return new SimpleStringProperty(textoCadera);
             });
 
@@ -758,20 +758,6 @@ public class MainViewEmpleadoController {
     }
 
     /**
-     * Abre la ventana de modificación de revisión
-     *
-     * @param event El evento que desencadenó esta acción
-     */
-    public void manejarBotonEditarRevision(ActionEvent event) {
-        Revision revisionSeleccionada = tablaRevisiones.getSelectionModel().getSelectedItem();
-        if (revisionSeleccionada != null) {
-            mostrarFormularioAñadirEditarRevision(revisionSeleccionada);
-        } else {
-            Utilidades.mostrarAlerta("Selección requerida", "Por favor, seleccione una revisión para editar", Alert.AlertType.WARNING);
-        }
-    }
-
-    /**
      * Método para manejar el evento de crear rutina
      *
      * @param event El evento que desencadenó esta acción
@@ -779,7 +765,6 @@ public class MainViewEmpleadoController {
     public void manejarBotonCrearRutina(ActionEvent event) {
         abrirRegistroRutina(null);
     }
-
 
     /**
      * Maneja el evento de eliminar una rutina

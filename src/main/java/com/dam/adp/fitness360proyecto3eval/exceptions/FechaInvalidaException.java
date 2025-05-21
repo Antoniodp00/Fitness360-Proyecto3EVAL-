@@ -6,7 +6,7 @@ package com.dam.adp.fitness360proyecto3eval.exceptions;
  * Esta excepción se lanza cuando un campo que debería contener una fecha
  * contiene un valor nulo o un formato de fecha inválido.
  */
-public class FechaInvalidaException extends RuntimeException {
+public class FechaInvalidaException extends ValidacionException {
     /**
      * Constructor de la excepción que permite especificar un mensaje de error.
      *

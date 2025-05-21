@@ -6,7 +6,7 @@ package com.dam.adp.fitness360proyecto3eval.exceptions;
  * Esta excepción se lanza cuando se detecta un formato incorrecto en la dirección de correo electrónico
  * proporcionada por el usuario.
  */
-public class EmailInvalidoException extends RuntimeException {
+public class EmailInvalidoException extends ValidacionException {
 
     /**
      * Constructor de la excepción que permite especificar un mensaje de error.

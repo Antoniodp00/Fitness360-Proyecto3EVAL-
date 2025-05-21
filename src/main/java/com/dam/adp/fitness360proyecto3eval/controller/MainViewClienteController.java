@@ -114,12 +114,12 @@ public class MainViewClienteController {
 
     private UsuarioCliente clienteAutenticado;
 
-     private final ClienteTarifaDAO clienteTarifaDAO = new ClienteTarifaDAO();
-     private final ClienteRutinaDAO clienteRutinaDAO = new ClienteRutinaDAO();
-     private final ClienteDietaDAO clienteDietaDAO = new ClienteDietaDAO();
-     private final RevisionDAO revisionDAO = new RevisionDAO();
-     private final UsuarioEmpleadoDAO usuarioEmpleadoDAO = new UsuarioEmpleadoDAO();
-     private final TarifaDAO tarifaDAO = new TarifaDAO();
+    private final ClienteTarifaDAO clienteTarifaDAO = new ClienteTarifaDAO();
+    private final ClienteRutinaDAO clienteRutinaDAO = new ClienteRutinaDAO();
+    private final ClienteDietaDAO clienteDietaDAO = new ClienteDietaDAO();
+    private final RevisionDAO revisionDAO = new RevisionDAO();
+    private final UsuarioEmpleadoDAO usuarioEmpleadoDAO = new UsuarioEmpleadoDAO();
+    private final TarifaDAO tarifaDAO = new TarifaDAO();
 
 
     /**
@@ -448,9 +448,9 @@ public class MainViewClienteController {
         logger.debug("Configurando columnas de la tabla de tarifas");
         colNombreTarifa.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getNombre())
-                );
-        colPrecioTarifa.setCellValueFactory(cellData->
-                new SimpleStringProperty(String.format("%.2f", cellData.getValue().getPrecio())+" €")
+        );
+        colPrecioTarifa.setCellValueFactory(cellData ->
+                new SimpleStringProperty(String.format("%.2f", cellData.getValue().getPrecio()) + " €")
         );
         colPeriodoTarifa.setCellValueFactory(cellData -> {
             Periodo periodo = cellData.getValue().getPeriodo();
@@ -494,7 +494,7 @@ public class MainViewClienteController {
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            System.err.println("Error al cargar la pantalla de login: " + e.getMessage());
+            logger.error("Error al cargar la pantalla de login: {}", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -531,7 +531,7 @@ public class MainViewClienteController {
             // Recargar las rutinas después de cerrar el formulario
             cargarRutinas();
         } catch (IOException e) {
-            System.err.println("Error al cargar la pantalla de registro de rutina: " + e.getMessage());
+            logger.error("Error al cargar la pantalla de registro de rutina: {}", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -579,9 +579,9 @@ public class MainViewClienteController {
             boolean puedeEliminar = true;
 
             // Verificar si la rutina fue creada por un entrenador
-            if (rutinaSeleccionada.getRutina().getCreadorEmpleado().getNombre() != null){
-                    Utilidades.mostrarAlerta("Acción no permitida", "No puede eliminar una rutina asignada por un entrenador", Alert.AlertType.WARNING);
-                    puedeEliminar = false;
+            if (rutinaSeleccionada.getRutina().getCreadorEmpleado().getNombre() != null) {
+                Utilidades.mostrarAlerta("Acción no permitida", "No puede eliminar una rutina asignada por un entrenador", Alert.AlertType.WARNING);
+                puedeEliminar = false;
             }
 
             if (puedeEliminar) {
@@ -594,27 +594,27 @@ public class MainViewClienteController {
                 if (alert.showAndWait().get() == ButtonType.OK) {
                     try {
                         // Eliminar la rutina
-                        clienteRutinaDAO.delete(clienteAutenticado.getId(), 
-                            rutinaSeleccionada.getRutina().getIdRutina());
+                        clienteRutinaDAO.delete(clienteAutenticado.getId(),
+                                rutinaSeleccionada.getRutina().getIdRutina());
 
                         // Recargar las rutinas
                         cargarRutinas();
 
-                        Utilidades.mostrarAlerta("Rutina eliminada", 
-                            "La rutina ha sido eliminada correctamente", 
-                            Alert.AlertType.INFORMATION);
+                        Utilidades.mostrarAlerta("Rutina eliminada",
+                                "La rutina ha sido eliminada correctamente",
+                                Alert.AlertType.INFORMATION);
                     } catch (Exception e) {
-                        System.err.println("Error al eliminar la rutina: " + e.getMessage());
-                        Utilidades.mostrarAlerta("Error", 
-                            "No se pudo eliminar la rutina", 
-                            Alert.AlertType.ERROR);
+                        logger.error("Error al eliminar la rutina: {}", e.getMessage());
+                        Utilidades.mostrarAlerta("Error",
+                                "No se pudo eliminar la rutina",
+                                Alert.AlertType.ERROR);
                     }
                 }
             }
         } else {
-            Utilidades.mostrarAlerta("Selección requerida", 
-                "Por favor, seleccione una rutina para eliminar", 
-                Alert.AlertType.WARNING);
+            Utilidades.mostrarAlerta("Selección requerida",
+                    "Por favor, seleccione una rutina para eliminar",
+                    Alert.AlertType.WARNING);
         }
     }
 
@@ -626,7 +626,7 @@ public class MainViewClienteController {
      * @param event El evento que desencadenó esta acción
      */
     public void contratarTarifa(ActionEvent event) {
-        Tarifa tarifaSeleccionada = (Tarifa) tablaTarifas.getSelectionModel().getSelectedItem();
+        Tarifa tarifaSeleccionada = tablaTarifas.getSelectionModel().getSelectedItem();
         boolean puedeContratar = true;
 
         if (tarifaSeleccionada == null) {
@@ -666,7 +666,6 @@ public class MainViewClienteController {
                     Utilidades.mostrarAlerta("Tarifa Asignada", "Tarifa asignada correctamente", Alert.AlertType.INFORMATION);
                 }
             } catch (ValidacionException e) {
-                System.err.println("Error al asignar la tarifa: " + e.getMessage());
                 Utilidades.mostrarAlerta("Error", "No se pudo asignar la tarifa", Alert.AlertType.ERROR);
             }
         }

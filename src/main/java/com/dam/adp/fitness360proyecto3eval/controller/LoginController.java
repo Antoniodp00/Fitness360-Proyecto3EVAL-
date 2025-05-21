@@ -153,7 +153,6 @@ public class LoginController {
 
             logger.debug("Validación de campos exitosa");
         } catch (ValidacionException e) {
-            logger.warn("Validación fallida: {}", e.getMessage());
             errores.append("Error: ").append(e.getMessage());
             errorMessage.setText(errores.toString());
             errorMessage.setVisible(true);

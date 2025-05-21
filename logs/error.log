@@ -204,3 +204,6 @@ Caused by: java.sql.SQLSyntaxErrorException: You have an error in your SQL synta
 2025-05-21 13:01:17 [ERROR] [c.d.a.f.utilidades.Utilidades] - Validación fallida: El correo electrónico no puede estar vacío
 2025-05-21 13:01:20 [ERROR] [c.d.a.f.utilidades.Utilidades] - Validación fallida: Formato de correo electrónico inválido: a
 2025-05-21 13:01:28 [ERROR] [c.d.a.f.utilidades.Utilidades] - Validación fallida: Formato de correo electrónico inválido: a@.cpom
+2025-05-21 13:06:19 [ERROR] [c.d.a.f.utilidades.Utilidades] - Validación fallida: El campo nombre de usuario no puede estar vacío
+2025-05-21 13:07:59 [ERROR] [c.d.a.f.utilidades.Utilidades] - Validación fallida: El campo nombre de usuario no puede estar vacío
+2025-05-21 13:08:29 [ERROR] [c.d.a.f.utilidades.Utilidades] - Validación fallida: El campo nombre de usuario no puede estar vacío

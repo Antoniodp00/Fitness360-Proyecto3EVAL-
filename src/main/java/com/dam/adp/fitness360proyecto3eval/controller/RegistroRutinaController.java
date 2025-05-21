@@ -364,7 +364,7 @@ public class RegistroRutinaController {
             errores.append(e.getMessage()).append("\n");
             errorMessage.setText(errores.toString());
             errorMessage.setVisible(true);
-            logger.warn("Validación de campos fallida: {}", errores.toString());
+            logger.warn("Validación de campos fallida: {}", errores);
             valido = false;
         }
 
